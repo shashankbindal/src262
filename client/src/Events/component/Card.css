@@ -58,7 +58,38 @@
   font-size: 1.1rem;
   color: var(--text-secondary);
   line-height: 1.7;
-  margin-bottom: 36px;
+  margin-bottom: 28px;
+}
+
+.competition-card-team {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.competition-team-pill {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 14px;
+  border: 1px solid var(--border-medium);
+  border-radius: 10px;
+  background: var(--surface-glass);
+}
+
+.competition-team-role {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--primary);
+}
+
+.competition-team-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .competition-rulebook-btn {
@@ -97,15 +128,15 @@
   .competition-card-container.even {
     flex-direction: column;
   }
-  
+
   .competition-card-image {
     min-height: 250px;
   }
-  
+
   .competition-card-content {
     padding: 40px 24px;
   }
-  
+
   .competition-card-title {
     font-size: 1.8rem;
   }
