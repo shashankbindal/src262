@@ -15,7 +15,7 @@
   background-size: 30px 30px;
   width: 100%;
   min-height: 100vh;
-  padding-top: 80px;
+  padding-top: 140px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -297,5 +297,59 @@
   }
   .rm-registration-box button {
     flex: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .rm-green-section {
+    padding-top: 120px;
+  }
+  
+  .rm-title-main {
+    font-size: clamp(3rem, 12vw, 4rem);
+  }
+  
+  .rm-title-sub {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+  }
+  
+  .rm-title-desc {
+    font-size: 0.9rem;
+    padding: 4px 10px;
+  }
+  
+  .rm-notebook {
+    width: 95%;
+  }
+  
+  .rm-notebook-inner {
+    padding: 20px 10px;
+    min-height: auto;
+  }
+  
+  .rm-ring {
+    height: 30px;
+    width: 12px;
+  }
+  
+  .rm-toolkit-wrapper {
+    margin-top: 40px;
+  }
+  
+  .rm-beige-section, .rm-orange-section, .rm-black-section {
+    padding: 40px 16px;
+  }
+  
+  .rm-section-heading {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .rm-orange-content h2 {
+    font-size: 1.5rem;
+  }
+  
+  .rm-orange-content p {
+    font-size: 1rem;
   }
 }

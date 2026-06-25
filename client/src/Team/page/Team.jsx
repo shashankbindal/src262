@@ -1,5 +1,7 @@
 import React from 'react';
 import { bentoCards } from '../../TeamProfile/teamsData';
+import { useReveal } from '../../Home/useReveal.js';
+import '../../Home/animations.css';
 import './Team.css';
 import TeamHero from './TeamHero';
 
@@ -9,8 +11,11 @@ const Team = () => {
       <TeamHero />
       <div className="team-page-container">
         <div className="teams-list">
-        {bentoCards.map((team, idx) => (
-          <div key={team.id} className="team-group" style={{ '--team-color': team.color || 'var(--primary)' }}>
+        {bentoCards.map((team, idx) => {
+          const [teamRef, teamVisible] = useReveal(0.1);
+          
+          return (
+          <div ref={teamRef} key={team.id} className={`team-group reveal-scale ${teamVisible ? 'visible' : ''}`} style={{ '--team-color': team.color || 'var(--primary)' }}>
             <h2 className="team-group-name">{team.name}</h2>
             
             <div className="team-hierarchy">
@@ -33,9 +38,9 @@ const Team = () => {
                       {arrangedMembers.map((member, index) => {
                         const { role, name, image, type } = member;
                         return (
-                          <div key={`${name}-${index}`} className={`member-card ${type}-card`}>
+                          <div key={`${name}-${index}`} className={`member-card ${type}-card reveal-d${index % 8 + 1}`}>
                             <div className="member-image-placeholder">
-                              {image && <img src={image} alt={name} className="member-image" />}
+                              {image && <img src={image} alt={name} className="member-image" loading="lazy" decoding="async" />}
                             </div>
                             <div className="member-info">
                               <h3 className="member-name">{name}</h3>
@@ -53,7 +58,8 @@ const Team = () => {
             
             {idx !== bentoCards.length - 1 && <div className="team-divider"></div>}
           </div>
-        ))}
+          )
+        })}
       </div>
     </div>
     </>

@@ -1,10 +1,13 @@
 .team-profile-container {
-  background-color: #1a1b18;
-  color: #F8F6F2;
-  height: 100vh;
-  overflow: hidden;
-  padding: 20px 5% 40px;
-  font-family: 'Raleway', sans-serif;
+  background-color: #f5eedc;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  color: #000;
+  min-height: 100vh;
+  padding: 100px 5% 40px;
+  font-family: 'Inter', sans-serif;
   display: flex;
   flex-direction: column;
 }
@@ -16,8 +19,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #1a1b18;
-  color: #F8F6F2;
+  background-color: #f5eedc;
+  color: #000;
   gap: 20px;
 }
 
@@ -27,24 +30,28 @@
 }
 
 .back-btn {
-  background: transparent;
-  border: 1px solid rgba(248, 246, 242, 0.4);
-  color: #F8F6F2;
-  padding: 10px 24px;
-  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
-  font-size: 0.85rem;
+  background: #000;
+  border: 4px solid #000;
+  color: #fff;
+  padding: 12px 24px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
   letter-spacing: 1px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   text-transform: uppercase;
   position: relative;
   z-index: 10;
-  touch-action: manipulation;
+  box-shadow: 6px 6px 0 #00a651;
 }
 
 .back-btn:hover {
-  background-color: #F8F6F2;
-  color: #1a1b18;
+  background-color: transparent;
+  color: #000;
+  transform: translate(-3px, -3px);
+  box-shadow: 9px 9px 0 #00a651;
+  animation: jitter 0.3s ease 1;
 }
 
 .team-profile-content {
@@ -69,29 +76,34 @@
   font-weight: 900;
   line-height: 1;
   margin-bottom: 16px;
-  letter-spacing: -1px;
+  letter-spacing: -2px;
   text-transform: uppercase;
+  color: #000;
+  text-shadow: 4px 4px 0 #00a651;
 }
 
 .team-profile-subtitle {
-  font-size: 1.1rem;
-  color: rgba(248, 246, 242, 0.8);
+  font-size: 1.2rem;
+  color: #000;
   margin-bottom: 30px;
+  font-weight: 800;
+  text-transform: uppercase;
 }
-
 
 .team-image-container {
   width: 100%;
   aspect-ratio: 16/9;
-  border: 1px solid rgba(248, 246, 242, 0.2);
+  border: 4px solid #000;
+  box-shadow: 12px 12px 0 #000;
   overflow: hidden;
   position: relative;
+  border-radius: 0;
+  background: var(--team-color, #00a651);
 }
 
 .team-image-placeholder {
   width: 100%;
   height: 100%;
-  background-color: var(--team-color, var(--primary));
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -102,15 +114,19 @@
 
 .team-image-placeholder h2 {
   font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 800;
+  font-weight: 900;
   margin-bottom: 8px;
-  color: #ffffff;
+  color: #fff;
+  text-shadow: 4px 4px 0 #000;
 }
 
 .team-image-placeholder p {
   font-size: 1.2rem;
-  color: var(--surface-bg);
-  font-family: 'JetBrains Mono', monospace;
+  color: #000;
+  font-weight: 800;
+  background: #fff;
+  padding: 4px 8px;
+  border: 2px solid #000;
 }
 
 .team-profile-right {
@@ -120,22 +136,39 @@
   padding-top: 20px;
 }
 
+.profile-section {
+  background: #ff7e40;
+  padding: 30px;
+  border: 4px solid #000;
+  box-shadow: 8px 8px 0 #000;
+}
+
+.profile-section:nth-child(even) {
+  background: #00a651;
+}
+
+.profile-section:nth-child(even) .section-text,
+.profile-section:nth-child(even) .details-list li {
+  color: #fff;
+}
+
 .section-title {
-  font-family: 'Raleway', sans-serif;
-  font-size: 2rem;
-  font-weight: 400;
-  letter-spacing: 1px;
+  font-family: 'Inter', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: -1px;
   margin-bottom: 20px;
   text-transform: uppercase;
-  border-bottom: 1px solid rgba(248, 246, 242, 0.2);
+  border-bottom: 4px solid #000;
   padding-bottom: 10px;
+  color: #000;
 }
 
 .section-text {
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   line-height: 1.7;
-  color: rgba(248, 246, 242, 0.85);
-  font-weight: 500;
+  color: #000;
+  font-weight: 700;
 }
 
 .profile-details-grid {
@@ -154,10 +187,10 @@
 }
 
 .details-list li {
-  font-size: 0.95rem;
-  color: rgba(248, 246, 242, 0.8);
-  font-family: 'Raleway', sans-serif;
-  line-height: 1.4;
+  font-size: 1rem;
+  color: #000;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
 @media (max-width: 900px) {
@@ -183,12 +216,12 @@
     gap: 10px;
     overflow: visible;
   }
-  
+
   .team-profile-title {
     font-size: 1.8rem;
     margin-bottom: 5px;
   }
-  
+
   .team-profile-subtitle {
     font-size: 0.8rem;
     margin-bottom: 10px;
@@ -197,7 +230,7 @@
   .team-image-container {
     aspect-ratio: 24/9;
   }
-  
+
   .team-profile-right {
     padding-top: 0;
     gap: 10px;
@@ -213,7 +246,7 @@
     font-size: 0.75rem;
     line-height: 1.3;
   }
-  
+
   .profile-details-grid {
     grid-template-columns: 1fr 1fr;
     gap: 10px;

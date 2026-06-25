@@ -42,7 +42,6 @@ const Main = () => {
               ref={toolkitRef} 
               className={`rm-toolkit-wrapper reveal-scale ${toolkitVisible ? 'visible' : ''}`}
             >
-              <h2 className="rm-toolkit-title"><span>TOOL</span> KIT</h2>
               <Events />
               <Sponsors />
             </div>

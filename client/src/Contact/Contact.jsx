@@ -1,18 +1,30 @@
 import React, { useState } from 'react'
+import { useReveal } from '../Home/useReveal.js'
+import { useStaggerLines } from '../Home/useStaggerLines.js'
+import '../Home/animations.css'
 import './Contact.css'
 
 const Contact = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  
+  const [headerRef, headerVisible] = useReveal(0.1);
+  const textRef = useStaggerLines('p', 0.1);
+  const [cardsRef, cardsVisible] = useReveal(0.1);
+  const [formRef, formVisible] = useReveal(0.1);
+  const [mapRef, mapVisible] = useReveal(0.1);
+
   return (
     <>
       <div className="contact-container">
       <div className="contact-left">
-        <h1 className="contact-title">Contact Us</h1>
-        <p className="contact-description">
-          We're happy to answer any questions you have or provide you with an estimate. Just send us a message in the form with any question you may have.
-        </p>
+        <h1 ref={headerRef} className={`contact-title reveal-left ${headerVisible ? 'visible' : ''}`}>Contact Us</h1>
+        <div ref={textRef}>
+          <p className="contact-description">
+            We're happy to answer any questions you have or provide you with an estimate. Just send us a message in the form with any question you may have.
+          </p>
+        </div>
 
-        <div className="contact-cards">
+        <div ref={cardsRef} className={`contact-cards reveal-scale ${cardsVisible ? 'visible' : ''}`}>
           <div className="contact-card">
             <h3 className="card-title">General Queries</h3>
             <h4 className="card-name">Shubhendra Singh</h4>
@@ -25,7 +37,7 @@ const Contact = () => {
           </div>
 
           <div className="contact-card">
-            <h3 className="card-title">Accommodation Queries</h3>
+            <h3 className="card-title">Travel & Coordination Queries</h3>
             <h4 className="card-name">Abhimanyu Singh</h4>
             <div className="card-info">
               <div className="info-item">
@@ -35,7 +47,7 @@ const Contact = () => {
             </div>
           </div>
           <div className="contact-card">
-            <h3 className="card-title">Travel & Coordination Queries</h3>
+            <h3 className="card-title">Accommodation Queries</h3>
             <h4 className="card-name">Sharad Shukla</h4>
             <div className="card-info">
               <div className="info-item">
@@ -47,13 +59,13 @@ const Contact = () => {
         </div>
       </div>
 
-      <div className="contact-right">
+      <div ref={formRef} className={`contact-right reveal-right ${formVisible ? 'visible' : ''}`}>
         <div className="contact-form-container">
           {isSubmitted ? (
             <div className="success-message" style={{ textAlign: 'center', padding: '40px 0' }}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto 16px' }}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-              <h3 style={{ fontSize: '1.8rem', color: 'var(--text-primary)', marginBottom: '16px' }}>Message Sent!</h3>
-              <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', marginBottom: '32px' }}>Thank you for reaching out. We will get back to you shortly.</p>
+              <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#00a651" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto 16px' }}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              <h3 style={{ fontSize: '1.8rem', color: '#000', marginBottom: '16px', fontWeight: '800' }}>Message Sent!</h3>
+              <p style={{ fontSize: '1.1rem', color: '#000', marginBottom: '32px', fontWeight: '600' }}>Thank you for reaching out. We will get back to you shortly.</p>
               <button onClick={() => setIsSubmitted(false)} className="submit-btn">Send Another Message</button>
             </div>
           ) : (
@@ -88,7 +100,7 @@ const Contact = () => {
       </div>
     </div>
       
-    <div className="how-to-reach-section">
+    <div ref={mapRef} className={`how-to-reach-section reveal-scale ${mapVisible ? 'visible' : ''}`}>
         <h2 className="how-to-reach-title">How to Reach</h2>
         <div className="map-container">
           <iframe

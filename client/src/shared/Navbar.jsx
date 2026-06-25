@@ -66,11 +66,11 @@ const Navbar = () => {
   return (
     <>
       <div className={`nav-side-logo rgipt-side-logo ${scrolled ? 'scrolled' : ''}`}>
-        <img src="/rgipt.png" alt="RGIPT Logo" className="navbar-logo-img" />
+        <img src="/rgipt.png" alt="RGIPT Logo" className="navbar-logo-img" fetchpriority="high" />
       </div>
       <div className={`nav-side-logo aiche-side-logo ${scrolled ? 'scrolled' : ''}`}>
-        <img src="/aiche.png" alt="AIChE Logo" className="navbar-logo-img" />
-        <img src="/aiche-rgipt.jpeg" alt="AIChE RGIPT Logo" className="navbar-logo-img aiche-round-logo" />
+        <img src="/aiche.png" alt="AIChE Logo" className="navbar-logo-img" fetchpriority="high" />
+        <img src="/aiche-rgipt.jpeg" alt="AIChE RGIPT Logo" className="navbar-logo-img aiche-round-logo" fetchpriority="high" />
       </div>
 
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>

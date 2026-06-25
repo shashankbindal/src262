@@ -144,3 +144,22 @@
   margin: 0;
   font-size: 1.05rem;
 }
+
+@media (max-width: 768px) {
+  .faq-title {
+    font-size: 1.8rem;
+  }
+  .faq-subtitle {
+    font-size: 1rem;
+  }
+  .faq-question {
+    font-size: 1rem;
+    padding: 16px;
+  }
+  .faq-item.active .faq-answer {
+    padding: 0 16px 16px 16px;
+  }
+  .faq-answer p {
+    font-size: 0.95rem;
+  }
+}

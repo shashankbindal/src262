@@ -28,7 +28,7 @@ const Sponsors = () => {
           
           {[...sponsorsData, ...sponsorsData].map((item, index) => (
             <div key={index} className="sponsor-card">
-              <img src={item.url} alt={item.name} className="sponsor-logo" />
+              <img src={item.url} alt={item.name} className="sponsor-logo" loading="lazy" decoding="async" />
             </div>
           ))}
         </div>

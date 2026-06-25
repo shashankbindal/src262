@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useReveal } from '../Home/useReveal.js';
+import '../Home/animations.css';
 import './Sponsor.css';
 
 const sponsorsData = [
@@ -19,15 +21,17 @@ const sponsorsData = [
 import SponsorsHero from './SponsorsHero';
 
 const Sponsor = () => {
+  const [containerRef, containerVisible] = useReveal(0.1);
+
   return (
     <>
       <SponsorsHero />
       <div className="sponsors-page">
-        <div className="sponsors-container">
+        <div ref={containerRef} className={`sponsors-container reveal ${containerVisible ? 'visible' : ''}`}>
           <div className="sponsors-grid">
             {sponsorsData.map((sponsor, idx) => (
-              <div key={idx} className="sponsor-card">
-                <img src={sponsor.url} alt={sponsor.name} className="sponsor-logo" />
+              <div key={idx} className={`sponsor-card reveal-scale reveal-d${idx % 8 + 1} ${containerVisible ? 'visible' : ''}`}>
+                <img src={sponsor.url} alt={sponsor.name} className="sponsor-logo" loading="lazy" decoding="async" />
               </div>
             ))}
           </div>

@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import Navbar from "./shared/Navbar.jsx";
 import Footer from "./shared/Footer.jsx";
 import Main from "./Home/Main.jsx";
@@ -14,6 +15,20 @@ import TeamProfile from "./TeamProfile/TeamProfile.jsx";
 
 import ScrollToTop from "./shared/ScrollToTop.jsx";
 
+const PageTransition = ({ children }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8, y: 100, rotateX: 45 }}
+      animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
+      exit={{ opacity: 0, scale: 1.2, y: -100, rotateX: -45, filter: "blur(20px)" }}
+      transition={{ type: "spring", stiffness: 100, damping: 15, duration: 1 }}
+      style={{ transformOrigin: "center center" }}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
 const AppContent = () => {
   const location = useLocation();
   const hideNavFooter = location.pathname.startsWith('/team-profile');
@@ -22,17 +37,19 @@ const AppContent = () => {
     <SmoothScroller>
       <ScrollToTop />
       {!hideNavFooter && <Navbar />}
-      <main style={{ flex: 1 }}>
-        <Routes>
-          <Route path="/" element={<Main />} />
-          <Route path="/events" element={<Event />} />
-          <Route path="/team" element={<Team />} />
-          {/* <Route path="/accommodation" element={<Accommodation />} /> */}
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/register" element={<Registration />} />
-          <Route path="/sponsors" element={<Sponsor />} />
-          <Route path="/team-profile/:teamId" element={<TeamProfile />} />
-        </Routes>
+      <main style={{ flex: 1, overflowX: "hidden" }}>
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<PageTransition><Main /></PageTransition>} />
+            <Route path="/events" element={<PageTransition><Event /></PageTransition>} />
+            <Route path="/team" element={<PageTransition><Team /></PageTransition>} />
+            {/* <Route path="/accommodation" element={<PageTransition><Accommodation /></PageTransition>} /> */}
+            <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
+            <Route path="/register" element={<PageTransition><Registration /></PageTransition>} />
+            <Route path="/sponsors" element={<PageTransition><Sponsor /></PageTransition>} />
+            <Route path="/team-profile/:teamId" element={<PageTransition><TeamProfile /></PageTransition>} />
+          </Routes>
+        </AnimatePresence>
       </main>
       {!hideNavFooter && <Footer />}
     </SmoothScroller>

@@ -18,10 +18,18 @@ export const useStaggerLines = (childSelector = 'p', threshold = 0.2) => {
 
     // Set initial state: all children hidden
     const children = el.querySelectorAll(childSelector);
-    gsap.set(children, { 
-      opacity: 0, 
-      y: 40,
-      filter: 'blur(4px)'
+    
+    // Convert to Array to apply soothing initial state
+    const childrenArr = Array.from(children);
+    
+    childrenArr.forEach((child) => {
+      gsap.set(child, { 
+        opacity: 0, 
+        y: 40,
+        rotationZ: -2,
+        scale: 0.95,
+        filter: 'blur(8px)'
+      });
     });
 
     const observer = new IntersectionObserver(
@@ -29,14 +37,19 @@ export const useStaggerLines = (childSelector = 'p', threshold = 0.2) => {
         if (entry.isIntersecting && !hasAnimated) {
           setHasAnimated(true);
 
-          // Stagger animate each paragraph
+          // Soothing stagger animate each paragraph
           gsap.to(children, {
             opacity: 1,
             y: 0,
+            rotationZ: 0,
+            scale: 1,
             filter: 'blur(0px)',
-            duration: 0.7,
+            duration: 1.2,
             ease: 'power3.out',
-            stagger: 0.2,
+            stagger: {
+              each: 0.1,
+              from: "start"
+            },
           });
 
           observer.unobserve(el);

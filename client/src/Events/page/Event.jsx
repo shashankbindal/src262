@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import Card from '../component/Card.jsx';
+import { useReveal } from '../../Home/useReveal.js';
+import { useStaggerLines } from '../../Home/useStaggerLines.js';
+import '../../Home/animations.css';
 import './Event.css';
 
 const eventsList = [
@@ -20,14 +23,14 @@ const eventsList = [
     title: "K-12 Competition",
     description: (
       <>
-        The AIChE K-12 competition invites undergraduate chemical engineering innovators to design and present interactive, high-impact STEM projects tailored for young minds. Aimed at age groups ranging from kindergarten to grade 12, teams will demonstrate complex scientific principles through engaging working models, live demonstrations, or creative posters across four specific student categories:
+        <p>The AIChE K-12 competition invites undergraduate chemical engineering innovators to design and present interactive, high-impact STEM projects tailored for young minds. Aimed at age groups ranging from kindergarten to grade 12, teams will demonstrate complex scientific principles through engaging working models, live demonstrations, or creative posters across four specific student categories:</p>
         <ul style={{ margin: "12px 0", paddingLeft: "24px" }}>
           <li><strong>Curious Minds</strong> (KG–Grade 2)</li>
           <li><strong>Emerging Sparks</strong> (Grade 3–Grade 5)</li>
           <li><strong>Critical Thinkers</strong> (Grade 6–Grade 8)</li>
           <li><strong>Future Engineers</strong> (Grade 9–Grade 12)</li>
         </ul>
-        The event challenges future engineers to translate real-world problem-solving into safe, student-friendly, and educational experiences that cultivate a lifelong curiosity for science and technology.
+        <p>The event challenges future engineers to translate real-world problem-solving into safe, student-friendly, and educational experiences that cultivate a lifelong curiosity for science and technology.</p>
       </>
     ),
     image: "https://learningliftoff.com/wp-content/uploads/2023/01/pexels-artem-podrez-6941450-1536x864.jpg.webp",
@@ -51,7 +54,7 @@ const eventsList = [
     id: 4,
     title: "Technical Paper Presentation Competition",
     description: "The Technical Paper Presentation provides a platform for students to showcase original research, innovative methodologies, and cutting-edge developments in chemical engineering and allied disciplines. Participants present their work before a panel of experts, fostering scientific dialogue, critical thinking, and knowledge exchange. The competition celebrates research excellence while encouraging students to address real-world challenges through engineering solutions.",
-    image: "https://images.unsplash.com/photo-1515603403036-f3d35f75ca52?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3Dnsplash.com/photo-1558021212-51b6ecfa0db9?q=80&w=800&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1515603403036-f3d35f75ca52?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     rulebookLink: "#",
     chairs: [{ role: "Chair", name: "Omika Singh" }],
     coordinators: [
@@ -72,11 +75,16 @@ const eventsList = [
 ];
 
 const Event = () => {
+  const [headerRef, headerVisible] = useReveal(0.1);
+  const subtitleRef = useStaggerLines('p', 0.1);
+
   return (
     <div className="events-page-container">
       <div className="events-page-header">
-        <h1 className="events-page-title">Events</h1>
-        <p className="events-page-subtitle">Discover the exciting competitions, presentations, and interactive activities lined up for SRC 2026.</p>
+        <h1 ref={headerRef} className={`events-page-title reveal-scale ${headerVisible ? 'visible' : ''}`}>Events</h1>
+        <div ref={subtitleRef}>
+          <p className="events-page-subtitle">Discover the exciting competitions, presentations, and interactive activities lined up for SRC 2026.</p>
+        </div>
       </div>
 
       <div className="events-cards-wrapper">
