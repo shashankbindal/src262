@@ -32,7 +32,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* scroll-behavior: auto; handled by lenis */
 }
 
 body {
@@ -106,4 +106,24 @@ html,
 body {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
 }

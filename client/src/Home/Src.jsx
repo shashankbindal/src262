@@ -19,9 +19,11 @@ const Src = () => {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "center center",
-          end: "+=150%", 
+          end: "+=200%", 
           pin: true,
-          scrub: 1, 
+          scrub: true,
+          fastScrollEnd: true,
+          preventOverlaps: true,
         }
       })
 

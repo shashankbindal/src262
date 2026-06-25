@@ -16,7 +16,7 @@ const Main = () => {
       <Sponsors />
       <Src />
       <Events />
-      <Schedule />
+      {/* <Schedule /> */}
       <Aiche/>
       <Teams />
       <Faq />

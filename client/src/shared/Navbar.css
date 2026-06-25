@@ -64,11 +64,11 @@
 }
 
 .rgipt-side-logo .navbar-logo-img {
-  height: 90px;
+  height: 75px;
 }
 
 .aiche-side-logo .navbar-logo-img {
-  height: 60px;
+  height: 75px;
 }
 
 .nav-side-logo:hover .navbar-logo-img {
@@ -249,21 +249,21 @@
   }
 
   .rgipt-side-logo .navbar-logo-img {
-    height: 55px;
+    height: 48px;
   }
 
   .aiche-side-logo {
-    left: 90px;
+    left: 85px;
     right: auto;
     gap: 12px;
   }
 
   .aiche-side-logo.scrolled {
-    left: 82px;
+    left: 77px;
   }
 
   .aiche-side-logo .navbar-logo-img {
-    height: 40px;
+    height: 48px;
   }
 
   .mobile-nav-overlay {
