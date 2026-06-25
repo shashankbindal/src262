@@ -1,16 +1,14 @@
 import React from 'react';
 import { bentoCards } from '../../TeamProfile/teamsData';
 import './Team.css';
+import TeamHero from './TeamHero';
 
 const Team = () => {
   return (
-    <div className="team-page-container">
-      <div className="team-page-header">
-        <h1 className="team-page-title">OUR TEAM</h1>
-        <p className="team-page-subtitle">The minds behind SRC '26</p>
-      </div>
-
-      <div className="teams-list">
+    <>
+      <TeamHero />
+      <div className="team-page-container">
+        <div className="teams-list">
         {bentoCards.map((team, idx) => (
           <div key={team.id} className="team-group" style={{ '--team-color': team.color || 'var(--primary)' }}>
             <h2 className="team-group-name">{team.name}</h2>
@@ -58,6 +56,7 @@ const Team = () => {
         ))}
       </div>
     </div>
+    </>
   );
 };
 

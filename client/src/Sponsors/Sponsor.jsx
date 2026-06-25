@@ -16,28 +16,24 @@ const sponsorsData = [
   { name: 'Burger Singh', url: '/burger.png' }
 ];
 
-
+import SponsorsHero from './SponsorsHero';
 
 const Sponsor = () => {
   return (
-    <div className="sponsors-page">
-      <div className="sponsors-container">
-        <div className="sponsors-header">
-          <h1 className="sponsors-title">Our Past Sponsors</h1>
-          <p className="sponsors-subtitle">
-            Supported by industry leaders who believe in innovation, leadership, and the future of engineering.
-          </p>
-        </div>
-        
-        <div className="sponsors-grid">
-          {sponsorsData.map((sponsor, idx) => (
-            <div key={idx} className="sponsor-card">
-              <img src={sponsor.url} alt={sponsor.name} className="sponsor-logo" />
-            </div>
-          ))}
+    <>
+      <SponsorsHero />
+      <div className="sponsors-page">
+        <div className="sponsors-container">
+          <div className="sponsors-grid">
+            {sponsorsData.map((sponsor, idx) => (
+              <div key={idx} className="sponsor-card">
+                <img src={sponsor.url} alt={sponsor.name} className="sponsor-logo" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

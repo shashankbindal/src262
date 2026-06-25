@@ -1,0 +1,85 @@
+.team-hero {
+  position: relative;
+  width: 100%;
+  padding: 140px 5% 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.team-hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/teams.jpg');
+  background-size: cover;
+  background-position: center;
+  mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
+  z-index: 0;
+}
+
+.team-hero-bg::after {
+  content: '';
+  position: absolute;
+  top: 0; 
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  mask-image: radial-gradient(ellipse at center, transparent 60%, black 100%);
+  -webkit-mask-image: radial-gradient(ellipse at center, transparent 60%, black 100%);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.team-hero-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  background: linear-gradient(to top, var(--surface-bg) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.team-hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 800px;
+  padding: 50px 80px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.team-hero-title {
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -2px;
+  color: var(--text-primary);
+  margin-bottom: 15px;
+  line-height: 1;
+}
+
+.team-hero-subtitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .team-hero-title {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+  }
+}

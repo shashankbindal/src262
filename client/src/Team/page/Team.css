@@ -1,33 +1,8 @@
 .team-page-container {
-  min-height: 100vh;
-  padding: 140px 5% 100px;
+  padding: 40px 5% 100px;
   background-color: var(--surface-bg);
   color: var(--text-primary);
   font-family: 'Raleway', sans-serif;
-}
-
-.team-page-header {
-  text-align: center;
-  margin-bottom: 120px;
-  position: relative;
-}
-
-.team-page-title {
-  font-size: clamp(3rem, 8vw, 7rem);
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: -2px;
-  color: var(--text-primary);
-  margin-bottom: 15px;
-  line-height: 1;
-}
-
-.team-page-subtitle {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  letter-spacing: 6px;
-  text-transform: uppercase;
 }
 
 .teams-list {
@@ -194,11 +169,7 @@
 
 @media (max-width: 768px) {
   .team-page-container {
-    padding: 100px 5% 60px;
-  }
-  
-  .team-page-title {
-    font-size: clamp(2.5rem, 6vw, 4rem);
+    padding: 60px 5% 60px;
   }
 
   .teams-list {
