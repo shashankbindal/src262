@@ -28,6 +28,7 @@
 
   background-color: var(--surface-card); 
   color: var(--text-card); 
+  font-family: 'Absans', sans-serif;
   border-radius: 32px;
   padding: 40px 60px;
   overflow: hidden;
@@ -53,17 +54,19 @@
 }
 
 .aiche-card-title {
+  font-family: 'Absans', sans-serif;
   font-size: clamp(2rem, 4vw, 3rem);
   margin-bottom: 8px;
   font-weight: 700;
 }
 
 .aiche-card p {
+  font-family: 'Absans', sans-serif;
   font-size: clamp(0.85rem, 1.1vw, 1rem);
-  line-height: 1.4;
+  line-height: 1.6;
   opacity: 0.8;
-  font-weight: 600;
-  letter-spacing: 0;
+  font-weight: 400;
+  letter-spacing: 0.03em;
   color: var(--text-card);
   margin-bottom: 0.6rem;
 }

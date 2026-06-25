@@ -62,8 +62,8 @@ const Aiche = () => {
               About AIChE
             </h2>
             <div className="aiche-card-text">
-              <p>The American Institute of Chemical Engineers (AIChE) is the world’s leading organization for chemical engineering professionals and students. With a global network, AIChE promotes innovation, knowledge exchange, professional growth, and technological advancement through conferences, publications, competitions, and leadership opportunities.</p>
-              <p>With over 60,000 members from 110+ countries and a presence in 14 global regions, AIChE unites students, researchers, and industry leaders to shape the future of chemical engineering across core industries and emerging fields.</p>
+              <p>The American Institute of Chemical Engineers (AIChE) is the world’s leading organization for chemical engineering professionals and students. With a global network , AIChE promotes innovation, knowledge exchange, professional growth, and technological advancement through conferences, publications, competitions, and leadership opportunities.</p>
+              <p>With over 60,000 members from 110+ countries and a presence in 14 global regions, AIChE unites students, researchers, and industry leaders to shape the future of chemical engineering across core industries and emerging fields .</p>
             </div>
           </div>
         </div>
@@ -71,13 +71,13 @@ const Aiche = () => {
         <div className="aiche-card card-2" ref={card2Ref}>
           <div className="aiche-card-content">
             <h2 className="aiche-card-title">
-              About AIChE at RGIPT
+              AIChE RGIPT STUDENT CHAPTER : From Excellence to Eminence
             </h2>
             <div className="aiche-card-text">
               <p>"Having earned the privilege of hosting AIChE India SRC 2026, RGIPT stands ready to welcome the nation's brightest minds to a campus synonymous with academic excellence, innovation, and leadership in Chemical and Petroleum Engineering."</p>
               <p>Established in 2016, the AIChE RGIPT Student Chapter has grown into one of India's most distinguished and dynamic student chapters, building a strong community of over 500 members over the years. Based at the Rajiv Gandhi Institute of Petroleum Technology (RGIPT), an Institute of National Importance renowned for Chemical, Petroleum, and Energy Engineering, the chapter has consistently fostered innovation, leadership, and professional excellence.</p>
               <p>Recognized with the prestigious AIChE Outstanding Student Chapter Award for two consecutive years, the chapter serves as a proud AIChE Regional Center and has maintained a strong international presence through multiple members serving on the AIChE Executive Student Committee (ESC). The chapter has also strengthened global engagement through collaborations with international student chapters, including its former sister chapter, AIChE UI Indonesia.</p>
-              <p>Over the years, AIChE RGIPT has successfully organised numerous technical, professional, and outreach initiatives while building strong relationships with leading organisations such as IndianOil, GAIL, HPCL, ONGC, MRPL, NRL, Indorama, ISRO, and CSIR. Today, with the collective efforts of 200+ dedicated student volunteers, the chapter is proudly hosting AIChE India SRC 2026 – VIPLAV, striving to deliver one of the most impactful and memorable editions of the conference while continuing its tradition of excellence, leadership, and innovation.</p>
+              <p>Over the years, AIChE RGIPT has successfully organised numerous technical, professional, and outreach initiatives while building strong relationships with leading organisations such as IndianOil, GAIL, HPCL, ONGC, MRPL, NRL, Indorama, ISRO, and CSIR. Today, with the collective efforts of 200+ dedicated student volunteers, the chapter is proudly hosting AIChE India SRC 2026 – Viplav, striving to deliver one of the most impactful and memorable editions of the conference while continuing its tradition of excellence, leadership, and innovation.</p>
             </div>
           </div>
         </div>

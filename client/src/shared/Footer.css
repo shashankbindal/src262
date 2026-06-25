@@ -1,6 +1,7 @@
 .footer {
   padding: 20px;
   background-color: var(--surface-bg);
+  font-family: 'Raleway', sans-serif;
 }
 
 .footer-card {
