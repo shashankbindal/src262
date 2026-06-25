@@ -99,10 +99,14 @@
   }
   
   .competition-card-image {
-    min-height: 250px;
+    flex: none;
+    width: 100%;
+    height: 250px;
+    min-height: auto;
   }
   
   .competition-card-content {
+    flex: none;
     padding: 40px 24px;
   }
   
