@@ -1,12 +1,9 @@
+/* ===== SPONSORS PAGE — DARK GRID ===== */
 .sponsors-page {
-  padding: 80px 24px;
-  background-color: var(--surface-bg);
+  padding: 80px 24px 120px;
+  background-color: var(--bg-primary);
   display: flex;
   justify-content: center;
-  background-image: 
-    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-  background-size: 20px 20px;
 }
 
 .sponsors-container {
@@ -14,73 +11,61 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 60px;
+  gap: 80px;
 }
 
 .sponsors-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 32px;
+  gap: 24px;
 }
 
 .sponsor-card {
-  padding: 20px;
+  padding: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 180px;
-  background: #f5eedc;
-  border: 4px solid #000;
-  box-shadow: 6px 6px 0 #000;
-  transition: all 0.2s ease;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-md);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
-  border-radius: 0;
+  border-radius: var(--radius-lg);
 }
 
 .sponsor-card:hover {
-  transform: translate(-3px, -3px);
-  box-shadow: 9px 9px 0 #000;
-  background: #fff;
-  animation: jitter 0.3s ease 1;
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-xl), var(--shadow-glow-green);
+  border-color: var(--border-glow);
+  background: var(--bg-elevated);
 }
 
 .sponsor-logo {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 80%;
+  max-height: 80%;
   object-fit: contain;
-  transition: transform 0.2s ease;
-  filter: grayscale(100%);
+  transition: all 0.4s ease;
+  filter: grayscale(100%) brightness(0.5);
 }
 
 .sponsor-card:hover .sponsor-logo {
-  transform: scale(1.08);
-  filter: grayscale(0%);
+  transform: scale(1.06);
+  filter: grayscale(0%) brightness(1);
 }
 
 .sponsor-fallback {
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--text-muted);
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.08em;
 }
 
 @media (max-width: 768px) {
-  .sponsors-page {
-    padding: 40px 16px;
-  }
-  
-  .sponsors-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 16px;
-  }
-  
-  .sponsor-card {
-    height: 120px;
-    padding: 16px;
-    border-radius: 0;
-    border: 3px solid #000;
-    box-shadow: 4px 4px 0 #000;
-  }
+  .sponsors-page { padding: 40px 16px 80px; }
+  .sponsors-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; }
+  .sponsor-card { height: 120px; padding: 20px; }
 }

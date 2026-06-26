@@ -33,11 +33,51 @@ const AppContent = () => {
   const location = useLocation();
   const hideNavFooter = location.pathname.startsWith('/team-profile');
 
+  React.useEffect(() => {
+    // 1. Mouse move tracker for card hover spotlight gradients ( O(1) hover tracking )
+    const handleMouseMove = (e) => {
+      const card = e.target.closest(
+        '.rm-event-block, .carousel-card, .info-card, .aiche-card, .competition-card-container, .contact-card, .sponsor-card, .contact-form-container, .rm-postit, .member-image-placeholder'
+      );
+      if (card) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      }
+    };
+
+    // 2. Scroll progress tracker
+    const handleScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalHeight > 0) {
+        const progress = (window.scrollY / totalHeight) * 100;
+        const progressBar = document.querySelector('.scroll-progress');
+        if (progressBar) {
+          progressBar.style.width = `${progress}%`;
+        }
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <SmoothScroller>
+      <div className="scroll-progress" />
+      <div className="bg-glow-orb orb-1" />
+      <div className="bg-glow-orb orb-2" />
+      <div className="bg-glow-orb orb-3" />
       <ScrollToTop />
       {!hideNavFooter && <Navbar />}
-      <main style={{ flex: 1, overflowX: "hidden" }}>
+      <main style={{ flex: 1, overflowX: "hidden", position: "relative", zIndex: 1 }}>
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<PageTransition><Main /></PageTransition>} />

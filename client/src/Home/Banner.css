@@ -1,24 +1,30 @@
+/* ===== BANNER — GLOWING CARD GRID ===== */
 .rm-banner-section {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-  padding-bottom: 60px;
+  padding-bottom: 80px;
 }
 
 .rm-banner-header {
   margin-bottom: 60px;
   text-align: left;
   width: 100%;
-  padding-left: 5%;
 }
 
 .rm-banner-theme {
-  font-size: clamp(2rem, 4vw, 4rem);
-  color: #000;
-  line-height: 1.1;
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--text-primary) 30%, var(--primary) 60%, var(--primary-light) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 8s ease infinite;
 }
 
 .rm-postits-container {
@@ -28,88 +34,111 @@
   gap: 30px;
   position: relative;
   width: 100%;
-  min-height: 400px;
+  min-height: 420px;
 }
 
+/* ===== POST-IT CARDS — GLASS WITH GLOW BORDERS ===== */
 .rm-postit {
-  width: 250px;
-  height: 250px;
-  padding: 30px;
+  width: 260px;
+  height: 260px;
+  padding: 36px 30px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  color: #000;
-  border: 4px solid #000;
-  box-shadow: 6px 6px 0 rgba(0, 0, 0, 1);
+  color: var(--text-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   position: absolute;
-  transition: transform 0.2s ease, z-index 0.2s;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease,
+              z-index 0.5s ease;
   cursor: pointer;
+  background: var(--bg-secondary);
+  backdrop-filter: blur(10px);
 }
 
 .rm-postit:hover {
-  transform: scale(1.05) translateY(-5px) !important;
+  transform: scale(1.06) translateY(-12px) !important;
   z-index: 100 !important;
-  box-shadow: 10px 10px 0 rgba(0, 0, 0, 1);
+  box-shadow: var(--shadow-xl), var(--shadow-glow-green);
+  border-color: var(--border-glow);
 }
 
 .rm-postit h3 {
-  font-size: 1.2rem;
-  font-weight: 800;
-  margin-bottom: 15px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 20px;
   text-transform: uppercase;
-  border-bottom: 2px solid rgba(0,0,0,0.2);
-  padding-bottom: 5px;
+  letter-spacing: 0.15em;
+  color: var(--primary);
+  border-bottom: 1px solid var(--border-medium);
+  padding-bottom: 10px;
 }
 
 .rm-postit p {
-  font-size: 1.1rem;
-  font-weight: 600;
-  line-height: 1.4;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.6;
 }
 
-/* Post-it specific colors and messy rotations */
+/* Card variants with subtle color tints */
 .rm-postit-c1 {
-  background-color: #00a651; /* Green */
-  color: #fff;
-  top: 10px;
-  left: 10%;
-  transform: rotate(-5deg);
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(62, 207, 107, 0.05) 100%);
+  border-color: rgba(62, 207, 107, 0.2);
+  top: 10px; left: 5%;
+  transform: rotate(-1.5deg);
   z-index: 5;
 }
-.rm-postit-c1 h3 { border-bottom-color: rgba(255,255,255,0.3); }
 
 .rm-postit-c2 {
-  background-color: #ff7e40; /* Orange */
-  top: 40px;
-  left: 30%;
-  transform: rotate(8deg);
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(232, 118, 75, 0.05) 100%);
+  border-color: rgba(232, 118, 75, 0.2);
+  top: 40px; left: 28%;
+  transform: rotate(2deg);
   z-index: 6;
 }
+.rm-postit-c2 h3 { color: var(--accent); }
 
 .rm-postit-c3 {
-  background-color: #f5eedc; /* Beige */
-  top: -20px;
-  left: 50%;
-  transform: rotate(-3deg);
+  background: var(--bg-secondary);
+  border-color: var(--border-medium);
+  top: -10px; left: 51%;
+  transform: rotate(-1deg);
   z-index: 4;
 }
 
 .rm-postit-c4 {
-  background-color: #000; /* Black */
-  color: #fff; 
-  top: 120px;
-  left: 15%;
-  transform: rotate(6deg);
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+  color: var(--bg-primary);
+  border-color: var(--primary);
+  top: 130px; left: 16%;
+  transform: rotate(1deg);
   z-index: 7;
+  box-shadow: var(--shadow-lg);
 }
-.rm-postit-c4 h3 { border-bottom-color: rgba(255,255,255,0.3); }
+.rm-postit-c4 h3 { color: rgba(12, 15, 14, 0.5); border-bottom-color: rgba(12, 15, 14, 0.15); }
+.rm-postit-c4 p { color: var(--bg-primary); }
 
 .rm-postit-c5 {
-  background-color: #ff7e40; /* Orange again or Green? Let's do Orange */
-  top: 100px;
-  left: 60%;
-  transform: rotate(-8deg);
+  background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-tertiary) 100%);
+  border-color: var(--border-dark);
+  top: 100px; left: 62%;
+  transform: rotate(-2deg);
   z-index: 8;
+}
+
+@media (max-width: 1024px) {
+  .rm-postits-container { min-height: 500px; }
+  .rm-postit-c1 { left: 2%; }
+  .rm-postit-c2 { left: 25%; }
+  .rm-postit-c3 { left: 48%; }
+  .rm-postit-c4 { left: 12%; }
+  .rm-postit-c5 { left: 58%; }
 }
 
 @media (max-width: 900px) {
@@ -118,17 +147,18 @@
     flex-direction: column;
     align-items: center;
     gap: 20px;
+    min-height: auto;
+    margin-top: 20px;
   }
-  
   .rm-postit {
     position: relative;
     top: auto !important;
     left: auto !important;
     transform: rotate(0) !important;
-    margin-bottom: 20px;
-    width: 90%;
-    max-width: 300px;
+    width: 100%;
+    max-width: 450px;
     height: auto;
-    min-height: 200px;
+    min-height: 160px;
+    padding: 28px;
   }
 }

@@ -1,35 +1,26 @@
+/* ===== COMPETITION CARDS — CINEMATIC DARK GLASS ===== */
 .competition-card-container {
   display: flex;
-  background: var(--surface-bg);
-  border-radius: 0px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-xl);
   overflow: hidden;
-  box-shadow: 6px 6px 0 rgba(0, 0, 0, 1);
-  border: 3px solid #000;
-  margin-bottom: 48px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-medium);
+  margin-bottom: 56px;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .competition-card-container:hover {
-  transform: translate(-3px, -3px);
-  box-shadow: 9px 9px 0 rgba(0, 0, 0, 1);
-  animation: jitter 0.3s ease 1;
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl), var(--shadow-glow-green);
+  border-color: var(--border-glow);
 }
 
-@keyframes jitter {
-  0% { transform: translate(-3px, -3px); }
-  25% { transform: translate(-5px, -1px) rotate(-1deg); }
-  50% { transform: translate(-2px, -4px) rotate(1deg); }
-  75% { transform: translate(-4px, -2px) rotate(-0.5deg); }
-  100% { transform: translate(-3px, -3px) rotate(0deg); }
-}
-
-.competition-card-container.even {
-  flex-direction: row-reverse;
-}
+.competition-card-container.even { flex-direction: row-reverse; }
 
 .competition-card-image {
-  flex: 1.3;
-  min-height: 350px;
+  flex: 1.35;
+  min-height: 420px;
   position: relative;
   overflow: hidden;
 }
@@ -39,32 +30,41 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.6s ease;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: brightness(0.85) saturate(1.1);
 }
 
 .competition-card-container:hover .competition-card-image img {
-  transform: scale(1.05);
+  transform: scale(1.06);
+  filter: brightness(1) saturate(1.2);
 }
 
 .competition-card-content {
   flex: 1;
-  padding: 56px 48px;
+  padding: 60px 48px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: var(--surface-bg-dark);
+  background: var(--bg-elevated);
+  border-left: 1px solid var(--border-light);
+}
+
+.competition-card-container.even .competition-card-content {
+  border-left: none;
+  border-right: 1px solid var(--border-light);
 }
 
 .competition-card-title {
-  font-size: 2.2rem;
+  font-family: var(--font-display);
+  font-size: 2rem;
   color: var(--text-primary);
   margin-bottom: 16px;
-  font-weight: 800;
-  line-height: 1.2;
+  font-weight: 600;
 }
 
 .competition-card-description {
-  font-size: 1.1rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
   color: var(--text-secondary);
   line-height: 1.7;
   margin-bottom: 28px;
@@ -73,8 +73,8 @@
 .competition-card-team {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 28px;
+  gap: 10px;
+  margin-bottom: 32px;
 }
 
 .competition-team-pill {
@@ -83,77 +83,61 @@
   gap: 2px;
   padding: 8px 14px;
   border: 1px solid var(--border-medium);
-  border-radius: 10px;
-  background: var(--surface-glass);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  transition: all var(--transition-fast);
+}
+
+.competition-card-container:hover .competition-team-pill {
+  border-color: var(--border-dark);
+  background: var(--bg-tertiary);
 }
 
 .competition-team-role {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.62rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.1em;
   color: var(--primary);
 }
 
 .competition-team-name {
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
 .competition-rulebook-btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  background: #000;
-  color: #fff;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: var(--bg-primary);
   padding: 14px 28px;
-  border-radius: 0;
-  border: 2px solid #000;
-  font-weight: 700;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--primary);
+  font-family: var(--font-body);
+  font-weight: 600;
   text-decoration: none;
   width: fit-content;
-  transition: all 0.2s ease;
-  font-size: 0.95rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 3px 3px 0 #fff;
+  transition: all var(--transition-fast);
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  box-shadow: var(--shadow-md);
 }
 
 .competition-rulebook-btn:hover {
-  background: transparent;
-  color: inherit;
-  box-shadow: 5px 5px 0 #fff;
-  transform: translate(-2px, -2px);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-intense);
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
 }
 
-.competition-rulebook-btn svg {
-  transition: transform 0.3s ease;
-}
-
-.competition-rulebook-btn:hover svg {
-  transform: translateY(2px);
-}
+.competition-rulebook-btn svg { stroke: currentColor; transition: transform 0.3s ease; }
+.competition-rulebook-btn:hover svg { transform: translateY(2px); }
 
 @media (max-width: 900px) {
-  .competition-card-container,
-  .competition-card-container.even {
-    flex-direction: column;
-  }
-
-  .competition-card-image {
-    flex: none;
-    width: 100%;
-    height: 250px;
-    min-height: auto;
-  }
-
-  .competition-card-content {
-    flex: none;
-    padding: 40px 24px;
-  }
-
-  .competition-card-title {
-    font-size: 1.8rem;
-  }
+  .competition-card-container, .competition-card-container.even { flex-direction: column; }
+  .competition-card-image { flex: none; width: 100%; height: 280px; min-height: auto; }
+  .competition-card-content { flex: none; padding: 40px 24px; border-left: none !important; border-right: none !important; border-top: 1px solid var(--border-light); }
+  .competition-card-title { font-size: 1.6rem; }
 }

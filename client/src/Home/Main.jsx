@@ -23,7 +23,7 @@ const Main = () => {
         <div className="rm-title-wrapper">
           <h1 className="rm-title-main">VIPLAV '26</h1>
           <h2 className="rm-title-sub">STUDENT REGIONAL CONFERENCE</h2>
-          <p className="rm-title-desc">Make the most of AIChE SRC 2026 at RGIPT</p>
+          <p className="rm-title-desc" style={{ display: 'none' }}></p>
           <div className="rm-title-pill">Register Now</div>
         </div>
 
