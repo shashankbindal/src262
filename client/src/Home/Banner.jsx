@@ -64,13 +64,24 @@ function ParticleCanvas() {
       raf = requestAnimationFrame(draw)
     }
 
-    draw()
+    let isVisible = true
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting
+      if (isVisible) {
+        if (!raf) raf = requestAnimationFrame(draw)
+      } else {
+        cancelAnimationFrame(raf)
+        raf = null
+      }
+    }, { threshold: 0 })
+    observer.observe(canvas)
 
     const ro = new ResizeObserver(resize)
     ro.observe(canvas)
 
     return () => {
-      cancelAnimationFrame(raf)
+      if (raf) cancelAnimationFrame(raf)
+      observer.disconnect()
       ro.disconnect()
     }
   }, [])
@@ -105,7 +116,7 @@ const Banner = () => {
 
   return (
     <div className="banner-container" ref={containerRef}>
-      <img className="banner-bg" src="/bg.png" alt="Background" />
+      <img className="banner-bg" src="/bg.png" alt="Background" fetchpriority="high" decoding="async" />
       <ParticleCanvas />
       <div className="banner-content">
         <h1 className="banner-title">

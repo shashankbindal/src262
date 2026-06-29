@@ -39,11 +39,12 @@ const Events = () => {
   const prevCard = () => setActiveIndex(prev => prev === 0 ? eventData.length - 1 : prev - 1)
 
   useEffect(() => {
+    if (!isVisible) return; // Pause auto-play when off-screen to save CPU/GPU overhead
     const timer = setInterval(() => {
       setActiveIndex(prev => (prev + 1) % eventData.length)
     }, 4000) // Change card every 4 seconds
     return () => clearInterval(timer)
-  }, [])
+  }, [isVisible])
 
   return (
     <div className="fan-section" ref={ref}>
@@ -83,7 +84,7 @@ const Events = () => {
                 style={getCardStyle(offset)}
                 onClick={() => { if (!isCenter) setActiveIndex(index) }}
               >
-                <img src={event.img} alt={event.title} className="fan-card-img" />
+                <img src={event.img} alt={event.title} className="fan-card-img" loading="lazy" decoding="async" />
                 <div className="fan-card-overlay" />
               </div>
             )

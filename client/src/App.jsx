@@ -39,25 +39,29 @@ const AppContent = () => {
       '.team-card',
     ].join(', ')
 
+    let mouseFrame;
     const handleMouseMove = (e) => {
-      /* Spotlight for tracked cards */
-      const card = e.target.closest(SPOTLIGHT_SELECTOR)
-      if (card) {
-        const rect = card.getBoundingClientRect()
-        card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`)
-        card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`)
-      }
+      if (mouseFrame) cancelAnimationFrame(mouseFrame);
+      mouseFrame = requestAnimationFrame(() => {
+        /* Spotlight for tracked cards */
+        const card = e.target.closest(SPOTLIGHT_SELECTOR)
+        if (card) {
+          const rect = card.getBoundingClientRect()
+          card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`)
+          card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`)
+        }
 
-      /* Magnetic effect for [data-magnetic] elements */
-      const magEl = e.target.closest('[data-magnetic]')
-      if (magEl) {
-        const r  = magEl.getBoundingClientRect()
-        const cx = r.left + r.width  / 2
-        const cy = r.top  + r.height / 2
-        const dx = (e.clientX - cx) * 0.35
-        const dy = (e.clientY - cy) * 0.35
-        magEl.style.transform = `translate(${dx}px, ${dy}px)`
-      }
+        /* Magnetic effect for [data-magnetic] elements */
+        const magEl = e.target.closest('[data-magnetic]')
+        if (magEl) {
+          const r  = magEl.getBoundingClientRect()
+          const cx = r.left + r.width  / 2
+          const cy = r.top  + r.height / 2
+          const dx = (e.clientX - cx) * 0.35
+          const dy = (e.clientY - cy) * 0.35
+          magEl.style.transform = `translate(${dx}px, ${dy}px)`
+        }
+      });
     }
 
     const handleMouseLeave = (e) => {
@@ -71,13 +75,17 @@ const AppContent = () => {
     }
 
     /* 2 ─ Scroll progress bar */
+    let scrollFrame;
     const handleScroll = () => {
-      const total = document.documentElement.scrollHeight - window.innerHeight
-      if (total > 0) {
-        const pct = (window.scrollY / total) * 100
-        const bar = document.querySelector('.scroll-progress')
-        if (bar) bar.style.width = `${pct}%`
-      }
+      if (scrollFrame) cancelAnimationFrame(scrollFrame);
+      scrollFrame = requestAnimationFrame(() => {
+        const total = document.documentElement.scrollHeight - window.innerHeight
+        if (total > 0) {
+          const pct = (window.scrollY / total) * 100
+          const bar = document.querySelector('.scroll-progress')
+          if (bar) bar.style.transform = `scaleX(${pct / 100})`
+        }
+      });
     }
 
     window.addEventListener('mousemove',  handleMouseMove,  { passive: true })

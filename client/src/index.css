@@ -15,24 +15,28 @@
   src: url('./assets/fonts/Ranade-Regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 @font-face {
   font-family: 'Ranade';
   src: url('./assets/fonts/Ranade-Medium.otf') format('opentype');
   font-weight: 500 600;
   font-style: normal;
+  font-display: swap;
 }
 @font-face {
   font-family: 'Ranade';
   src: url('./assets/fonts/Ranade-Bold.otf') format('opentype');
   font-weight: 700 900;
   font-style: normal;
+  font-display: swap;
 }
 @font-face {
   font-family: 'Ranade';
   src: url('./assets/fonts/Ranade-BoldItalic.otf') format('opentype');
   font-weight: 700 900;
   font-style: italic;
+  font-display: swap;
 }
 
 :root {
@@ -201,8 +205,10 @@ html.lenis, html.lenis body { height: auto; }
   height: 3px;
   background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 50%, var(--primary-light) 100%);
   z-index: 10000;
-  width: 0%;
-  transition: width 0.05s ease-out;
+  width: 100%;
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.05s ease-out;
   box-shadow: var(--shadow-sm);
 }
 
@@ -212,7 +218,6 @@ html.lenis, html.lenis body { height: auto; }
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-  filter: blur(90px);
   will-change: transform;
 }
 
