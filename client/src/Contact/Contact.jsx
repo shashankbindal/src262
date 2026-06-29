@@ -12,6 +12,7 @@ const Contact = () => {
   const [cardsRef, cardsVisible] = useReveal(0.1);
   const [formRef, formVisible] = useReveal(0.1);
   const [mapRef, mapVisible] = useReveal(0.1);
+  const [placesRef, placesVisible] = useReveal(0.1);
 
   return (
     <>
@@ -113,6 +114,49 @@ const Contact = () => {
             referrerPolicy="no-referrer-when-downgrade"
             title="RGIPT Map Location"
           ></iframe>
+        </div>
+      </div>
+      
+      <div ref={placesRef} className={`places-to-visit-section reveal-scale ${placesVisible ? 'visible' : ''}`}>
+        <div className="places-header">
+          <div className="places-line"></div>
+          <h2 className="places-title">PLACES TO VISIT</h2>
+          <div className="places-line"></div>
+        </div>
+        
+        <div className="places-timeline">
+          <div className="timeline-center-line"></div>
+          
+          {/* Ayodhya (Right Side) */}
+          <div className="timeline-item right">
+            <div className="timeline-dot"></div>
+            <div className="timeline-content">
+              <div className="timeline-text">
+                <h3>Ayodhya</h3>
+                <p>Experience the spiritual heart of India. Visit the grand Ram Mandir and stroll along the serene Sarayu river ghats.</p>
+              </div>
+              <div className="timeline-images">
+                <div className="place-img" style={{ backgroundImage: "url('/ayodhya-1.jpg')" }}></div>
+                <div className="place-img offset" style={{ backgroundImage: "url('/ayodhya-2.jpg')" }}></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Banaras (Left Side) */}
+          <div className="timeline-item left">
+            <div className="timeline-dot"></div>
+            <div className="timeline-content">
+              <div className="timeline-text">
+                <h3>Banaras (Varanasi)</h3>
+                <p>Discover the eternal city of lights. Witness the mesmerizing Ganga Aarti and experience profound spirituality.</p>
+              </div>
+              <div className="timeline-images">
+                <div className="place-img" style={{ backgroundImage: "url('/varanasi-1.jpeg')" }}></div>
+                <div className="place-img offset" style={{ backgroundImage: "url('/varanasi-2.jpg')" }}></div>
+              </div>
+            </div>
+          </div>
+          
         </div>
       </div>
       

@@ -1,58 +1,69 @@
-/* ===== SPONSORS MARQUEE — DARK WITH FADE EDGES ===== */
-.sponsors-section {
-  margin-top: 80px;
-  margin-bottom: 60px;
+/* ===== PREMIUM SPONSORS MARQUEE (LINEAR / STRIPE STYLE) ===== */
+.premium-sponsors-section {
+  position: relative;
+  margin: 40px 0 80px;
   width: 100%;
+  padding: 100px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  background-color: transparent;
+}
+
+
+
+.sponsors-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 64px;
+}
+
+.sponsors-subtitle {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 16px;
 }
 
 .sponsors-title {
   font-family: var(--font-display);
-  font-size: clamp(1.8rem, 3vw, 2.6rem);
-  font-weight: 600;
-  color: var(--text-primary);
-  text-align: left;
-  margin-bottom: 30px;
-  border-bottom: 1px solid var(--border-medium);
-  padding-bottom: 12px;
-  width: 100%;
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.sponsors-divider {
+  width: 48px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
 }
 
 .sponsors-marquee-wrapper {
+  position: relative;
+  z-index: 1;
   display: flex;
   overflow: hidden;
-  position: relative;
   width: 100%;
-  padding: 30px 0;
-  border-top: 1px solid var(--border-light);
-  border-bottom: 1px solid var(--border-light);
-  background: var(--bg-secondary);
-  border-radius: var(--radius-lg);
-}
-
-.sponsors-marquee-wrapper::before,
-.sponsors-marquee-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  width: 150px;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
-}
-.sponsors-marquee-wrapper::before {
-  left: 0;
-  background: linear-gradient(90deg, var(--bg-secondary) 0%, transparent 100%);
-}
-.sponsors-marquee-wrapper::after {
-  right: 0;
-  background: linear-gradient(-90deg, var(--bg-secondary) 0%, transparent 100%);
+  padding: 40px 0;
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
 }
 
 .sponsors-marquee-track {
   display: flex;
-  gap: 32px;
-  padding-left: 32px;
-  animation: scroll-marquee 30s linear infinite;
+  gap: 24px;
+  padding-left: 24px;
+  animation: scroll-marquee 40s linear infinite;
   will-change: transform;
 }
 
@@ -60,51 +71,104 @@
   animation-play-state: paused;
 }
 
-.sponsor-card {
-  flex: 0 0 200px;
-  height: 90px;
+.premium-sponsor-card {
+  flex: 0 0 180px;
+  height: 180px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-md);
-  background: var(--bg-elevated);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 20px;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
-.sponsor-card:hover {
-  transform: translateY(-6px) scale(1.05);
-  border-color: var(--border-glow);
-  box-shadow: var(--shadow-lg), var(--shadow-glow-green);
-  background: var(--bg-tertiary);
+/* Shimmer sweep on hover */
+.premium-sponsor-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(245, 223, 179, 0.12) 50%,
+    transparent 65%
+  );
+  transform: translateX(-100%);
+  transition: transform 0s;
+  pointer-events: none;
+  z-index: 2;
+}
+.premium-sponsor-card:hover::before {
+  transform: translateX(100%);
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.sponsor-logo {
-  max-width: 70%;
-  max-height: 70%;
+.premium-sponsor-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.sponsor-card-inner {
+  width: 100%;
+  height: 100%;
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.premium-sponsor-logo {
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
-  filter: grayscale(100%) brightness(0.6);
-  transition: all 0.4s ease;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0.9;
 }
 
-.sponsor-card:hover .sponsor-logo {
-  filter: grayscale(0%) brightness(1);
+.premium-sponsor-card:hover .premium-sponsor-logo {
+  opacity: 1;
   transform: scale(1.08);
 }
 
 @keyframes scroll-marquee {
   0% { transform: translateX(0); }
-  100% { transform: translateX(calc(-50% - 16px)); }
+  100% { transform: translateX(calc(-50% - 12px)); }
 }
 
-@media (max-width: 600px) {
-  .sponsors-marquee-wrapper { padding: 20px 0; }
-  .sponsors-marquee-wrapper::before, .sponsors-marquee-wrapper::after { width: 60px; }
-  .sponsor-card { flex: 0 0 140px; height: 70px; }
-  .sponsors-marquee-track { gap: 16px; padding-left: 16px; }
-  @keyframes scroll-marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(calc(-50% - 8px)); }
+@media (max-width: 768px) {
+  .premium-sponsors-section { padding: 60px 0; margin: 40px 0; }
+  .sponsors-title { font-size: 2rem; margin-bottom: 20px; }
+  .premium-sponsor-card {
+    flex: 0 0 calc(50vw - 16px);
+    height: calc(50vw - 16px);
+    border-radius: 16px;
   }
+  .sponsor-card-inner { padding: 24px; }
+  .sponsors-marquee-wrapper {
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  }
+}
+
+@media (max-width: 480px) {
+  .premium-sponsors-section { padding: 48px 0; margin: 24px 0; }
+  .sponsors-title { font-size: clamp(1.6rem, 6vw, 2rem); }
+  .sponsors-subtitle { font-size: 0.7rem; }
+  .premium-sponsor-card {
+    flex: 0 0 calc(46vw - 8px);
+    height: calc(46vw - 8px);
+    border-radius: 12px;
+  }
+  .sponsor-card-inner { padding: 16px; }
+  .sponsors-marquee-track { gap: 12px; padding-left: 12px; }
+  .sponsors-header { margin-bottom: 40px; }
 }

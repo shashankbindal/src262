@@ -28,6 +28,7 @@ const Sponsor = () => {
       <SponsorsHero />
       <div className="sponsors-page">
         <div ref={containerRef} className={`sponsors-container reveal ${containerVisible ? 'visible' : ''}`}>
+          <h2 className="past-sponsors-title">Past Sponsors</h2>
           <div className="sponsors-grid">
             {sponsorsData.map((sponsor, idx) => (
               <div key={idx} className={`sponsor-card reveal-scale reveal-d${idx % 8 + 1} ${containerVisible ? 'visible' : ''}`}>

@@ -1,140 +1,259 @@
-/* ===== EVENTS GRID — BENTO WITH GLOW ===== */
-.rm-events-section {
+/* ===== EVENTS FAN CAROUSEL ===== */
+
+.fan-section {
   width: 100%;
-  margin-top: 60px;
-  text-align: left;
+  padding: 80px 5%;
+  background-color: var(--bg-primary);
+  overflow: hidden;
 }
 
-.rm-events-header {
+/* ---- Header ---- */
+.fan-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 40px;
-  border-bottom: 1px solid var(--border-medium);
-  padding-bottom: 16px;
+  align-items: flex-start;
+  margin-bottom: 60px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.fan-header.visible { opacity: 1; transform: translateY(0); }
 
-.rm-events-title {
+.fan-header-left { flex: 1.2; padding-right: 40px; }
+
+.fan-title {
   font-family: var(--font-display);
-  font-size: clamp(1.8rem, 3vw, 2.6rem);
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.rm-view-all-link {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: clamp(2.5rem, 4vw, 4rem);
   font-weight: 500;
+  line-height: 1.1;
+  color: var(--text-light);
+}
+
+.fan-accent {
+  font-style: italic;
+  font-weight: 400;
   color: var(--primary);
-  text-decoration: none;
-  padding: 8px 20px;
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-full);
-  background: var(--bg-glass);
-  backdrop-filter: blur(10px);
-  transition: all var(--transition-fast);
-  letter-spacing: 0.05em;
 }
 
-.rm-view-all-link:hover {
-  color: var(--primary-light);
-  border-color: var(--primary);
-  box-shadow: var(--shadow-glow-green);
-  transform: translateX(4px);
-}
-
-.rm-events-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 220px;
+.fan-header-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 20px;
 }
 
-.rm-event-block {
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-lg);
-  padding: 32px;
+.fan-desc {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.fan-explore-btn {
+  display: inline-block;
+  padding: 12px 32px;
+  background-color: var(--primary);
+  color: #111;
+  border-radius: 40px;
+  font-weight: 600;
+  text-decoration: none;
+  font-family: var(--font-body);
+  transition: background-color var(--transition-fast),
+              transform var(--transition-fast),
+              box-shadow var(--transition-fast);
+}
+.fan-explore-btn:hover {
+  background-color: var(--primary-light);
+  color: #111;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(62, 207, 107, 0.3);
+}
+
+/* ---- Stage (the framed area with corner brackets) ---- */
+.fan-stage {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 70px 56px;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s,
+              transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+}
+.fan-stage.visible { opacity: 1; transform: translateY(0); }
+
+/* ---- Corner bracket decorations ---- */
+.fan-corner {
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  border-color: var(--primary);
+  border-style: solid;
+  border-radius: 4px;
+}
+.fan-corner--tl { top: 0; left: 0;  border-width: 3px 0 0 3px; }
+.fan-corner--tr { top: 0; right: 0; border-width: 3px 3px 0 0; }
+.fan-corner--bl { bottom: 0; left: 0;  border-width: 0 0 3px 3px; }
+.fan-corner--br { bottom: 0; right: 0; border-width: 0 3px 3px 0; }
+
+/* ---- Active card label ---- */
+.fan-label {
+  text-align: center;
+  margin-bottom: 24px;
+  min-height: 72px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  box-shadow: var(--shadow-md);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  background: var(--bg-secondary);
+  justify-content: flex-end;
+  gap: 4px;
 }
-
-.rm-event-block:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: var(--shadow-xl), var(--shadow-glow-green);
-  border-color: var(--border-glow);
-}
-
-.rm-event-block-title {
+.fan-label-title {
   font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 600;
-  line-height: 1.15;
-  z-index: 2;
-  color: var(--text-primary);
+  font-size: 1.9rem;
+  font-weight: 500;
+  color: var(--text-light);
+  letter-spacing: 0.01em;
+}
+.fan-label-sub {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-style: italic;
 }
 
-.rm-event-block-icon {
-  font-size: 3.5rem;
+/* ---- Track (the fan spread area) ---- */
+.fan-track {
+  position: relative;
+  width: 100%;
+  height: 430px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ---- Individual cards ---- */
+.fan-card {
   position: absolute;
-  bottom: 15px;
-  right: 15px;
-  opacity: 0.08;
-  z-index: 1;
-  transition: all 0.5s ease;
+  width: 250px;
+  height: 380px;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #1a1a1a;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4),
+              0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.55s ease,
+              box-shadow 0.65s ease;
+  will-change: transform, opacity, box-shadow;
 }
 
-.rm-event-block:hover .rm-event-block-icon {
-  transform: scale(1.15) rotate(8deg);
-  opacity: 0.15;
+.fan-card--active {
+  cursor: default;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6),
+              0 0 0 4px #ffffff;
 }
 
-/* Feature cards with strong identity */
-.rm-event-block-0 {
-  grid-column: span 1;
-  grid-row: span 2;
-  background: linear-gradient(145deg, var(--primary-dark) 0%, var(--primary) 100%);
-  border-color: var(--primary);
-  box-shadow: var(--shadow-lg);
-}
-.rm-event-block-0 .rm-event-block-title { color: var(--bg-primary); }
-.rm-event-block-0:hover { box-shadow: var(--shadow-xl), var(--shadow-glow-intense); }
-
-.rm-event-block-1 { grid-column: span 1; grid-row: span 1; }
-.rm-event-block-2 { grid-column: span 1; grid-row: span 2; background: var(--bg-elevated); border-color: var(--border-dark); }
-.rm-event-block-3 { grid-column: span 1; grid-row: span 1; }
-
-.rm-event-block-4 {
-  grid-column: span 2;
-  grid-row: span 1;
-  background: linear-gradient(135deg, var(--accent-dark) 0%, var(--accent) 100%);
-  border-color: var(--accent);
-  box-shadow: var(--shadow-lg);
-}
-.rm-event-block-4 .rm-event-block-title { color: var(--bg-primary); }
-.rm-event-block-4:hover { box-shadow: var(--shadow-xl), 0 0 40px rgba(232, 118, 75, 0.25); }
-
-.rm-event-block-5 {
-  grid-column: span 3;
-  grid-row: span 1;
-  background: var(--bg-elevated);
-  border-color: var(--border-dark);
+.fan-card:not(.fan-card--active):hover {
+  filter: brightness(1.15);
 }
 
-@media (max-width: 900px) {
-  .rm-events-grid { grid-template-columns: 1fr 1fr; grid-auto-rows: 200px; gap: 16px; }
-  .rm-event-block-0, .rm-event-block-2 { grid-row: span 1; }
-  .rm-event-block-5 { grid-column: span 2; }
+.fan-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  display: block;
 }
 
-@media (max-width: 600px) {
-  .rm-events-grid { grid-template-columns: 1fr; grid-auto-rows: 160px; }
-  .rm-event-block { grid-column: span 1 !important; grid-row: span 1 !important; padding: 24px; }
-  .rm-event-block-title { font-size: 1.3rem; }
+.fan-card--active .fan-card-img {
+  transform: scale(1.02);
+}
+
+.fan-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 55%, rgba(0, 0, 0, 0.72));
+  pointer-events: none;
+}
+
+/* ---- Navigation controls ---- */
+.fan-controls {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.fan-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-fast),
+              transform var(--transition-fast),
+              box-shadow var(--transition-fast);
+}
+
+.fan-btn--prev {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-light);
+  border: 1px solid var(--border-medium);
+}
+.fan-btn--prev:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.fan-btn--next {
+  background: var(--primary);
+  color: #111;
+}
+.fan-btn--next:hover {
+  background: var(--primary-light);
+  transform: translateX(3px);
+  box-shadow: 0 4px 16px rgba(62, 207, 107, 0.35);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1024px) {
+  .fan-header { flex-direction: column; gap: 28px; }
+  .fan-header-left { padding-right: 0; }
+  .fan-stage { padding: 32px 36px 48px; }
+  .fan-track { height: 370px; }
+  .fan-card { width: 205px; height: 320px; }
+  .fan-title { font-size: clamp(2rem, 4vw, 3.2rem); }
+}
+
+@media (max-width: 768px) {
+  .fan-section { padding: 60px 4%; }
+  .fan-stage { padding: 24px 20px 40px; }
+  .fan-corner { width: 34px; height: 34px; }
+  .fan-track { height: 300px; }
+  .fan-card { width: 162px; height: 258px; }
+  .fan-label-title { font-size: 1.4rem; }
+  .fan-label-sub { font-size: 0.85rem; }
+  .fan-desc { font-size: 0.95rem; }
+}
+
+@media (max-width: 480px) {
+  .fan-section { padding: 48px 4%; }
+  .fan-stage { padding: 18px 14px 34px; }
+  .fan-corner { width: 26px; height: 26px; border-width: 2px; }
+  .fan-track { height: 250px; }
+  .fan-card { width: 136px; height: 216px; border-radius: 14px; }
+  .fan-label-title { font-size: 1.15rem; }
+  .fan-label { margin-bottom: 16px; min-height: 56px; }
+  .fan-btn { width: 40px; height: 40px; font-size: 1rem; }
+}
+
+@media (max-width: 360px) {
+  .fan-track { height: 220px; }
+  .fan-card { width: 118px; height: 188px; border-radius: 12px; }
 }

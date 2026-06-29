@@ -1,0 +1,56 @@
+/* ===== CUSTOM CURSOR — touch/pointer safe ===== */
+/* Cursor hidden rule removed */
+
+.cur-dot,
+.cur-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 99999;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+/* Dot — instant, follows cursor exactly */
+.cur-dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  background: var(--primary);
+  transition: width .22s ease, height .22s ease, margin .22s ease, background .22s ease;
+}
+
+/* Ring — lerps behind, gives trailing feel */
+.cur-ring {
+  width: 42px;
+  height: 42px;
+  margin: -21px 0 0 -21px;
+  border: 1.5px solid rgba(245, 223, 179, 0.38);
+  background: transparent;
+  transition: width  .38s cubic-bezier(0.16, 1, 0.3, 1),
+              height .38s cubic-bezier(0.16, 1, 0.3, 1),
+              margin .38s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color .38s ease,
+              background   .38s ease;
+}
+
+/* ---- Hover state ---- */
+.cur-dot.active {
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+}
+
+.cur-ring.active {
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  border-color: rgba(245, 223, 179, 0.65);
+  background: rgba(245, 223, 179, 0.035);
+}
+
+/* Hide on touch devices */
+@media (hover: none), (pointer: coarse) {
+  .cur-dot, .cur-ring { display: none; }
+}

@@ -140,7 +140,7 @@
 }
 
 @media (max-width: 768px) {
-  .team-page-container { padding: 40px 5% 80px; }
+  .team-page-container { padding: 40px 4% 80px; }
   .teams-list { gap: 80px; }
   .team-group-name { margin-bottom: 40px; }
   .team-hierarchy { gap: 40px; }
@@ -153,4 +153,22 @@
   .member-name { font-size: 1.05rem; }
   .member-role { font-size: 0.65rem; }
   .team-divider { margin-top: 40px; height: 40px; }
+}
+
+@media (max-width: 480px) {
+  .team-page-container { padding: 32px 4% 60px; }
+  .teams-list { gap: 64px; }
+  .team-group-name { font-size: clamp(1.6rem, 6vw, 2rem); margin-bottom: 32px; }
+  .hierarchy-level { gap: 16px; }
+  .member-card { width: 130px; gap: 10px; }
+  .member-image-placeholder { width: 130px; height: 170px; }
+  .member-name { font-size: 0.95rem; }
+  .member-role { font-size: 0.6rem; letter-spacing: 0.05em; }
+  .team-divider { margin-top: 32px; height: 32px; }
+}
+
+@media (max-width: 360px) {
+  .member-card { width: 110px; }
+  .member-image-placeholder { width: 110px; height: 144px; }
+  .hierarchy-level { gap: 12px; }
 }

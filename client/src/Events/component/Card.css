@@ -57,7 +57,7 @@
 .competition-card-title {
   font-family: var(--font-display);
   font-size: 2rem;
-  color: var(--text-primary);
+  color: inherit;
   margin-bottom: 16px;
   font-weight: 600;
 }
@@ -65,9 +65,15 @@
 .competition-card-description {
   font-family: var(--font-body);
   font-size: 1rem;
-  color: var(--text-secondary);
+  color: inherit;
   line-height: 1.7;
   margin-bottom: 28px;
+}
+
+.competition-card-description p,
+.competition-card-description ul,
+.competition-card-description li {
+  color: inherit;
 }
 
 .competition-card-team {
@@ -130,6 +136,7 @@
   transform: translateY(-3px);
   box-shadow: var(--shadow-lg), var(--shadow-glow-intense);
   background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+  color: #111;
 }
 
 .competition-rulebook-btn svg { stroke: currentColor; transition: transform 0.3s ease; }
@@ -140,4 +147,20 @@
   .competition-card-image { flex: none; width: 100%; height: 280px; min-height: auto; }
   .competition-card-content { flex: none; padding: 40px 24px; border-left: none !important; border-right: none !important; border-top: 1px solid var(--border-light); }
   .competition-card-title { font-size: 1.6rem; }
+}
+
+@media (max-width: 480px) {
+  .competition-card-container { border-radius: 16px; margin-bottom: 36px; }
+  .competition-card-image { height: 220px; }
+  .competition-card-content { padding: 28px 20px; }
+  .competition-card-title { font-size: clamp(1.25rem, 5vw, 1.6rem); margin-bottom: 12px; }
+  .competition-card-description { font-size: 0.92rem; margin-bottom: 20px; }
+  .competition-rulebook-btn { padding: 12px 22px; font-size: 0.85rem; }
+  .competition-team-pill { padding: 6px 10px; }
+  .competition-team-name { font-size: 0.8rem; }
+}
+
+@media (max-width: 360px) {
+  .competition-card-image { height: 180px; }
+  .competition-card-content { padding: 22px 16px; }
 }

@@ -72,9 +72,16 @@
 }
 
 @media (max-width: 768px) {
-  .team-hero { padding: 120px 20px 80px; }
+  .team-hero { padding: 120px 16px 80px; }
   .team-hero-bg { background-attachment: scroll; }
-  .team-hero-content { padding: 40px 24px; margin: 0 12px; }
+  .team-hero-content { padding: 40px 24px; margin: 0 8px; }
   .team-hero-title { font-size: clamp(2rem, 7vw, 3.2rem); }
   .team-hero-subtitle { font-size: 0.8rem; letter-spacing: 0.1em; }
+}
+
+@media (max-width: 480px) {
+  .team-hero { padding: 100px 12px 64px; }
+  .team-hero-content { padding: 28px 20px; border-radius: 16px; }
+  .team-hero-title { font-size: clamp(1.7rem, 7vw, 2.4rem); }
+  .team-hero-subtitle { font-size: 0.72rem; }
 }

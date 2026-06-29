@@ -21,19 +21,25 @@ const Sponsors = () => {
   const [ref, isVisible] = useReveal(0.1);
 
   return (
-    <div className={`sponsors-section reveal ${isVisible ? 'visible' : ''}`} ref={ref}>
-      <h2 className="sponsors-title">Our Past Sponsors</h2>
+    <section className={`premium-sponsors-section reveal ${isVisible ? 'visible' : ''}`} ref={ref}>
+      <div className="sponsors-header">
+        <span className="sponsors-subtitle">Trusted by Industry Leaders</span>
+        <h2 className="sponsors-title">Our Partners</h2>
+        <div className="sponsors-divider"></div>
+      </div>
+
       <div className="sponsors-marquee-wrapper">
         <div className="sponsors-marquee-track">
-          
           {[...sponsorsData, ...sponsorsData].map((item, index) => (
-            <div key={index} className="sponsor-card">
-              <img src={item.url} alt={item.name} className="sponsor-logo" loading="lazy" decoding="async" />
+            <div key={index} className="premium-sponsor-card">
+              <div className="sponsor-card-inner">
+                <img src={item.url} alt={item.name} className="premium-sponsor-logo" loading="lazy" decoding="async" />
+              </div>
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 

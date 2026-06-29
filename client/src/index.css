@@ -36,34 +36,34 @@
 }
 
 :root {
-  /* ===== DEEP RICH COLOR PALETTE ===== */
-  --bg-primary: #0C0F0E;          /* Near-black with green undertone */
-  --bg-secondary: #131917;        /* Dark forest surface */
-  --bg-tertiary: #1A2420;         /* Rich dark olive */
-  --bg-elevated: #1E2B26;         /* Elevated card surface */
-  --bg-glass: rgba(20, 30, 25, 0.7); /* Glass panel */
-  --bg-dark: #080A09;             /* True deep black */
+  /* ===== DEEP SLATE & BEIGE COLOR PALETTE (REFERENCE THEME) ===== */
+  --bg-primary: #0F1319;          /* Deep Slate Background */
+  --bg-secondary: #171E27;        /* Lighter Slate */
+  --bg-tertiary: #202A36;         /* Elevated Slate */
+  --bg-elevated: #283443;         /* Card Surface */
+  --bg-glass: rgba(15, 19, 25, 0.7); /* Glass panel */
+  --bg-dark: #0A0D12;             /* True deep slate black */
   
-  --primary: #3ECF6B;             /* Vivid Emerald Green */
-  --primary-dark: #1E9E47;        /* Deep Emerald */
-  --primary-light: #5AE882;       /* Bright Mint */
-  --primary-glow: rgba(62, 207, 107, 0.15);
-  --primary-glow-strong: rgba(62, 207, 107, 0.3);
+  --primary: #F5DFB3;             /* Warm Beige / Yellow from reference */
+  --primary-dark: #E3CA97;        /* Darker Beige */
+  --primary-light: #FDF1D8;       /* Light Beige */
+  --primary-glow: rgba(245, 223, 179, 0.15);
+  --primary-glow-strong: rgba(245, 223, 179, 0.3);
 
-  --accent: #E8764B;              /* Rich Burnt Orange */
-  --accent-light: #F2A07A;        /* Warm Copper Glow */
-  --accent-dark: #C2593F;         /* Deep Terracotta */
-  --accent-glow: rgba(232, 118, 75, 0.2);
+  --accent: #A5B4CB;              /* Slate Blue Accent */
+  --accent-light: #D2DCE8;        /* Light Slate Blue */
+  --accent-dark: #7C8EA6;         /* Deep Slate Blue */
+  --accent-glow: rgba(165, 180, 203, 0.2);
 
-  --text-primary: #E8ECE9;        /* Soft warm white */
-  --text-secondary: #94A39A;      /* Muted sage */
-  --text-muted: #5B6E64;          /* Dim forest gray */
-  --text-light: #F4F7F5;          /* Bright white */
+  --text-primary: #F9FAFB;        /* Bright white for text */
+  --text-secondary: #9CA3AF;      /* Slate Gray for secondary text */
+  --text-muted: #6B7280;          /* Dim gray */
+  --text-light: #FFFFFF;          /* True white */
 
-  --border-light: rgba(62, 207, 107, 0.08);
-  --border-medium: rgba(62, 207, 107, 0.15);
-  --border-dark: rgba(62, 207, 107, 0.25);
-  --border-glow: rgba(62, 207, 107, 0.4);
+  --border-light: rgba(255, 255, 255, 0.05);
+  --border-medium: rgba(255, 255, 255, 0.1);
+  --border-dark: rgba(255, 255, 255, 0.15);
+  --border-glow: rgba(245, 223, 179, 0.3);
   
   /* ===== REAL DRAMATIC SHADOWS ===== */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
@@ -90,10 +90,11 @@
   --transition-slow: 0.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-* {
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  min-width: 0; /* prevents flex/grid children from overflowing */
 }
 
 body {
@@ -205,9 +206,59 @@ html.lenis, html.lenis body { height: auto; }
   box-shadow: var(--shadow-sm);
 }
 
-/* ===== AMBIENT FLOATING ORB SYSTEM — REMOVED ===== */
+/* ===== AMBIENT FLOATING ORB SYSTEM ===== */
 .bg-glow-orb {
-  display: none;
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(90px);
+  will-change: transform;
+}
+
+.orb-1 {
+  width: 700px;
+  height: 700px;
+  top: -220px;
+  left: -220px;
+  background: radial-gradient(circle, rgba(245, 223, 179, 0.038) 0%, transparent 70%);
+  animation: orb-drift-1 22s ease-in-out infinite;
+}
+
+.orb-2 {
+  width: 550px;
+  height: 550px;
+  bottom: -120px;
+  right: -120px;
+  background: radial-gradient(circle, rgba(165, 180, 203, 0.028) 0%, transparent 70%);
+  animation: orb-drift-2 28s ease-in-out infinite;
+}
+
+.orb-3 {
+  width: 420px;
+  height: 420px;
+  top: 45%;
+  left: 40%;
+  background: radial-gradient(circle, rgba(245, 223, 179, 0.02) 0%, transparent 70%);
+  animation: orb-drift-3 19s ease-in-out infinite;
+}
+
+@keyframes orb-drift-1 {
+  0%, 100% { transform: translate(0px, 0px); }
+  33%       { transform: translate(90px, 70px); }
+  66%       { transform: translate(-50px, 90px); }
+}
+
+@keyframes orb-drift-2 {
+  0%, 100% { transform: translate(0px, 0px); }
+  33%       { transform: translate(-70px, -90px); }
+  66%       { transform: translate(50px, -50px); }
+}
+
+@keyframes orb-drift-3 {
+  0%, 100% { transform: translate(0px, 0px); }
+  33%       { transform: translate(110px, -70px); }
+  66%       { transform: translate(-70px, 90px); }
 }
 
 /* ===== 3D CARD SYSTEM WITH REAL DEPTH ===== */
@@ -232,14 +283,14 @@ html.lenis, html.lenis body { height: auto; }
 .rm-postit,
 .member-image-placeholder {
   position: relative;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1),
               border-color 0.3s ease,
               background-color 0.3s ease;
   transform-style: preserve-3d;
 }
 
-/* Cursor-tracking spotlight overlay */
+/* Cursor-tracking spotlight overlay (green for events/info/contact cards) */
 .rm-event-block::after,
 .carousel-card::after,
 .info-card::after,

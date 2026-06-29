@@ -11,7 +11,7 @@ const Card = ({ event, index }) => {
   const textRef = useStaggerLines('p, ul', 0.15);
 
   // Assign brutalist colors based on index
-  const colors = ["#00a651", "#ff7e40", "#f5eedc", "#00a651", "#000"];
+  const colors = ["#00a651", "#f5eedc", ];
   const bgColor = colors[index % colors.length];
   const textColor = bgColor === "#f5eedc" ? "#000" : "#fff";
 
@@ -30,9 +30,9 @@ const Card = ({ event, index }) => {
         />
       </div>
       <div className="competition-card-content" style={{ backgroundColor: bgColor }}>
-        <h2 className="competition-card-title" style={{ color: textColor }}>{event.title}</h2>
+        <h2 className="competition-card-title">{event.title}</h2>
         <div className="competition-card-description" ref={textRef}>
-          {typeof event.description === 'string' ? <p style={{ color: textColor }}>{event.description}</p> : event.description}
+          {typeof event.description === 'string' ? <p>{event.description}</p> : event.description}
         </div>
 
         {team.length > 0 && (

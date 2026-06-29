@@ -1,62 +1,121 @@
-import React, { useRef } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { bentoCards } from '../TeamProfile/teamsData'
 import { useReveal } from './useReveal.js'
+import { useTextReveal } from './useTextReveal.js'
 import './Teams.css'
 
 const Teams = () => {
-  const navigate = useNavigate();
-  const [ref, isVisible] = useReveal(0.1);
-  const carouselRef = useRef(null);
+  const navigate  = useNavigate()
+  const [ref, isVisible] = useReveal(0.1)
+  const titleRef  = useTextReveal(0.15)
+  const gridRef   = useRef(null)
 
-  const scrollLeft = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -350, behavior: 'smooth' });
-    }
-  };
+  /* ---- Grid-level mouse spotlight ---- */
+  useEffect(() => {
+    const grid = gridRef.current
+    if (!grid) return
 
-  const scrollRight = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 350, behavior: 'smooth' });
+    const onMove = (e) => {
+      const r = grid.getBoundingClientRect()
+      grid.style.setProperty('--sx', `${e.clientX - r.left}px`)
+      grid.style.setProperty('--sy', `${e.clientY - r.top}px`)
     }
-  };
+    const onLeave = () => {
+      grid.style.setProperty('--sx', '-9999px')
+      grid.style.setProperty('--sy', '-9999px')
+    }
+
+    grid.addEventListener('mousemove', onMove, { passive: true })
+    grid.addEventListener('mouseleave', onLeave)
+    return () => {
+      grid.removeEventListener('mousemove', onMove)
+      grid.removeEventListener('mouseleave', onLeave)
+    }
+  }, [])
+
+  /* ---- Per-card 3D tilt ---- */
+  const onTiltMove = useCallback((e) => {
+    const el = e.currentTarget
+    const r  = el.getBoundingClientRect()
+    const dx = (e.clientX - (r.left + r.width  / 2)) / (r.width  / 2)
+    const dy = (e.clientY - (r.top  + r.height / 2)) / (r.height / 2)
+    el.style.setProperty('--rx', `${-dy * 5}deg`)
+    el.style.setProperty('--ry', `${dx  * 5}deg`)
+  }, [])
+
+  const onTiltLeave = useCallback((e) => {
+    e.currentTarget.style.setProperty('--rx', '0deg')
+    e.currentTarget.style.setProperty('--ry', '0deg')
+  }, [])
 
   return (
-    <div className="teams-section" ref={ref}>
-      <div className={`teams-header-carousel reveal-left ${isVisible ? 'visible' : ''}`}>
-        <div>
-          <h2 className="teams-title">Leadership & Team</h2>
-          <p className="teams-subtitle">The minds behind SRC '26</p>
+    <section className="teams-section" ref={ref}>
+
+      <div className={`teams-header ${isVisible ? 'visible' : ''}`}>
+        <div className="teams-header-left">
+          <span className="teams-eyebrow">Our People</span>
+          {/* overflow:hidden on the wrapper lets useTextReveal clip the roll-in */}
+          <div style={{ overflow: 'hidden' }}>
+            <h2 ref={titleRef} className="teams-title">
+              Leadership &amp; <em>Team</em>
+            </h2>
+          </div>
         </div>
-        <div className="carousel-nav-buttons">
-          <button className="carousel-nav-btn" onClick={scrollLeft}>&larr;</button>
-          <button className="carousel-nav-btn" onClick={scrollRight}>&rarr;</button>
-        </div>
+        <p className="teams-tagline">
+          The minds behind SRC&nbsp;'26 — a collective of engineers, designers,
+          and organizers working together to make this conference exceptional.
+        </p>
       </div>
-      
-      <div className="teams-carousel-wrapper" ref={carouselRef}>
-        <div className="teams-carousel-row">
-          {bentoCards.map((card, index) => {
-            const num = (index + 1).toString().padStart(2, '0');
-            return (
-              <div 
-                key={card.id} 
-                className={`carousel-card reveal-scale reveal-d${Math.min(index + 1, 8)} ${isVisible ? 'visible' : ''}`}
-                style={{ '--team-color': card.color || 'var(--primary)' }}
-              >
-                <div className="carousel-card-number">{num}</div>
-                <div className="carousel-card-inner">
-                  <h3 className="carousel-team-name">{card.name}</h3>
-                  <button className="carousel-know-more" onClick={() => navigate(`/team-profile/${card.id}`)}>
-                    <span className="text">View Profile</span> <span className="arrow">&rarr;</span>
-                  </button>
-                </div>
+
+      <div className="teams-grid" ref={gridRef}>
+        {bentoCards.map((card, i) => {
+          const beigeShades = ['#eaddc5', '#f5eedc', '#F5DFB3', '#DDC8A0', '#EED8B3', '#E3D5BA']
+          const accentColor = beigeShades[i % beigeShades.length]
+          const num         = (i + 1).toString().padStart(2, '0')
+          const isWide      = card.span === 'col-span-2'
+          const allMembers  = [...card.chairs, ...card.coordinators]
+          const chips       = allMembers.slice(0, isWide ? 3 : 2)
+          const extra       = allMembers.length - chips.length
+
+          return (
+            <div
+              key={card.id}
+              className={`team-card${isWide ? ' team-card--wide' : ''} ${isVisible ? 'visible' : ''}`}
+              style={{ '--c': accentColor, '--delay': `${i * 0.05}s` }}
+              onClick={() => navigate(`/team-profile/${card.id}`)}
+              onMouseMove={onTiltMove}
+              onMouseLeave={onTiltLeave}
+            >
+              <div className="team-card-accent" />
+              <div className="team-card-orb" />
+              <span className="team-card-num" aria-hidden="true">{num}</span>
+
+              <div className="team-card-body">
+                <h3 className="team-card-name">{card.name}</h3>
+                <p className="team-card-desc">{card.description}</p>
               </div>
-            );
-          })}
-        </div>
+
+              <div className="team-card-footer">
+                <div className="team-card-chips">
+                  {chips.map((m, ci) => (
+                    <span key={ci} className="team-chip">
+                      {m.name.split(' ')[0]}
+                    </span>
+                  ))}
+                  {extra > 0 && (
+                    <span className="team-chip team-chip--more">+{extra}</span>
+                  )}
+                </div>
+                <button className="team-card-cta" tabIndex={-1}>
+                  View <span className="cta-arrow">→</span>
+                </button>
+              </div>
+            </div>
+          )
+        })}
       </div>
-    </div>
+    </section>
   )
 }
 

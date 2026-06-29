@@ -65,21 +65,22 @@ const Navbar = () => {
 
   return (
     <>
-      <div className={`nav-side-logo rgipt-side-logo ${scrolled ? 'scrolled' : ''}`}>
-        <img src="/rgipt.png" alt="RGIPT Logo" className="navbar-logo-img" fetchpriority="high" />
-      </div>
-      <div className={`nav-side-logo aiche-side-logo ${scrolled ? 'scrolled' : ''}`}>
-        <img src="/aiche.png" alt="AIChE Logo" className="navbar-logo-img" fetchpriority="high" />
-        <img src="/aiche-rgipt.jpeg" alt="AIChE RGIPT Logo" className="navbar-logo-img aiche-round-logo" fetchpriority="high" />
-      </div>
-
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <div className="nav-container">
+          <Link to="/" className="nav-brand" onClick={closeMenu}>
+            <img src="/rgipt.png" alt="RGIPT Logo" className="navbar-logo-img rgipt-logo" fetchpriority="high" />
+          </Link>
+
           <ul className="nav-menu">
             {NAV_ITEMS.map(item => (
               <NavItem key={item.href} item={item} onClose={closeMenu} />
             ))}
           </ul>
+
+          <div className="nav-brand nav-brand-right">
+            <img src="/aiche.png" alt="AIChE Logo" className="navbar-logo-img" fetchpriority="high" />
+            <img src="/aiche-rgipt.jpeg" alt="AIChE RGIPT Logo" className="navbar-logo-img aiche-round-logo" fetchpriority="high" />
+          </div>
 
           <button
             ref={iconRef}

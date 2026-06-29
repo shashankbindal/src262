@@ -12,62 +12,84 @@ import Registration from "./Registration/Registration.jsx";
 import Sponsor from "./Sponsors/Sponsor.jsx";
 import SmoothScroller from "./shared/SmoothScroller.jsx";
 import TeamProfile from "./TeamProfile/TeamProfile.jsx";
-
 import ScrollToTop from "./shared/ScrollToTop.jsx";
 
-const PageTransition = ({ children }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8, y: 100, rotateX: 45 }}
-      animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
-      exit={{ opacity: 0, scale: 1.2, y: -100, rotateX: -45, filter: "blur(20px)" }}
-      transition={{ type: "spring", stiffness: 100, damping: 15, duration: 1 }}
-      style={{ transformOrigin: "center center" }}
-    >
-      {children}
-    </motion.div>
-  );
-};
+const PageTransition = ({ children }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.8, y: 100, rotateX: 45 }}
+    animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
+    exit={{ opacity: 0, scale: 1.2, y: -100, rotateX: -45, filter: "blur(20px)" }}
+    transition={{ type: "spring", stiffness: 100, damping: 15, duration: 1 }}
+    style={{ transformOrigin: "center center" }}
+  >
+    {children}
+  </motion.div>
+);
 
 const AppContent = () => {
   const location = useLocation();
   const hideNavFooter = location.pathname.startsWith('/team-profile');
 
   React.useEffect(() => {
-    // 1. Mouse move tracker for card hover spotlight gradients ( O(1) hover tracking )
+    /* 1 ─ Mouse-spotlight tracker for cards that use --mouse-x/y */
+    const SPOTLIGHT_SELECTOR = [
+      '.rm-event-block', '.carousel-card', '.info-card', '.aiche-card',
+      '.competition-card-container', '.contact-card', '.sponsor-card',
+      '.contact-form-container', '.rm-postit', '.member-image-placeholder',
+      '.team-card',
+    ].join(', ')
+
     const handleMouseMove = (e) => {
-      const card = e.target.closest(
-        '.rm-event-block, .carousel-card, .info-card, .aiche-card, .competition-card-container, .contact-card, .sponsor-card, .contact-form-container, .rm-postit, .member-image-placeholder'
-      );
+      /* Spotlight for tracked cards */
+      const card = e.target.closest(SPOTLIGHT_SELECTOR)
       if (card) {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        card.style.setProperty('--mouse-x', `${x}px`);
-        card.style.setProperty('--mouse-y', `${y}px`);
+        const rect = card.getBoundingClientRect()
+        card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`)
+        card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`)
       }
-    };
 
-    // 2. Scroll progress tracker
+      /* Magnetic effect for [data-magnetic] elements */
+      const magEl = e.target.closest('[data-magnetic]')
+      if (magEl) {
+        const r  = magEl.getBoundingClientRect()
+        const cx = r.left + r.width  / 2
+        const cy = r.top  + r.height / 2
+        const dx = (e.clientX - cx) * 0.35
+        const dy = (e.clientY - cy) * 0.35
+        magEl.style.transform = `translate(${dx}px, ${dy}px)`
+      }
+    }
+
+    const handleMouseLeave = (e) => {
+      const magEl = e.target.closest('[data-magnetic]')
+      if (magEl) {
+        magEl.style.transition = 'transform 0.55s cubic-bezier(0.16, 1, 0.3, 1)'
+        magEl.style.transform  = ''
+        /* Clear inline transition after it completes so hover-CSS transitions still work */
+        setTimeout(() => { magEl && (magEl.style.transition = '') }, 600)
+      }
+    }
+
+    /* 2 ─ Scroll progress bar */
     const handleScroll = () => {
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (totalHeight > 0) {
-        const progress = (window.scrollY / totalHeight) * 100;
-        const progressBar = document.querySelector('.scroll-progress');
-        if (progressBar) {
-          progressBar.style.width = `${progress}%`;
-        }
+      const total = document.documentElement.scrollHeight - window.innerHeight
+      if (total > 0) {
+        const pct = (window.scrollY / total) * 100
+        const bar = document.querySelector('.scroll-progress')
+        if (bar) bar.style.width = `${pct}%`
       }
-    };
+    }
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('mousemove',  handleMouseMove,  { passive: true })
+    document.addEventListener('mouseleave', handleMouseLeave, true)
+    window.addEventListener('scroll',     handleScroll,     { passive: true })
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+      window.removeEventListener('mousemove',  handleMouseMove)
+      document.removeEventListener('mouseleave', handleMouseLeave, true)
+      window.removeEventListener('scroll',     handleScroll)
+    }
+  }, [])
 
   return (
     <SmoothScroller>
@@ -80,13 +102,12 @@ const AppContent = () => {
       <main style={{ flex: 1, overflowX: "hidden", position: "relative", zIndex: 1 }}>
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<PageTransition><Main /></PageTransition>} />
-            <Route path="/events" element={<PageTransition><Event /></PageTransition>} />
-            <Route path="/team" element={<PageTransition><Team /></PageTransition>} />
-            {/* <Route path="/accommodation" element={<PageTransition><Accommodation /></PageTransition>} /> */}
-            <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
-            <Route path="/register" element={<PageTransition><Registration /></PageTransition>} />
-            <Route path="/sponsors" element={<PageTransition><Sponsor /></PageTransition>} />
+            <Route path="/"              element={<PageTransition><Main /></PageTransition>} />
+            <Route path="/events"        element={<PageTransition><Event /></PageTransition>} />
+            <Route path="/team"          element={<PageTransition><Team /></PageTransition>} />
+            <Route path="/contact"       element={<PageTransition><Contact /></PageTransition>} />
+            <Route path="/register"      element={<PageTransition><Registration /></PageTransition>} />
+            <Route path="/sponsors"      element={<PageTransition><Sponsor /></PageTransition>} />
             <Route path="/team-profile/:teamId" element={<PageTransition><TeamProfile /></PageTransition>} />
           </Routes>
         </AnimatePresence>

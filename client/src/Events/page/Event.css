@@ -33,5 +33,19 @@
 
 @media (max-width: 768px) {
   .events-page-container { padding: 140px 5vw 80px; }
+  .events-page-header { margin-bottom: 56px; }
   .events-page-title { font-size: 2.2rem; }
+  .events-page-subtitle { font-size: 1rem; }
+}
+
+@media (max-width: 480px) {
+  .events-page-container { padding: 110px 4vw 60px; }
+  .events-page-header { margin-bottom: 40px; }
+  .events-page-title { font-size: clamp(1.8rem, 7vw, 2.4rem); margin-bottom: 16px; }
+  .events-page-subtitle { font-size: 0.92rem; }
+  .events-cards-wrapper { gap: 32px; }
+}
+
+@media (max-width: 360px) {
+  .events-page-container { padding: 100px 4vw 48px; }
 }

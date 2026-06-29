@@ -3,6 +3,19 @@
    Soothing, responsive transitions
    ============================================= */
 
+/* ---- GSAP SplitText word wrapper ---- */
+.gsap-word {
+  display: inline-block;
+  vertical-align: bottom;
+  will-change: transform, opacity;
+}
+
+/* ---- Magnetic element reset ---- */
+[data-magnetic] {
+  display: inline-block;
+  will-change: transform;
+}
+
 /* --- Base reveal state (hidden before intersection) --- */
 .reveal {
   opacity: 0;

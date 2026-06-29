@@ -163,3 +163,13 @@
   .profile-details-grid { grid-template-columns: 1fr; gap: 16px; }
   .details-list li { font-size: 0.8rem; }
 }
+
+@media (max-width: 480px) {
+  .team-profile-container { padding: 120px 4% 48px; }
+  .team-profile-title { font-size: clamp(1.7rem, 7vw, 2.2rem); }
+  .profile-section { padding: 24px 18px; }
+  .section-title { font-size: 1.15rem; margin-bottom: 14px; padding-bottom: 10px; }
+  .section-text { font-size: 0.9rem; }
+  .back-btn { padding: 10px 20px; font-size: 0.78rem; }
+  .team-profile-header { margin-bottom: 32px; }
+}
