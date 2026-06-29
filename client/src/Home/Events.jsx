@@ -11,12 +11,12 @@ const eventData = [
   { id: 5, title: "K-12 STEM", desc: "Inspiring the Next Generation", img: "https://learningliftoff.com/wp-content/uploads/2023/01/pexels-artem-podrez-6941450-1536x864.jpg.webp" }
 ]
 
-const TX_MAP    = [0, 105, 190] // Percentages of width
+const TX_MAP = [0, 105, 190] // Percentages of width
 const SCALE_MAP = [1, 0.8, 0.6]
 const OPACITY_MAP = [1, 0.7, 0.4]
 
 const getCardStyle = (offset) => {
-  const abs  = Math.abs(offset)
+  const abs = Math.abs(offset)
   const sign = Math.sign(offset)
 
   if (abs > 2) {
@@ -35,8 +35,7 @@ const Events = () => {
   const [ref, isVisible] = useReveal(0.1)
   const [activeIndex, setActiveIndex] = useState(2)
 
-  const nextCard = () => setActiveIndex(prev => (prev + 1) % eventData.length)
-  const prevCard = () => setActiveIndex(prev => prev === 0 ? eventData.length - 1 : prev - 1)
+
 
   useEffect(() => {
     if (!isVisible) return; // Pause auto-play when off-screen to save CPU/GPU overhead
@@ -91,10 +90,7 @@ const Events = () => {
           })}
         </div>
 
-        <div className="fan-controls">
-          <button className="fan-btn fan-btn--prev" onClick={prevCard} aria-label="Previous">&#8592;</button>
-          <button className="fan-btn fan-btn--next" onClick={nextCard} aria-label="Next">&#8594;</button>
-        </div>
+
       </div>
     </div>
   )

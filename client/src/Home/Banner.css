@@ -1,6 +1,6 @@
 .banner-container {
   width: 100%;
-  height: calc(100vh - 81px);
+  height: 100vh;
   min-height: 520px;
   display: flex;
   justify-content: center;
@@ -8,6 +8,9 @@
   position: relative;
   overflow: hidden;
   z-index: 1;
+  margin-top: -2px;
+  box-sizing: border-box;
+  padding-top: 60px;
 }
 
 /* Background Image Styling */
@@ -76,7 +79,9 @@
 }
 
 @keyframes particles-fade-in {
-  to { opacity: 1; }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Responsive adjustments */
@@ -91,9 +96,11 @@
     min-height: unset;
     height: auto;
     aspect-ratio: 16 / 10;
-    padding-bottom: 6%; /* Added 2% more gap roughly */
+    padding-bottom: 6%;
+    /* Added 2% more gap roughly */
     margin-bottom: 1rem;
   }
+
   .banner-container::after {
     content: '';
     position: absolute;
@@ -105,11 +112,13 @@
     pointer-events: none;
     z-index: 2;
   }
+
   .banner-title {
     font-size: 5rem;
     z-index: 3;
     position: relative;
   }
+
   .banner-bg {
     height: auto;
     object-fit: cover;
@@ -124,8 +133,10 @@
     min-height: unset;
     height: auto;
     aspect-ratio: 16 / 10;
-    padding-bottom: 8%; /* Added more gap */
+    padding-bottom: 8%;
+    /* Added more gap */
   }
+
   .banner-container::after {
     content: '';
     position: absolute;
@@ -137,12 +148,14 @@
     pointer-events: none;
     z-index: 2;
   }
+
   .banner-title {
     font-size: 3.5rem;
     letter-spacing: 0.05em;
     z-index: 3;
     position: relative;
   }
+
   .banner-bg {
     height: auto;
     object-fit: cover;

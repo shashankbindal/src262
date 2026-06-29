@@ -16,11 +16,18 @@
   opacity: 0;
   transform: translateY(30px);
   transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.fan-header.visible { opacity: 1; transform: translateY(0); }
 
-.fan-header-left { flex: 1.2; padding-right: 40px; }
+.fan-header.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fan-header-left {
+  flex: 1.2;
+  padding-right: 40px;
+}
 
 .fan-title {
   font-family: var(--font-display);
@@ -61,9 +68,10 @@
   text-decoration: none;
   font-family: var(--font-body);
   transition: background-color var(--transition-fast),
-              transform var(--transition-fast),
-              box-shadow var(--transition-fast);
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
+
 .fan-explore-btn:hover {
   background-color: var(--primary-light);
   color: #111;
@@ -81,9 +89,13 @@
   opacity: 0;
   transform: translateY(40px);
   transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s,
-              transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+    transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
 }
-.fan-stage.visible { opacity: 1; transform: translateY(0); }
+
+.fan-stage.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 
 /* ---- Corner bracket decorations ---- */
 .fan-corner {
@@ -94,10 +106,30 @@
   border-style: solid;
   border-radius: 4px;
 }
-.fan-corner--tl { top: 0; left: 0;  border-width: 3px 0 0 3px; }
-.fan-corner--tr { top: 0; right: 0; border-width: 3px 3px 0 0; }
-.fan-corner--bl { bottom: 0; left: 0;  border-width: 0 0 3px 3px; }
-.fan-corner--br { bottom: 0; right: 0; border-width: 0 3px 3px 0; }
+
+.fan-corner--tl {
+  top: 0;
+  left: 0;
+  border-width: 3px 0 0 3px;
+}
+
+.fan-corner--tr {
+  top: 0;
+  right: 0;
+  border-width: 3px 3px 0 0;
+}
+
+.fan-corner--bl {
+  bottom: 0;
+  left: 0;
+  border-width: 0 0 3px 3px;
+}
+
+.fan-corner--br {
+  bottom: 0;
+  right: 0;
+  border-width: 0 3px 3px 0;
+}
 
 /* ---- Active card label ---- */
 .fan-label {
@@ -109,6 +141,7 @@
   justify-content: flex-end;
   gap: 4px;
 }
+
 .fan-label-title {
   font-family: var(--font-display);
   font-size: 1.9rem;
@@ -116,6 +149,7 @@
   color: var(--text-light);
   letter-spacing: 0.01em;
 }
+
 .fan-label-sub {
   font-family: var(--font-body);
   font-size: 0.95rem;
@@ -143,16 +177,16 @@
   cursor: pointer;
   background: #1a1a1a;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4),
-              0 0 0 1px rgba(255, 255, 255, 0.1);
+    0 0 0 1px rgba(255, 255, 255, 0.1);
   transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-              opacity 0.55s ease;
+    opacity 0.55s ease;
   will-change: transform, opacity;
 }
 
 .fan-card--active {
   cursor: default;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6),
-              0 0 0 4px #ffffff;
+    0 0 0 4px #ffffff;
 }
 
 .fan-card:not(.fan-card--active):hover {
@@ -197,8 +231,8 @@
   align-items: center;
   justify-content: center;
   transition: background-color var(--transition-fast),
-              transform var(--transition-fast),
-              box-shadow var(--transition-fast);
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .fan-btn--prev {
@@ -206,6 +240,7 @@
   color: var(--text-light);
   border: 1px solid var(--border-medium);
 }
+
 .fan-btn--prev:hover {
   background: rgba(255, 255, 255, 0.14);
 }
@@ -214,6 +249,7 @@
   background: var(--primary);
   color: #111;
 }
+
 .fan-btn--next:hover {
   background: var(--primary-light);
   transform: translateX(3px);
@@ -222,37 +258,118 @@
 
 /* ---- Responsive ---- */
 @media (max-width: 1024px) {
-  .fan-header { flex-direction: column; gap: 28px; }
-  .fan-header-left { padding-right: 0; }
-  .fan-stage { padding: 32px 36px 48px; }
-  .fan-track { height: 370px; }
-  .fan-card { width: 205px; height: 320px; }
-  .fan-title { font-size: clamp(2rem, 4vw, 3.2rem); }
+  .fan-header {
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .fan-header-left {
+    padding-right: 0;
+  }
+
+  .fan-stage {
+    padding: 32px 36px 48px;
+  }
+
+  .fan-track {
+    height: 370px;
+  }
+
+  .fan-card {
+    width: 205px;
+    height: 320px;
+  }
+
+  .fan-title {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+  }
 }
 
 @media (max-width: 768px) {
-  .fan-section { padding: 60px 4%; }
-  .fan-stage { padding: 24px 20px 40px; }
-  .fan-corner { width: 34px; height: 34px; }
-  .fan-track { height: 300px; }
-  .fan-card { width: 162px; height: 258px; }
-  .fan-label-title { font-size: 1.4rem; }
-  .fan-label-sub { font-size: 0.85rem; }
-  .fan-desc { font-size: 0.95rem; }
+  .fan-section {
+    padding: 60px 4%;
+  }
+
+  .fan-stage {
+    padding: 24px 20px 40px;
+  }
+
+  .fan-corner {
+    width: 34px;
+    height: 34px;
+  }
+
+  .fan-track {
+    height: 300px;
+  }
+
+  .fan-card {
+    width: 162px;
+    height: 258px;
+  }
+
+  .fan-label-title {
+    font-size: 1.4rem;
+  }
+
+  .fan-label-sub {
+    font-size: 0.85rem;
+  }
+
+  .fan-desc {
+    font-size: 0.95rem;
+  }
 }
 
 @media (max-width: 480px) {
-  .fan-section { padding: 48px 4%; }
-  .fan-stage { padding: 18px 14px 34px; }
-  .fan-corner { width: 26px; height: 26px; border-width: 2px; }
-  .fan-track { height: 250px; }
-  .fan-card { width: 136px; height: 216px; border-radius: 14px; }
-  .fan-label-title { font-size: 1.15rem; }
-  .fan-label { margin-bottom: 16px; min-height: 56px; }
-  .fan-btn { width: 40px; height: 40px; font-size: 1rem; }
+  .fan-section {
+    padding: 48px 4%;
+  }
+
+  .fan-stage {
+    padding: 18px 14px 34px;
+  }
+
+  .fan-corner {
+    width: 26px;
+    height: 26px;
+    border-width: 2px;
+  }
+
+  .fan-track {
+    height: 250px;
+  }
+
+  .fan-card {
+    width: 136px;
+    height: 216px;
+    border-radius: 14px;
+  }
+
+  .fan-label-title {
+    font-size: 1.15rem;
+  }
+
+  .fan-label {
+    margin-bottom: 16px;
+    min-height: 56px;
+  }
+
+  .fan-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
 }
 
 @media (max-width: 360px) {
-  .fan-track { height: 220px; }
-  .fan-card { width: 118px; height: 188px; border-radius: 12px; }
+  .fan-track {
+    height: 220px;
+  }
+
+  .fan-card {
+    width: 118px;
+    height: 188px;
+    border-radius: 12px;
+  }
 }

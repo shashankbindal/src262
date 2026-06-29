@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   gap: 120px;
-  background-color: var(--bg-primary); /* Slate Background */
+  background-color: var(--bg-primary);
   overflow: hidden;
 }
 
@@ -15,33 +15,24 @@
   justify-content: space-between;
   width: 100%;
   opacity: 0;
-  transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.ref-block.visible { opacity: 1; }
 
-.ref-block.visible {
-  opacity: 1;
-}
+.block-right-image { transform: translateY(40px); }
+.block-right-image.visible { transform: translateY(0); }
+.block-left-image  { transform: translateY(40px); }
+.block-left-image.visible  { transform: translateY(0); }
 
-.block-right-image {
-  transform: translateY(40px);
-}
-.block-right-image.visible {
-  transform: translateY(0);
-}
-
-.block-left-image {
-  transform: translateY(40px);
-}
-.block-left-image.visible {
-  transform: translateY(0);
-}
-
+/* ---- Text content area ---- */
 .ref-text-content {
   flex: 1.5;
   padding: 0 6%;
   max-width: 850px;
 }
 
+/* ---- Subtitle row (line + scrambled label) ---- */
 .ref-subtitle {
   font-family: var(--font-body);
   font-size: 0.85rem;
@@ -54,13 +45,30 @@
   margin-bottom: 24px;
 }
 
+/* The thin line: scale-in left→right when block becomes visible */
 .ref-line {
   display: inline-block;
   width: 40px;
   height: 1px;
+  flex-shrink: 0;
   background-color: var(--text-secondary);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
+}
+.ref-block.visible .ref-line { transform: scaleX(1); }
+
+/* Scramble text label — starts invisible; useTextScramble sets opacity:1 */
+.sub-text { opacity: 0; }
+
+/* Random chars rendered during scramble, tinted with brand colour */
+.scramble-char {
+  color: var(--primary);
+  opacity: 0.5;
+  display: inline-block;
 }
 
+/* ---- Headings — useRevealWords sets opacity:1 then GSAP stagger-animates each word ---- */
 .ref-title {
   font-family: var(--font-display);
   font-size: clamp(2rem, 3.5vw, 3rem);
@@ -68,65 +76,18 @@
   color: var(--text-light);
   line-height: 1.2;
   margin-bottom: 30px;
+  opacity: 0; /* GSAP takes over on reveal */
 }
 
+.ref-desc strong { color: var(--text-primary); font-weight: 600; }
+
+/* ---- Description paragraphs — CSS stagger via nth-child delays ---- */
 .ref-desc p {
   font-family: var(--font-body);
   font-size: 1.05rem;
   line-height: 1.7;
   color: var(--text-secondary);
   margin-bottom: 20px;
-}
-
-.ref-desc strong {
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
-.ref-read-more {
-  display: inline-block;
-  margin-top: 10px;
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--primary-dark);
-  text-decoration: none;
-  font-weight: 600;
-  transition: var(--transition-fast);
-}
-
-.ref-read-more:hover {
-  color: var(--primary);
-  transform: translateX(5px);
-}
-
-/* ---- Staggered text reveals ---- */
-.ref-subtitle {
-  opacity: 0;
-  transform: translateX(-18px);
-  transition: opacity 0.65s ease 0.15s, transform 0.65s ease 0.15s;
-}
-.ref-block.visible .ref-subtitle {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.ref-title {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.3s,
-              transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
-}
-.ref-title + .ref-title {
-  transition-delay: 0.48s;
-}
-.ref-block.visible .ref-title {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.ref-desc p {
   opacity: 0;
   transform: translateY(14px);
 }
@@ -134,12 +95,9 @@
 .ref-desc p:nth-child(2) { transition: opacity 0.6s ease 0.65s, transform 0.6s ease 0.65s; }
 .ref-desc p:nth-child(3) { transition: opacity 0.6s ease 0.8s,  transform 0.6s ease 0.8s; }
 .ref-desc p:nth-child(4) { transition: opacity 0.6s ease 0.95s, transform 0.6s ease 0.95s; }
-.ref-block.visible .ref-desc p {
-  opacity: 1;
-  transform: translateY(0);
-}
+.ref-block.visible .ref-desc p { opacity: 1; transform: translateY(0); }
 
-/* ---- Image wipe-reveal (scaleX from edge, behind pill shape) ---- */
+/* ---- Image section ---- */
 .ref-image-wrapper {
   flex: 0.7;
   height: 400px;
@@ -147,7 +105,19 @@
   position: relative;
 }
 
-/* The wipe overlay */
+/* Pill shapes */
+.img-right { border-top-left-radius: 200px; border-bottom-left-radius: 200px; }
+.img-left  { border-top-right-radius: 200px; border-bottom-right-radius: 200px; }
+
+.ref-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 10s ease;
+}
+.ref-block:hover .ref-img { transform: scale(1.05); }
+
+/* ---- Image wipe-reveal — scaleX overlay collapses away from pill edge ---- */
 .ref-image-wrapper::before {
   content: '';
   position: absolute;
@@ -156,47 +126,19 @@
   z-index: 2;
   transition: transform 1.1s cubic-bezier(0.86, 0, 0.07, 1) 0.45s;
 }
-
-/* img-right wipes LEFT → RIGHT (overlay origin: right) */
 .ref-image-wrapper.img-right::before {
   transform-origin: right;
   transform: scaleX(1);
 }
-.ref-block.visible .ref-image-wrapper.img-right::before {
-  transform: scaleX(0);
-}
+.ref-block.visible .ref-image-wrapper.img-right::before { transform: scaleX(0); }
 
-/* img-left wipes RIGHT → LEFT (overlay origin: left) */
 .ref-image-wrapper.img-left::before {
   transform-origin: left;
   transform: scaleX(1);
 }
-.ref-block.visible .ref-image-wrapper.img-left::before {
-  transform: scaleX(0);
-}
+.ref-block.visible .ref-image-wrapper.img-left::before { transform: scaleX(0); }
 
-/* The magic pill shapes! */
-.img-right {
-  border-top-left-radius: 200px;
-  border-bottom-left-radius: 200px;
-}
-
-.img-left {
-  border-top-right-radius: 200px;
-  border-bottom-right-radius: 200px;
-}
-
-.ref-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 10s ease;
-}
-
-.ref-block:hover .ref-img {
-  transform: scale(1.05);
-}
-
+/* ---- Responsive ---- */
 @media (max-width: 1024px) {
   .ref-block { flex-direction: column; gap: 60px; }
   .block-left-image { flex-direction: column-reverse; }
