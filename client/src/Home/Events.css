@@ -57,6 +57,8 @@
   font-size: 1.05rem; /* Larger body text */
   line-height: 1.8;
   color: var(--text-secondary);
+  max-width: 60ch; /* Comfortable reading line length */
+  text-align: left; /* Clean left alignment for readability */
 }
 
 .fan-explore-btn {

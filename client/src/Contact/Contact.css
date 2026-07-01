@@ -27,6 +27,8 @@
   color: var(--text-secondary);
   line-height: 1.8;
   margin-bottom: 56px; /* Increased margin */
+  max-width: 60ch; /* Comfortable reading width */
+  text-align: left; /* Clean left alignment */
 }
 
 .contact-cards {

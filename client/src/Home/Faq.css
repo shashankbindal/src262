@@ -119,6 +119,8 @@
   line-height: 1.8; /* Generous line height */
   margin: 0;
   font-size: 1.05rem; /* Larger and readable */
+  text-align: left; /* Clear left-aligned answers */
+  max-width: 70ch; /* Comfortable reading line width */
 }
 
 @media (max-width: 768px) {

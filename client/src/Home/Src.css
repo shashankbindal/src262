@@ -92,6 +92,9 @@
   margin-bottom: 32px; /* Increased paragraph spacing */
   opacity: 0;
   transform: translateY(14px);
+  max-width: 65ch; /* Comfortable reading line length */
+  text-align: justify;
+  text-justify: inter-word;
 }
 .ref-desc p:nth-child(1) { transition: opacity 0.6s ease 0.5s,  transform 0.6s ease 0.5s; }
 .ref-desc p:nth-child(2) { transition: opacity 0.6s ease 0.65s, transform 0.6s ease 0.65s; }
@@ -151,6 +154,10 @@
     clear: both;
   }
   .ref-text-content { padding: 0 4%; max-width: 100%; display: block; }
+  .ref-desc p {
+    text-align: left; /* Left align on mobile for readability */
+    max-width: 100%;
+  }
   .ref-image-wrapper { 
     width: 35%;
     height: 360px; 

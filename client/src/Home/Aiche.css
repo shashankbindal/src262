@@ -72,6 +72,8 @@
   font-size: 1.05rem; /* Larger body size */
   color: var(--text-secondary);
   line-height: 1.8; /* Generous breathing room */
+  max-width: 65ch; /* Comfortable reading line length */
+  text-align: left; /* Clean left alignment for Call-to-Action content */
 }
 
 .ref-btn-primary {

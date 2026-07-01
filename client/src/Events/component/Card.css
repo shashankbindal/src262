@@ -70,6 +70,8 @@
   color: var(--text-secondary);
   line-height: 1.8; /* Increased line height */
   margin-bottom: 36px; /* Increased margin */
+  max-width: 60ch; /* Comfortable reading width */
+  text-align: left; /* Clean left alignment */
 }
 
 .competition-card-description p,

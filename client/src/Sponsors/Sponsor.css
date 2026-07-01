@@ -17,11 +17,14 @@
 .past-sponsors-title {
   text-align: center;
   font-family: var(--font-display);
-  font-size: clamp(2.4rem, 4.5vw, 3.4rem); /* Significant increase */
-  font-weight: 750; /* Bold/Editorial weight */
+  font-size: clamp(2.4rem, 4.5vw, 3.4rem);
+  /* Significant increase */
+  font-weight: 750;
+  /* Bold/Editorial weight */
   letter-spacing: -0.03em;
   color: var(--text-primary);
-  text-transform: none; /* No uppercase for a premium feel */
+  text-transform: none;
+  /* No uppercase for a premium feel */
   margin-bottom: 24px;
 }
 
@@ -78,22 +81,63 @@
 }
 
 @media (max-width: 768px) {
-  .sponsors-page { padding: 40px 16px 100px; }
-  .sponsors-container { gap: 56px; }
-  .sponsors-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; }
-  .sponsor-card { height: 110px; padding: 16px; border-radius: 16px; }
-  .past-sponsors-title { font-size: clamp(1.4rem, 5vw, 2rem); }
+  .sponsors-page {
+    padding: 40px 16px 100px;
+  }
+
+  .sponsors-container {
+    gap: 56px;
+  }
+
+  .sponsors-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+
+  .sponsor-card {
+    height: 110px;
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .past-sponsors-title {
+    font-size: clamp(1.4rem, 5vw, 2rem);
+  }
 }
 
 @media (max-width: 480px) {
-  .sponsors-page { padding: 28px 12px 80px; }
-  .sponsors-container { gap: 40px; }
-  .sponsors-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
-  .sponsor-card { height: 90px; padding: 12px; border-radius: 12px; }
-  .past-sponsors-title { font-size: clamp(1.2rem, 5vw, 1.6rem); letter-spacing: 0.06em; }
+  .sponsors-page {
+    padding: 28px 12px 80px;
+  }
+
+  .sponsors-container {
+    gap: 40px;
+  }
+
+  .sponsors-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+  }
+
+  .sponsor-card {
+    height: 90px;
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .past-sponsors-title {
+    font-size: clamp(1.2rem, 5vw, 1.6rem);
+    letter-spacing: 0.06em;
+  }
 }
 
 @media (max-width: 360px) {
-  .sponsors-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; }
-  .sponsor-card { height: 78px; }
+  .sponsors-grid {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+  }
+
+  .sponsor-card {
+    height: 78px;
+  }
 }

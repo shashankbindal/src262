@@ -131,6 +131,7 @@
   max-height: none;
   overflow-y: visible;
   padding-right: 0;
+  text-align: left; /* Explicitly left-aligned for maximum legibility */
 }
 
 .ev-full-desc p,

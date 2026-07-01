@@ -32,6 +32,8 @@
   color: var(--text-secondary);
   line-height: 1.8;
   margin: 0;
+  max-width: 65ch; /* Comfortable reading width */
+  text-align: left; /* Clean left alignment */
 }
 
 /* ── Event select grid ── */
