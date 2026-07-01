@@ -82,9 +82,15 @@ const Navbar = () => {
     <>
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <div className="nav-container">
-          <Link to="/" className="nav-brand" onClick={closeMenu}>
+          <a
+            href="https://www.rgipt.ac.in/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-brand navbar-logo-anchor"
+            title="RGIPT"
+          >
             <img src="/rgipt.png" alt="RGIPT Logo" className="navbar-logo-img rgipt-logo" fetchpriority="high" />
-          </Link>
+          </a>
 
           <ul className="nav-menu">
             {NAV_ITEMS.map(item => (
@@ -93,8 +99,24 @@ const Navbar = () => {
           </ul>
 
           <div className="nav-brand nav-brand-right">
-            <img src="/aiche.png" alt="AIChE Logo" className="navbar-logo-img aiche-text-logo" fetchpriority="high" />
-            <img src="/aiche-rgipt.jpeg" alt="AIChE RGIPT Logo" className="navbar-logo-img aiche-round-logo" fetchpriority="high" />
+            <a
+              href="https://www.aiche.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="navbar-logo-anchor"
+              title="AIChE"
+            >
+              <img src="/aiche.png" alt="AIChE Logo" className="navbar-logo-img aiche-text-logo" fetchpriority="high" />
+            </a>
+            <a
+              href="https://www.aichergipt.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="navbar-logo-anchor"
+              title="AIChE RGIPT Chapter"
+            >
+              <img src="/aiche-rgipt.jpeg" alt="AIChE RGIPT Logo" className="navbar-logo-img aiche-round-logo" fetchpriority="high" />
+            </a>
             <div className="user-dropdown-container" ref={userMenuRef}>
               <button 
                 className="navbar-user-btn" 

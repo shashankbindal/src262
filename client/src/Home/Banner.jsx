@@ -13,22 +13,22 @@ function ParticleCanvas() {
     const ctx = canvas.getContext('2d')
     let raf
 
-    const N   = 50
+    const N = 50
     const MAX = 130  // connection distance
 
     const resize = () => {
-      canvas.width  = canvas.offsetWidth
+      canvas.width = canvas.offsetWidth
       canvas.height = canvas.offsetHeight
     }
     resize()
 
     const pts = Array.from({ length: N }, () => ({
-      x:  Math.random() * canvas.width,
-      y:  Math.random() * canvas.height,
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
       vx: (Math.random() - 0.5) * 0.28,
       vy: (Math.random() - 0.5) * 0.28,
-      r:  Math.random() * 1.4 + 0.4,
-      a:  Math.random() * 0.45 + 0.1,
+      r: Math.random() * 1.4 + 0.4,
+      a: Math.random() * 0.45 + 0.1,
     }))
 
     const draw = () => {
@@ -49,7 +49,7 @@ function ParticleCanvas() {
         for (let j = i + 1; j < N; j++) {
           const dx = pts[i].x - pts[j].x
           const dy = pts[i].y - pts[j].y
-          const d  = Math.sqrt(dx * dx + dy * dy)
+          const d = Math.sqrt(dx * dx + dy * dy)
           if (d < MAX) {
             ctx.beginPath()
             ctx.strokeStyle = `rgba(245,223,179,${0.08 * (1 - d / MAX)})`
@@ -97,7 +97,7 @@ function useBgParallax(wrapRef, ready) {
     if (!wrap) return
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const finePointer  = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
     if (reduceMotion || !finePointer) return
 
     const container = wrap.closest('.banner-container')
@@ -108,8 +108,8 @@ function useBgParallax(wrapRef, ready) {
       raf = requestAnimationFrame(() => {
         raf = null
         const rect = container.getBoundingClientRect()
-        const px = (e.clientX - rect.left) / rect.width  - 0.5 // -0.5 .. 0.5
-        const py = (e.clientY - rect.top)  / rect.height - 0.5
+        const px = (e.clientX - rect.left) / rect.width - 0.5 // -0.5 .. 0.5
+        const py = (e.clientY - rect.top) / rect.height - 0.5
         /* Subtle depth shift — background drifts opposite the cursor */
         wrap.style.transform = `translate3d(${px * -22}px, ${py * -14}px, 0)`
       })
@@ -133,7 +133,7 @@ function useBgParallax(wrapRef, ready) {
 /* ---- Banner ---- */
 const Banner = () => {
   const containerRef = useRef()
-  const bgWrapRef     = useRef()
+  const bgWrapRef = useRef()
   const [parallaxReady, setParallaxReady] = useState(false)
 
   useGSAP(() => {
@@ -147,19 +147,25 @@ const Banner = () => {
       delay: 0.9,
       onComplete: () => setParallaxReady(true),
     })
-    .from('.char', {
-      y: 150,
-      opacity: 0,
-      stagger: 0.1,
-      duration: 1.2,
-      ease: 'power4.out',
-    }, '-=0.5')
-    .from('.banner-subtitle', {
-      y: 20,
-      opacity: 0,
-      duration: 1,
-      ease: 'power3.out',
-    }, '-=0.4')
+      .from('.char', {
+        y: 150,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 1.2,
+        ease: 'power4.out',
+      }, '-=0.5')
+      .from('.banner-subtitle', {
+        y: 20,
+        opacity: 0,
+        duration: 1,
+        ease: 'power3.out',
+      }, '-=0.4')
+      .from('.banner-cta-link', {
+        y: 12,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+      }, '-=0.4')
   }, { scope: containerRef })
 
   useBgParallax(bgWrapRef, parallaxReady)
@@ -183,6 +189,19 @@ const Banner = () => {
           ))}
         </h1>
         <p className="banner-subtitle">AIChE Student Regional Conference</p>
+        
+        {/* CTA link */}
+        <a
+          href="https://www.aichergipt.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="banner-cta-link"
+        >
+          Explore AIChE RGIPT
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="cta-icon">
+            <path d="M7 17L17 7M7 7h10v10" />
+          </svg>
+        </a>
       </div>
       <ScrollCue />
     </div>
