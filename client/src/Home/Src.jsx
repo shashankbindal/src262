@@ -23,8 +23,8 @@ const Src = () => {
       <div ref={block1Ref} className={`ref-block block-right-image ${block1Visible ? 'visible' : ''}`}>
         <div className="ref-image-wrapper img-right">
           <img
-            src="https://plus.unsplash.com/premium_photo-1676496046182-356a6a0ed002?w=600&auto=format&fit=crop&q=60"
-            alt="Wind turbines landscape"
+            src="/about-src.jpeg"
+            alt="Student Regional Conference"
             className="ref-img"
             loading="lazy"
             decoding="async"

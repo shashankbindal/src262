@@ -1,10 +1,10 @@
 /* ===== REFERENCE DESIGN LAYOUT ===== */
 .src-section-ref {
   width: 100%;
-  padding: 80px 0;
+  padding: 140px 0;
   display: flex;
   flex-direction: column;
-  gap: 120px;
+  gap: 140px;
   background-color: var(--bg-primary);
   overflow: hidden;
 }
@@ -29,36 +29,37 @@
 .ref-text-content {
   flex: 1.5;
   padding: 0 6%;
-  max-width: 850px;
+  max-width: 700px;
 }
 
 /* ---- Subtitle row (line + scrambled label) ---- */
 .ref-subtitle {
   font-family: var(--font-body);
-  font-size: 0.85rem;
-  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: var(--primary);
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+  font-weight: 700;
 }
 
-/* The thin line: scale-in left→right when block becomes visible */
+/* The thin line */
 .ref-line {
   display: inline-block;
   width: 40px;
   height: 1px;
   flex-shrink: 0;
-  background-color: var(--text-secondary);
+  background-color: var(--border-medium);
   transform-origin: left center;
   transform: scaleX(0);
   transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
 }
 .ref-block.visible .ref-line { transform: scaleX(1); }
 
-/* Scramble text label — starts invisible; useTextScramble sets opacity:1 */
+/* Scramble text label */
 .sub-text { opacity: 0; }
 
 /* Random chars rendered during scramble, tinted with brand colour */
@@ -68,26 +69,27 @@
   display: inline-block;
 }
 
-/* ---- Headings — useRevealWords sets opacity:1 then GSAP stagger-animates each word ---- */
+/* ---- Headings ---- */
 .ref-title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 3.5vw, 3rem);
-  font-weight: 500;
-  color: var(--text-light);
-  line-height: 1.2;
-  margin-bottom: 30px;
-  opacity: 0; /* GSAP takes over on reveal */
+  font-size: clamp(2.4rem, 4vw, 3.4rem); /* Enlarged and bolded */
+  font-weight: 750;
+  color: var(--text-primary);
+  line-height: 1.15;
+  margin-bottom: 36px; /* Spacing */
+  opacity: 0;
+  letter-spacing: -0.03em;
 }
 
-.ref-desc strong { color: var(--text-primary); font-weight: 600; }
+.ref-desc strong { color: var(--text-primary); font-weight: 700; }
 
-/* ---- Description paragraphs — CSS stagger via nth-child delays ---- */
+/* ---- Description paragraphs ---- */
 .ref-desc p {
   font-family: var(--font-body);
-  font-size: 1.05rem;
-  line-height: 1.7;
+  font-size: 1.05rem; /* Larger */
+  line-height: 1.8; /* Increased line height */
   color: var(--text-secondary);
-  margin-bottom: 20px;
+  margin-bottom: 32px; /* Increased paragraph spacing */
   opacity: 0;
   transform: translateY(14px);
 }
@@ -117,7 +119,7 @@
 }
 .ref-block:hover .ref-img { transform: scale(1.05); }
 
-/* ---- Image wipe-reveal — scaleX overlay collapses away from pill edge ---- */
+/* ---- Image wipe-reveal ---- */
 .ref-image-wrapper::before {
   content: '';
   position: absolute;
@@ -169,17 +171,17 @@
 }
 
 @media (max-width: 768px) {
-  .src-section-ref { gap: 80px; padding: 60px 0; }
+  .src-section-ref { gap: 100px; padding: 100px 0; }
   .ref-image-wrapper { width: 45%; height: 320px; }
-  .ref-title { font-size: clamp(1.5rem, 5vw, 2.2rem); margin-bottom: 20px; }
+  .ref-title { font-size: clamp(1.5rem, 5vw, 2.2rem); margin-bottom: 24px; }
   .img-right { border-top-left-radius: 60px; border-bottom-left-radius: 60px; margin-left: 15px; }
   .img-left  { border-top-right-radius: 60px; border-bottom-right-radius: 60px; margin-right: 15px; }
 }
 
 @media (max-width: 480px) {
-  .src-section-ref { gap: 56px; padding: 40px 0; }
+  .src-section-ref { gap: 80px; padding: 80px 0; }
   .ref-image-wrapper { width: 50%; height: 260px; }
-  .ref-subtitle { font-size: 0.75rem; gap: 10px; }
+  .ref-subtitle { font-size: 0.68rem; gap: 10px; }
   .ref-line { width: 28px; }
   .img-right { border-top-left-radius: 36px; border-bottom-left-radius: 36px; margin-left: 10px; }
   .img-left  { border-top-right-radius: 36px; border-bottom-right-radius: 36px; margin-right: 10px; }

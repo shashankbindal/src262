@@ -2,11 +2,11 @@
 
 .notebook-feature-wrapper {
   width: 100%;
-  background-color: var(--bg-primary, #0F1319);
+  background-color: var(--bg-primary);
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px 20px 0 20px; /* Reduced padding and removed bottom padding to close gap */
+  padding: 40px 20px 0 20px;
   position: relative;
   z-index: 1;
 }
@@ -17,15 +17,13 @@
   height: auto;
   min-height: 400px;
   padding-bottom: 20px;
-  background-color: var(--card-bg-subtle);
+  background-color: #FFFFFF;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-radius: 16px;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  border-radius: 20px;
   position: relative;
-  box-shadow: var(--shadow-xl);
-  border: 1px solid var(--card-border-subtle);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 /* Spiral Binding */
@@ -51,10 +49,10 @@
 .spiral-hole {
   width: 24px;
   height: 24px;
-  background-color: var(--bg-primary, #0F1319); /* Matches outer dark bg */
+  background-color: var(--bg-primary);
   border-radius: 50%;
-  border: 2px solid var(--border-medium, #333);
-  box-shadow: inset 0 3px 6px rgba(0,0,0,0.8);
+  border: 2px solid var(--border-medium);
+  box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);
   margin-top: 10px;
 }
 
@@ -65,8 +63,8 @@
   height: 45px;
   background: linear-gradient(to right, #d9d9d9 0%, #ffffff 40%, #a6a6a6 100%);
   border-radius: 10px;
-  border: 1px solid #777;
-  box-shadow: 2px 4px 6px rgba(0,0,0,0.4);
+  border: 1px solid #ccc;
+  box-shadow: 2px 4px 6px rgba(0,0,0,0.12);
   z-index: 11;
 }
 
@@ -74,18 +72,36 @@
 .notebook-content {
   width: 100%;
   height: 100%;
-  padding: 60px 60px 40px 60px; /* Reduced top/bottom padding */
+  padding: 60px 60px 40px 60px;
   position: relative;
   overflow: hidden;
 }
 
+.notebook-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.notebook-subtitle {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--primary); /* Deep Forest Green (#0B5D46) */
+  letter-spacing: 0.22em; /* Increased spacing */
+  margin: 0;
+}
+
 .notebook-title {
-  font-family: var(--font-display, 'Helvetica Neue', Helvetica, Arial, sans-serif);
-  font-size: clamp(2.5rem, 4vw, 3.5rem);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 5vw, 4.2rem); /* Significantly larger */
+  font-weight: 800; /* Extra bold */
   color: var(--text-primary);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
   margin: 0;
   position: relative;
   z-index: 2;
@@ -94,7 +110,7 @@
 .notebook-inner-content {
   display: flex;
   flex-direction: column;
-  gap: 24px; /* Reduced gap */
+  gap: 32px; /* Increased breathing room */
   max-width: 1000px;
   justify-content: center;
   height: 100%;
@@ -102,29 +118,29 @@
 
 .notebook-details {
   display: flex;
-  gap: 60px;
-  margin-top: 20px;
+  gap: 80px; /* Increased breathing room */
+  margin-top: 24px;
 }
 
 .detail-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px; /* Increased breathing room */
 }
 
 .detail-label {
-  font-family: var(--font-mono, monospace);
-  font-size: 0.9rem;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-weight: 600;
+  letter-spacing: 0.18em; /* Elegantly spaced */
+  font-weight: 700; /* Stronger weight */
 }
 
 .detail-value {
-  font-family: var(--font-display, sans-serif);
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+  font-weight: 750;
   color: var(--text-primary);
 }
 
@@ -132,27 +148,28 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  background-color: var(--primary, #3ecf6b);
-  color: #000000; /* Solid black text for visibility */
-  padding: 14px 32px;
-  border-radius: 50px;
-  font-family: var(--font-body, sans-serif);
-  font-size: 1.05rem;
-  font-weight: 700;
+  background-color: var(--primary);
+  color: #FFFFFF;
+  padding: 16px 36px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-decoration: none;
   width: fit-content;
   margin-top: 10px;
   transition: all 0.3s ease;
-  border: 2px solid var(--primary, #3ecf6b);
+  border: 2px solid var(--primary);
 }
 
 .notebook-register-btn:hover {
-  background-color: transparent;
-  color: var(--primary, #3ecf6b); /* Matches border on hover */
-  transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(62, 207, 107, 0.2);
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(11, 93, 70, 0.2);
 }
 
 @media (max-width: 768px) {
@@ -169,8 +186,8 @@
   .notebook-content { padding: 48px 24px 32px; }
   .notebook-title { font-size: clamp(1.6rem, 6vw, 2rem); }
   .detail-value { font-size: 1.15rem; }
-  .detail-label { font-size: 0.8rem; }
-  .notebook-register-btn { padding: 12px 24px; font-size: 0.9rem; gap: 8px; }
+  .detail-label { font-size: 0.75rem; }
+  .notebook-register-btn { padding: 14px 28px; font-size: 0.85rem; gap: 8px; }
   .spirals-container { padding: 0 6px; }
   .spiral-unit { width: 18px; }
   .spiral-hole { width: 18px; height: 18px; }

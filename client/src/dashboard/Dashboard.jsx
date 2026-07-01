@@ -130,7 +130,7 @@ function PaymentUploadForm({ registrationId, onDone }) {
     <form className="payment-form" onSubmit={submit}>
       {error && <div className="auth-error" style={{ margin: 0 }}>{error}</div>}
 
-      <div style={{ textAlign: 'center', marginBottom: '24px', padding: '16px', background: 'var(--card-bg-subtle)', borderRadius: '12px', border: '1px solid var(--card-border-subtle)' }}>
+      <div style={{ textAlign: 'center', marginBottom: '24px', padding: '16px', background: '#FFFFFF', borderRadius: '12px', border: '1px solid var(--border-medium)' }}>
         <p style={{ margin: '0 0 16px 0', fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
           Scan the QR Code below to pay using any UPI app.
         </p>
@@ -410,7 +410,7 @@ export default function Dashboard() {
     <div className="dash-layout">
       <div className="dash-topbar">
         <div className="dash-topbar-inner">
-          <div style={{ padding: '16px 24px', fontFamily: 'var(--font-display)', fontSize: '1.2rem', color: 'var(--text-light)' }}>
+          <div style={{ padding: '16px 24px', fontFamily: 'var(--font-display)', fontSize: '1.2rem', color: 'var(--text-primary)', fontWeight: '600' }}>
             {isProfile ? 'My Profile' : 'My Registrations'}
           </div>
           <div style={{ flex: 1 }} />

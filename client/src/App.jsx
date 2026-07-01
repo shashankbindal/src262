@@ -10,7 +10,6 @@ import ScrollToTop from "./shared/ScrollToTop.jsx";
 
 /* Auth */
 import { AuthProvider } from "./context/AuthContext.jsx";
-import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
 
 /* Public pages */
@@ -21,7 +20,6 @@ import Accommodation from "./Accommodation/Accommodation.jsx";
 import Contact from "./Contact/Contact.jsx";
 import Registration from "./Registration/Registration.jsx";
 import Sponsor from "./Sponsors/Sponsor.jsx";
-import TeamProfile from "./TeamProfile/TeamProfile.jsx";
 
 /* Auth pages */
 import Login from "./auth/Login.jsx";
@@ -136,7 +134,6 @@ const AppContent = () => {
             <Route path="/team"    element={<PageTransition><Team /></PageTransition>} />
             <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
             <Route path="/sponsors" element={<PageTransition><Sponsor /></PageTransition>} />
-            <Route path="/team-profile/:teamId" element={<PageTransition><TeamProfile /></PageTransition>} />
 
             {/* ── Registration (auth-gated internally) ── */}
             <Route path="/register" element={<PageTransition><Registration /></PageTransition>} />
@@ -187,11 +184,9 @@ const AppContent = () => {
 export default function App() {
   return (
     <Router>
-      <ThemeProvider>
-        <AuthProvider>
-          <AppContent />
-        </AuthProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </Router>
   );
 }

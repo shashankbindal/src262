@@ -1,36 +1,37 @@
 /* ===== ANIMATED STAT ROW ===== */
 .ref-stats-row {
   display: flex;
-  gap: 40px;
-  margin-top: 8px;
-  padding-top: 28px;
-  border-top: 1px solid var(--border-light);
+  gap: 48px;
+  margin-top: 12px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border-medium);
 }
 
 .ref-stat {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .ref-stat-num {
   font-family: var(--font-display);
-  font-size: clamp(1.6rem, 3vw, 2.2rem);
-  font-weight: 700;
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem); /* Enlarged */
+  font-weight: 800; /* Bolder */
   color: var(--primary);
   line-height: 1;
 }
 
 .count-up {
-  font-variant-numeric: tabular-nums; /* prevents width jitter as digits change */
+  font-variant-numeric: tabular-nums;
 }
 
 .ref-stat-label {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
+  font-family: var(--font-body);
+  font-size: 0.72rem; /* Larger */
+  letter-spacing: 0.18em; /* Elegantly spaced */
   text-transform: uppercase;
   color: var(--text-muted);
+  font-weight: 700; /* Stronger weight */
 }
 
 @media (max-width: 600px) {
@@ -43,16 +44,18 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  padding: 40px 10%;
+  padding: 60px 10%;
   margin-top: 40px;
 }
 
 .ref-cta-title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  color: var(--text-light);
+  font-size: clamp(2.4rem, 4vw, 3.8rem); /* Significant increase */
+  font-weight: 750; /* Extra bold */
+  color: var(--text-primary);
   line-height: 1.1;
   flex: 1;
+  letter-spacing: -0.03em;
 }
 
 .ref-cta-content {
@@ -61,33 +64,34 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 30px;
+  gap: 32px;
 }
 
 .ref-cta-content p {
   font-family: var(--font-body);
-  font-size: 1.05rem;
+  font-size: 1.05rem; /* Larger body size */
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: 1.8; /* Generous breathing room */
 }
 
 .ref-btn-primary {
   background-color: var(--primary);
-  color: #0F1319; /* Dark slate */
+  color: #FFFFFF;
   font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 1rem;
+  font-weight: 600;
+  font-size: 0.95rem;
   padding: 16px 40px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all var(--transition-fast);
+  letter-spacing: 0.05em;
 }
 
 .ref-btn-primary:hover {
-  background-color: var(--primary-light);
+  background-color: var(--primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px var(--primary-glow);
+  box-shadow: 0 12px 30px rgba(11, 93, 70, 0.2);
 }
 
 @media (max-width: 900px) {
@@ -101,10 +105,10 @@
 
 @media (max-width: 600px) {
   .ref-cta-title { font-size: clamp(1.5rem, 6vw, 2.2rem); }
-  .ref-btn-primary { padding: 14px 28px; font-size: 0.9rem; }
+  .ref-btn-primary { padding: 14px 28px; font-size: 0.85rem; }
 }
 
 @media (max-width: 480px) {
   .ref-cta-section { padding: 32px 4%; }
-  .ref-cta-content { gap: 20px; }
+  .ref-cta-content { gap: 24px; }
 }

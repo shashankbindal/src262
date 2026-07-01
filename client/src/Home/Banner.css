@@ -13,11 +13,17 @@
   padding-top: 60px;
 }
 
-/* ---- Background layers ----
-   .banner-bg-mask  : fixed clip/fade mask, never transforms (avoids edge gaps)
-   .banner-bg-wrap  : GSAP entrance (scale/opacity) + cursor parallax (translate)
-   .banner-bg       : continuous ambient "Ken Burns" zoom/pan, always running
-*/
+/* Vignette overlay */
+.banner-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.35) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ---- Background layers ---- */
 .banner-bg-mask {
   position: absolute;
   inset: 0;
@@ -30,7 +36,7 @@
 
 .banner-bg-wrap {
   position: absolute;
-  inset: -24px; /* bleed so cursor parallax never reveals an edge */
+  inset: -24px;
   will-change: transform;
 }
 
@@ -47,14 +53,15 @@
   pointer-events: none;
   transform-origin: center center;
   will-change: transform;
-  animation: bannerAmbientDrift 24s ease-in-out infinite;
+  filter: brightness(0.75);
+  animation: bannerAmbientDrift 28s ease-in-out infinite;
 }
 
-/* Slow autonomous zoom + pan — gives the still photo a living, illustrated feel */
+/* Slow autonomous zoom — subtle, premium */
 @keyframes bannerAmbientDrift {
-  0%   { transform: scale(1.05) translate3d(0%, 0%, 0); }
-  50%  { transform: scale(1.14) translate3d(-1.8%, -1.2%, 0); }
-  100% { transform: scale(1.05) translate3d(0%, 0%, 0); }
+  0%   { transform: scale(1.03) translate3d(0%, 0%, 0); }
+  50%  { transform: scale(1.08) translate3d(-1%, -0.8%, 0); }
+  100% { transform: scale(1.03) translate3d(0%, 0%, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -79,17 +86,17 @@
 }
 
 .scroll-cue-label {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.25em;
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .scroll-cue-stem {
-  width: 1.5px;
+  width: 1px;
   height: 38px;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.15);
   position: relative;
   overflow: hidden;
   border-radius: 1px;
@@ -99,12 +106,12 @@
   position: absolute;
   left: 50%;
   top: 0;
-  width: 5px;
-  height: 5px;
-  margin-left: -2.5px;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
   border-radius: 50%;
-  background: var(--primary);
-  box-shadow: 0 0 8px var(--primary);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
   animation: scrollCueTravel 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
 
@@ -118,7 +125,7 @@
 }
 
 @media (max-width: 768px) {
-  .banner-scroll-cue { display: none; } /* mobile banner is short-aspect-ratio — no room */
+  .banner-scroll-cue { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -127,7 +134,7 @@
 
 /* Content wrapper to ensure text stays on top */
 .banner-content {
-  z-index: 1;
+  z-index: 2;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -135,15 +142,14 @@
 
 .banner-title {
   font-size: 10rem;
-  /* Very BIG text */
-  font-weight: 900;
+  font-weight: 800;
   color: #ffffff;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  text-shadow: 0px 4px 20px rgba(0, 0, 0, 0.8), 0px 8px 40px rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.08em;
+  text-shadow: 0px 4px 30px rgba(0, 0, 0, 0.5);
   margin: 0;
   padding: 0;
-  font-family: 'Inter', 'Roboto', 'Outfit', sans-serif;
+  font-family: var(--font-display);
   text-align: center;
   line-height: 1;
 }
@@ -152,7 +158,6 @@
 .char-wrapper {
   display: inline-block;
   overflow: hidden;
-  /* Padding added to prevent the text shadow from being clipped */
   padding-bottom: 40px;
   margin-bottom: -40px;
   padding-top: 20px;
@@ -195,7 +200,6 @@
     height: auto;
     aspect-ratio: 16 / 10;
     padding-bottom: 6%;
-    /* Added 2% more gap roughly */
     margin-bottom: 1rem;
   }
 
@@ -228,7 +232,6 @@
     height: auto;
     aspect-ratio: 16 / 10;
     padding-bottom: 8%;
-    /* Added more gap */
   }
 
   .banner-container::after {

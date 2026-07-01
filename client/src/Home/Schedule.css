@@ -1,25 +1,29 @@
-
 .schedule-section {
-  margin-bottom: 120px;
+  margin-bottom: 140px;
+  padding: 0 5%;
 }
 
 .schedule-header {
-  margin-bottom: 40px;
+  margin-bottom: 48px;
 }
 
 .schedule-title {
-  font-size: 3rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: -1px;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
 }
 
 .magazine-spread {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background-color: var(--surface-bg);
-  border-top: 2px solid var(--text-primary);
-  border-bottom: 2px solid var(--text-primary);
+  background-color: #FFFFFF;
+  border-top: 1px solid var(--border-medium);
+  border-bottom: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   position: relative;
   overflow: hidden;
 }
@@ -29,10 +33,9 @@
   position: absolute;
   top: 0;
   left: 50%;
-  width: 2px;
+  width: 1px;
   height: 100%;
-  background: linear-gradient(to right, rgba(0,0,0,0.05), rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.05));
-  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  background: var(--border-medium);
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -44,7 +47,7 @@
 }
 
 .page-right {
-  border-left: 1px solid rgba(0,0,0,0.05);
+  border-left: 1px solid rgba(0, 0, 0, 0.03);
 }
 
 .day-header {
@@ -54,21 +57,22 @@
 }
 
 .day-number {
-  font-size: 8rem;
-  font-weight: 900;
+  font-family: var(--font-display);
+  font-size: 6rem;
+  font-weight: 700;
   line-height: 0.8;
   color: var(--text-primary);
-  letter-spacing: -4px;
+  letter-spacing: -0.04em;
 }
 
 .day-date {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.1rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
   font-weight: 600;
   color: var(--primary);
   margin-top: 16px;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 0.12em;
 }
 
 .schedule-list {
@@ -79,51 +83,53 @@
 
 .schedule-item {
   display: grid;
-  grid-template-columns: 120px 1fr;
+  grid-template-columns: 140px 1fr;
   gap: 24px;
   align-items: baseline;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+  border-bottom: 1px solid var(--border-medium);
   padding-bottom: 16px;
 }
 
 .schedule-time {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-body);
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--primary);
 }
 
 .schedule-event {
-  font-size: 1.25rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 @media (max-width: 1100px) {
   .day-number {
-    font-size: 6rem;
+    font-size: 5rem;
   }
   .magazine-page {
-    padding: 60px 5%;
+    padding: 60px 6%;
   }
 }
 
 @media (max-width: 800px) {
   .magazine-spread {
     grid-template-columns: 1fr;
+    border-radius: var(--radius-md);
   }
   .magazine-spread::after {
     display: none;
   }
   .magazine-page {
-    padding: 60px 5vw;
+    padding: 60px 8vw;
   }
   .page-right {
     border-left: none;
-    border-top: 2px dashed rgba(0,0,0,0.1);
+    border-top: 1px dashed var(--border-medium);
   }
   .day-number {
-    font-size: 5rem;
+    font-size: 4.5rem;
   }
   .schedule-item {
     grid-template-columns: 1fr;
@@ -133,15 +139,15 @@
 
 @media (max-width: 500px) {
   .magazine-page {
-    padding: 40px 5vw;
+    padding: 40px 6vw;
   }
   .day-number {
-    font-size: 4rem;
+    font-size: 3.5rem;
   }
   .schedule-time {
     font-size: 0.85rem;
   }
   .schedule-event {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
   }
 }

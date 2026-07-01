@@ -26,7 +26,7 @@
   width: 42px;
   height: 42px;
   margin: -21px 0 0 -21px;
-  border: 1.5px solid rgba(245, 223, 179, 0.38);
+  border: 1.5px solid rgba(11, 93, 70, 0.3);
   background: transparent;
   transition: width  .38s cubic-bezier(0.16, 1, 0.3, 1),
               height .38s cubic-bezier(0.16, 1, 0.3, 1),
@@ -46,8 +46,8 @@
   width: 64px;
   height: 64px;
   margin: -32px 0 0 -32px;
-  border-color: rgba(245, 223, 179, 0.65);
-  background: rgba(245, 223, 179, 0.035);
+  border-color: rgba(11, 93, 70, 0.5);
+  background: rgba(11, 93, 70, 0.03);
 }
 
 /* Hide on touch devices */

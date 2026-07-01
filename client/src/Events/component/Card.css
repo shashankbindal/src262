@@ -1,20 +1,20 @@
-/* ===== COMPETITION CARDS — CINEMATIC DARK GLASS ===== */
+/* ===== COMPETITION CARDS — PREMIUM LIGHT GLASS ===== */
 .competition-card-container {
   display: flex;
-  background: var(--bg-secondary);
+  background: #FFFFFF;
   border-radius: var(--radius-xl);
   overflow: hidden;
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border-medium);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   margin-bottom: 56px;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   perspective: 1400px;
 }
 
 .competition-card-container:hover {
-  transform: translateY(-8px) perspective(1400px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  box-shadow: var(--shadow-xl), var(--shadow-glow-green);
-  border-color: var(--border-glow);
+  transform: translateY(-6px) perspective(1400px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+  border-color: var(--border-medium);
 }
 
 .competition-card-container.even { flex-direction: row-reverse; }
@@ -32,12 +32,12 @@
   object-fit: cover;
   display: block;
   transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-  filter: brightness(0.85) saturate(1.1);
+  filter: brightness(0.9) saturate(1);
 }
 
 .competition-card-container:hover .competition-card-image img {
-  transform: scale(1.06);
-  filter: brightness(1) saturate(1.2);
+  transform: scale(1.04);
+  filter: brightness(0.95) saturate(1.05);
 }
 
 .competition-card-content {
@@ -46,49 +46,50 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: var(--bg-elevated);
-  border-left: 1px solid var(--border-light);
+  background: #FFFFFF;
+  border-left: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .competition-card-container.even .competition-card-content {
   border-left: none;
-  border-right: 1px solid var(--border-light);
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .competition-card-title {
   font-family: var(--font-display);
-  font-size: 2rem;
-  color: inherit;
-  margin-bottom: 16px;
-  font-weight: 600;
+  font-size: 2.4rem; /* Significant size increase */
+  color: var(--text-primary);
+  margin-bottom: 20px; /* Increased breathing room */
+  font-weight: 800; /* Extra bold */
+  letter-spacing: -0.03em;
 }
 
 .competition-card-description {
   font-family: var(--font-body);
-  font-size: 1rem;
-  color: inherit;
-  line-height: 1.7;
-  margin-bottom: 28px;
+  font-size: 1.05rem; /* Larger font size */
+  color: var(--text-secondary);
+  line-height: 1.8; /* Increased line height */
+  margin-bottom: 36px; /* Increased margin */
 }
 
 .competition-card-description p,
 .competition-card-description ul,
 .competition-card-description li {
-  color: inherit;
+  color: var(--text-secondary);
 }
 
 .competition-card-team {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 32px;
+  gap: 12px;
+  margin-bottom: 36px; /* Increased breathing room */
 }
 
 .competition-team-pill {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 8px 14px;
+  gap: 4px;
+  padding: 10px 16px; /* Increased padding */
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-md);
   background: var(--bg-secondary);
@@ -96,20 +97,22 @@
 }
 
 .competition-card-container:hover .competition-team-pill {
-  border-color: var(--border-dark);
-  background: var(--bg-tertiary);
+  border-color: var(--border-medium);
+  background: var(--bg-secondary);
 }
 
 .competition-team-role {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-family: var(--font-body);
+  font-size: 0.72rem; /* Larger and clear */
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   color: var(--primary);
+  font-weight: 700; /* Bolder */
 }
 
 .competition-team-name {
-  font-size: 0.85rem;
+  font-family: var(--font-body);
+  font-size: 0.92rem; /* Larger */
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -118,26 +121,27 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  color: var(--bg-primary);
+  background: var(--primary);
+  color: #FFFFFF;
   padding: 14px 28px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--primary);
+  height: 52px;
+  border-radius: var(--radius-md);
   font-family: var(--font-body);
   font-weight: 600;
   text-decoration: none;
   width: fit-content;
   transition: all var(--transition-fast);
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
-  box-shadow: var(--shadow-md);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  box-shadow: 0 4px 12px rgba(11, 93, 70, 0.15);
+  text-transform: uppercase;
 }
 
 .competition-rulebook-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg), var(--shadow-glow-intense);
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
-  color: #111;
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(11, 93, 70, 0.25);
+  color: #FFFFFF;
 }
 
 .competition-rulebook-btn svg { stroke: currentColor; transition: transform 0.3s ease; }
@@ -146,7 +150,7 @@
 @media (max-width: 900px) {
   .competition-card-container, .competition-card-container.even { flex-direction: column; }
   .competition-card-image { flex: none; width: 100%; height: 280px; min-height: auto; }
-  .competition-card-content { flex: none; padding: 40px 24px; border-left: none !important; border-right: none !important; border-top: 1px solid var(--border-light); }
+  .competition-card-content { flex: none; padding: 40px 24px; border-left: none !important; border-right: none !important; border-top: 1px solid rgba(0, 0, 0, 0.05); }
   .competition-card-title { font-size: 1.6rem; }
 }
 
@@ -156,7 +160,7 @@
   .competition-card-content { padding: 28px 20px; }
   .competition-card-title { font-size: clamp(1.25rem, 5vw, 1.6rem); margin-bottom: 12px; }
   .competition-card-description { font-size: 0.92rem; margin-bottom: 20px; }
-  .competition-rulebook-btn { padding: 12px 22px; font-size: 0.85rem; }
+  .competition-rulebook-btn { padding: 12px 22px; font-size: 0.85rem; height: auto; }
   .competition-team-pill { padding: 6px 10px; }
   .competition-team-name { font-size: 0.8rem; }
 }

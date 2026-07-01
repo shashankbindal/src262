@@ -1,14 +1,26 @@
-/* ===== FOOTER — DARK WITH INTERACTIVE GIANT TEXT ===== */
+/* ===== FOOTER — DEEP GREEN PREMIUM ===== */
 .footer {
   padding: 0;
-  background-color: var(--bg-dark);
+  background-color: #0B5D46;
+  position: relative;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px; /* Decreased fade length */
+  background: linear-gradient(to bottom, #F8F7F2, #0B5D46);
+  pointer-events: none;
+  z-index: 10;
 }
 
 .footer-card {
   position: relative;
-  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-dark) 30%);
-  border-top: 1px solid var(--border-medium);
-  padding: 120px 80px 40px 80px;
+  background: #0B5D46;
+  padding: 90px 80px 48px 80px; /* Decreased top padding to compact the footer size */
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -24,7 +36,7 @@
 .dot::before, .dot::after {
   content: '';
   position: absolute;
-  background-color: var(--primary);
+  background-color: rgba(255, 255, 255, 0.2);
   opacity: 0.3;
 }
 .dot::before { top: 5px; left: 0; width: 12px; height: 1px; }
@@ -53,37 +65,44 @@
 
 .footer-heading {
   font-family: var(--font-display);
-  font-size: 2.2rem;
-  font-weight: 600;
-  color: var(--text-light);
-  margin-bottom: 8px;
+  font-size: 3rem; /* Enlarged significantly */
+  font-weight: 800; /* Extra bold */
+  color: #FFFFFF;
+  margin-bottom: 12px;
+  letter-spacing: -0.03em;
 }
 
 .footer-primary-link {
-  font-family: var(--font-mono);
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--primary);
+  font-family: var(--font-body);
+  font-size: 1.15rem; /* Larger contact links */
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   padding: 8px 0;
   display: inline-block;
-  border-bottom: 1px solid rgba(62, 207, 107, 0.3);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
   transition: all var(--transition-fast);
 }
 
 .footer-primary-link:hover {
-  color: var(--primary-light);
-  border-bottom-color: var(--primary-light);
-  text-shadow: 0 0 15px rgba(62, 207, 107, 0.4);
+  color: #fff;
+  border-bottom-color: #fff;
   transform: translateY(-1px);
 }
 
-.footer-secondary-link,
-.footer-address {
+.footer-secondary-link {
   font-family: var(--font-body);
   font-size: 1rem;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.8);
   font-weight: 400;
+}
+
+.footer-address {
+  font-family: var(--font-body);
+  font-size: 0.95rem; /* Slightly smaller for hierarchy */
+  color: rgba(255, 255, 255, 0.55); /* Muted contrast */
+  font-weight: 400;
+  line-height: 1.6;
 }
 
 .footer-right {
@@ -95,9 +114,9 @@
 }
 
 .footer-copyright {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.5); /* Muted */
   font-weight: 400;
   letter-spacing: 0.05em;
 }
@@ -119,7 +138,7 @@
 .footer-link-row a {
   font-family: var(--font-body);
   font-size: 0.95rem;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.75);
   text-decoration: none;
   font-weight: 400;
   padding: 4px 0;
@@ -128,31 +147,31 @@
 }
 
 .footer-link-row a:hover {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
-  text-shadow: 0 0 15px rgba(62, 207, 107, 0.3);
+  color: #fff;
+  border-bottom-color: rgba(255, 255, 255, 0.6);
 }
 
-/* ===== GIANT INTERACTIVE TEXT — CURSOR-TRACKED GLOW ===== */
+/* ===== GIANT INTERACTIVE TEXT ===== */
 .footer-giant-text {
   font-family: var(--font-display);
   font-size: 18vw;
   font-weight: 700;
   text-align: center;
   line-height: 0.8;
-  color: rgba(232, 236, 233, 0.02);
+  color: rgba(255, 255, 255, 0.01); /* Reduced fill */
   margin-top: auto;
   user-select: none;
+  pointer-events: none; /* Never interfere with readability/clicking */
   z-index: 1;
   letter-spacing: -0.02em;
   text-transform: uppercase;
   padding-bottom: 20px;
-  -webkit-text-stroke: 1px rgba(62, 207, 107, 0.08);
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.02); /* Reduced stroke */
   background-image: radial-gradient(
     circle 400px at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    var(--primary) 0%,
-    rgba(62, 207, 107, 0.15) 30%,
-    rgba(232, 236, 233, 0.02) 70%
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.04) 30%,
+    rgba(255, 255, 255, 0.01) 70%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -161,16 +180,16 @@
 
 .footer-giant-text:hover {
   color: transparent;
-  -webkit-text-stroke: 1px rgba(62, 207, 107, 0.15);
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.03);
 }
 
 @media (max-width: 900px) {
-  .footer-card { padding: 80px 40px 40px; }
+  .footer-card { padding: 100px 40px 40px; }
   .footer-giant-text { font-size: 20vw; }
 }
 
 @media (max-width: 600px) {
-  .footer-card { padding: 60px 24px 30px; }
+  .footer-card { padding: 80px 24px 30px; }
   .dot-tl { top: 20px; left: 20px; }
   .dot-tr { top: 20px; right: 20px; }
   .dot-bl { bottom: 20px; left: 20px; }

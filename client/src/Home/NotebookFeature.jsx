@@ -20,14 +20,17 @@ const NotebookFeature = () => {
         {/* Notebook Content */}
         <div className="notebook-content">
           <div className="notebook-inner-content">
-            <h1 className="notebook-title">
-              Engineering the<br />Decarbonization Revolution
-            </h1>
+            <div className="notebook-header">
+              <p className="notebook-subtitle">Theme of Viplav</p>
+              <h1 className="notebook-title">
+                Engineering the<br />Decarbonization Revolution
+              </h1>
+            </div>
             
             <div className="notebook-details">
               <div className="detail-item">
                 <span className="detail-label">Date</span>
-                <span className="detail-value">22nd-23rd August, 2026</span>
+                <span className="detail-value">21st-23rd August, 2026</span>
               </div>
               <div className="detail-item">
                 <span className="detail-label">Venue</span>

@@ -1,122 +1,59 @@
-import React, { useCallback, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { bentoCards } from '../TeamProfile/teamsData'
-import { useReveal } from './useReveal.js'
-import { useTextReveal } from './useTextReveal.js'
-import './Teams.css'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useReveal } from './useReveal.js';
+import './Teams.css';
 
 const Teams = () => {
-  const navigate  = useNavigate()
-  const [ref, isVisible] = useReveal(0.1)
-  const titleRef  = useTextReveal(0.15)
-  const gridRef   = useRef(null)
+  const [ref, isVisible] = useReveal(0.15);
 
-  /* ---- Grid-level mouse spotlight ---- */
-  useEffect(() => {
-    const grid = gridRef.current
-    if (!grid) return
-
-    const onMove = (e) => {
-      const r = grid.getBoundingClientRect()
-      grid.style.setProperty('--sx', `${e.clientX - r.left}px`)
-      grid.style.setProperty('--sy', `${e.clientY - r.top}px`)
-    }
-    const onLeave = () => {
-      grid.style.setProperty('--sx', '-9999px')
-      grid.style.setProperty('--sy', '-9999px')
-    }
-
-    grid.addEventListener('mousemove', onMove, { passive: true })
-    grid.addEventListener('mouseleave', onLeave)
-    return () => {
-      grid.removeEventListener('mousemove', onMove)
-      grid.removeEventListener('mouseleave', onLeave)
-    }
-  }, [])
-
-  /* ---- Per-card 3D tilt ---- */
-  const onTiltMove = useCallback((e) => {
-    const el = e.currentTarget
-    const r  = el.getBoundingClientRect()
-    const dx = (e.clientX - (r.left + r.width  / 2)) / (r.width  / 2)
-    const dy = (e.clientY - (r.top  + r.height / 2)) / (r.height / 2)
-    el.style.setProperty('--rx', `${-dy * 5}deg`)
-    el.style.setProperty('--ry', `${dx  * 5}deg`)
-  }, [])
-
-  const onTiltLeave = useCallback((e) => {
-    e.currentTarget.style.setProperty('--rx', '0deg')
-    e.currentTarget.style.setProperty('--ry', '0deg')
-  }, [])
+  const previewAvatars = [
+    { name: "Shubhendra Singh", image: "/team/Shubhendra Singh_Conference Chair.jpeg" },
+    { name: "Rudrakesh", image: "/team/Rudrakesh_Conference Co-Chair.jpg" },
+    { name: "Chirantan Toley", image: "/team/Chirantan toley_Conference Co-chair.jpg" },
+    { name: "Divisha Tiwari", image: "/team/Divisha Tiwari_ Chem-E-Car Chair_.jpg" },
+    { name: "Yashu Raj", image: "/team/Yashu Raj_Chair_Designing.jpg" }
+  ];
 
   return (
-    <section className="teams-section" ref={ref}>
-
-      <div className={`teams-header ${isVisible ? 'visible' : ''}`}>
-        <div className="teams-header-left">
-          <span className="teams-eyebrow">Our People</span>
-          {/* overflow:hidden on the wrapper lets useTextReveal clip the roll-in */}
-          <div style={{ overflow: 'hidden' }}>
-            <h2 ref={titleRef} className="teams-title">
-              Leadership &amp; <em>Team</em>
-            </h2>
+    <section className="teams-teaser-section" ref={ref}>
+      <div className={`teams-teaser-container ${isVisible ? 'visible' : ''}`}>
+        
+        {/* Left Card: Overlapping avatars and stats */}
+        <div className="teams-teaser-card">
+          <div className="avatar-stack">
+            {previewAvatars.map((avatar, idx) => (
+              <div key={idx} className="avatar-circle">
+                <img src={avatar.image} alt={avatar.name} className="avatar-img" />
+              </div>
+            ))}
+          </div>
+          <div className="teaser-stats">
+            <span className="teaser-stats-text">16 TEAMS &middot; 47+ ORGANIZERS</span>
           </div>
         </div>
-        <p className="teams-tagline">
-          The minds behind SRC&nbsp;'26 — a collective of engineers, designers,
-          and organizers working together to make this conference exceptional.
-        </p>
-      </div>
 
-      <div className="teams-grid" ref={gridRef}>
-        {bentoCards.map((card, i) => {
-          const beigeShades = ['#eaddc5', '#f5eedc', '#F5DFB3', '#DDC8A0', '#EED8B3', '#E3D5BA']
-          const accentColor = beigeShades[i % beigeShades.length]
-          const num         = (i + 1).toString().padStart(2, '0')
-          const isWide      = card.span === 'col-span-2'
-          const allMembers  = [...card.chairs, ...card.coordinators]
-          const chips       = allMembers.slice(0, isWide ? 3 : 2)
-          const extra       = allMembers.length - chips.length
+        {/* Right Info: Headings, description, and link to team page */}
+        <div className="teams-teaser-info">
+          <span className="teams-teaser-eyebrow">Our People</span>
+          <h2 className="teams-teaser-title">
+            Leadership &amp; Team
+          </h2>
+          <p className="teams-teaser-tagline">
+            The minds behind SRC '26 &mdash; a collective of engineers, designers,
+            and organizers working together to make this conference exceptional.
+          </p>
+          <Link to="/team" className="teams-teaser-btn" data-magnetic>
+            Meet the Team
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </Link>
+        </div>
 
-          return (
-            <div
-              key={card.id}
-              className={`team-card${isWide ? ' team-card--wide' : ''} ${isVisible ? 'visible' : ''}`}
-              style={{ '--c': accentColor, '--delay': `${i * 0.05}s` }}
-              onClick={() => navigate(`/team-profile/${card.id}`)}
-              onMouseMove={onTiltMove}
-              onMouseLeave={onTiltLeave}
-            >
-              <div className="team-card-accent" />
-              <div className="team-card-orb" />
-              <span className="team-card-num" aria-hidden="true">{num}</span>
-
-              <div className="team-card-body">
-                <h3 className="team-card-name">{card.name}</h3>
-                <p className="team-card-desc">{card.description}</p>
-              </div>
-
-              <div className="team-card-footer">
-                <div className="team-card-chips">
-                  {chips.map((m, ci) => (
-                    <span key={ci} className="team-chip">
-                      {m.name.split(' ')[0]}
-                    </span>
-                  ))}
-                  {extra > 0 && (
-                    <span className="team-chip team-chip--more">+{extra}</span>
-                  )}
-                </div>
-                <button className="team-card-cta" tabIndex={-1}>
-                  View <span className="cta-arrow">→</span>
-                </button>
-              </div>
-            </div>
-          )
-        })}
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Teams
+export default Teams;

@@ -1,51 +1,497 @@
-.events-page-container {
-  padding: 180px 5vw 120px;
-  margin: 0 auto;
+/* ═══════════════════════════════════════════════════════════════
+   Events Hero + Detail  ·  Event.css
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── HERO ──────────────────────────────────────────────────────────────── */
+.ev-hero {
+  position: relative;
   min-height: 100vh;
-  background-color: var(--bg-primary);
+  height: auto;
+  overflow: visible;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
 }
 
-.events-page-header { text-align: center; margin-bottom: 80px; }
-
-.events-page-title {
-  font-family: var(--font-display);
-  font-size: clamp(2.8rem, 6vw, 5rem);
-  font-weight: 700;
-  margin-bottom: 24px;
-  letter-spacing: -0.03em;
-  background: linear-gradient(135deg, var(--text-primary) 30%, var(--primary) 60%, var(--primary-light) 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: textShimmer 8s ease infinite;
+/* ── Background image layers ─────────────────────────────────────────── */
+.ev-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  will-change: transform, opacity;
+  /* Removed filter to keep image crisp and vivid */
+}
+.ev-bg--next {
+  z-index: 1;
+  opacity: 0;
 }
 
-.events-page-subtitle {
+/* ── Card-expand overlay ──── */
+.ev-expand {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  z-index: 200;
+  display: none;
+  pointer-events: none;
+  transform-origin: center center;
+  will-change: transform, opacity, border-radius;
+}
+
+/* ── Gradient overlay for text legibility ──────────────────────────────── */
+.ev-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    /* Semi-transparent Warm Ivory on the left text area letting the image show through with decent opacity */
+    linear-gradient(to right,
+      rgba(248, 247, 242, 0.85) 0%,
+      rgba(248, 247, 242, 0.85) 28%,
+      rgba(248, 247, 242, 0.6) 42%,
+      rgba(248, 247, 242, 0) 58%,
+      transparent 100%
+    ),
+    /* Soft bottom fade to blend with footer */
+    linear-gradient(to top,
+      rgba(248, 247, 242, 0.9) 0%,
+      transparent 15%
+    );
+}
+
+/* ── Left content ──────────────────────────────────────────────────────── */
+.ev-content {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: min(900px, 60vw);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
+  padding: 120px 0 160px 6vw;
+}
+
+/* Tag line above title */
+.ev-tag {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-family: var(--font-body);
-  font-size: 1.15rem;
-  color: var(--text-muted);
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.7;
+  font-size: 0.75rem; /* Larger tag */
+  letter-spacing: 0.22em; /* Increased spacing */
+  text-transform: uppercase;
+  color: var(--primary); /* Use primary green on light overlay */
+  white-space: nowrap;
+  opacity: 0;
+  font-weight: 700;
+}
+.ev-tag-rule {
+  display: inline-block;
+  width: 30px;
+  height: 1px;
+  background: var(--border-medium); /* Match line to tag */
+  flex-shrink: 0;
 }
 
-.events-cards-wrapper { display: flex; flex-direction: column; gap: 48px; }
+/* Hero title — two stacked lines */
+.ev-title {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 5vw, 6rem); /* Significantly enlarged */
+  font-weight: 850;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+  margin: 0 0 24px 0; /* Spacing */
+  opacity: 0;
+}
+.ev-title-line {
+  display: block;
+}
+
+/* Full description and team */
+.ev-desc {
+  font-family: var(--font-body);
+  font-size: 1.05rem; /* Larger body copy */
+  color: #121514; /* Deeper color */
+  font-weight: 550; /* Medium-bold for premium clarity */
+  line-height: 1.8; /* Increased line-height */
+  max-width: 640px;
+  margin: 0 0 32px 0; /* Spacing */
+  opacity: 0;
+  max-height: none;
+  overflow-y: visible;
+  padding-right: 0;
+}
+
+.ev-full-desc p,
+.ev-full-desc li {
+  font-weight: 550; /* Match parent weight */
+}
+
+.ev-desc::-webkit-scrollbar {
+  width: 4px;
+}
+.ev-desc::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+.ev-desc::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.ev-full-desc p {
+  margin: 0 0 10px 0;
+}
+.ev-full-desc ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+.ev-full-desc li {
+  margin-bottom: 4px;
+}
+
+/* Team Pills */
+.ev-team {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.ev-team-pill {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 10px 18px;
+  background: #FFFFFF;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  transition: all var(--transition-fast);
+}
+.ev-team-pill:hover {
+  background: var(--bg-secondary);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+.ev-team-role {
+  font-size: 0.72rem; /* Larger */
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+.ev-team-name {
+  font-size: 0.92rem; /* Larger */
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Actions */
+.ev-actions {
+  display: flex;
+  gap: 16px;
+  opacity: 0;
+}
+
+/* CTA button */
+.ev-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  width: fit-content;
+  padding: 16px 32px;
+  height: 54px;
+  background: var(--primary);
+  color: #FFFFFF;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+}
+.ev-cta:hover {
+  transform: translateY(-3px);
+  background: var(--primary-dark);
+  color: #FFFFFF;
+  box-shadow: 0 12px 28px rgba(11, 93, 70, 0.2);
+}
+.ev-cta-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  flex-shrink: 0;
+}
+.ev-cta svg {
+  transition: transform 0.3s ease;
+}
+.ev-cta:hover svg {
+  transform: translateX(4px);
+}
+
+.ev-cta--rulebook {
+  background: #FFFFFF;
+  color: var(--primary);
+  border: 1px solid var(--border-medium);
+}
+.ev-cta--rulebook:hover {
+  background: var(--bg-secondary);
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05);
+}
+.ev-cta--rulebook svg {
+  transition: transform 0.3s ease;
+}
+.ev-cta--rulebook:hover svg {
+  transform: translateY(-2px);
+}
+
+/* ── Card stack (right side) ────────────────────────────────────────────── */
+.ev-stack {
+  position: absolute;
+  right: 6vw;
+  bottom: 6rem;
+  top: auto;
+  transform: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  z-index: 3;
+  padding-top: 0;
+}
+
+/* Individual stack card */
+.ev-scard {
+  position: relative;
+  width: 140px;
+  height: 200px;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  flex-shrink: 0;
+  border: 1px solid var(--border-medium);
+  background: #000000;
+  transition: all var(--transition-fast);
+  will-change: transform;
+}
+.ev-scard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(4, 6, 9, 0.95) 0%,
+    rgba(4, 6, 9, 0.4) 60%,
+    transparent         100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+.ev-scard img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: brightness(0.7) saturate(0.85);
+  pointer-events: none;
+}
+.ev-scard:hover img {
+  transform: scale(1.06);
+  filter: brightness(0.75) saturate(1);
+}
+
+/* Card label at bottom */
+.ev-scard-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 14px 16px;
+  z-index: 3;
+  pointer-events: none;
+}
+.ev-scard-sup {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #B9D74B;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+.ev-scard-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.25;
+}
+
+/* Depth scale/opacity per position */
+.ev-scard--0 {
+  z-index: 4;
+  opacity: 1;
+  filter: brightness(1) saturate(1);
+  border-color: var(--primary);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+  transform: scale(1) translateY(0px);
+}
+.ev-scard--1 {
+  z-index: 3;
+  opacity: 0.75;
+  filter: brightness(0.85);
+  transform: scale(0.96) translateY(0px);
+}
+.ev-scard--2 {
+  z-index: 2;
+  opacity: 0.75;
+  filter: brightness(0.85);
+  transform: scale(0.92) translateY(0px);
+}
+.ev-scard--3 {
+  z-index: 1;
+  opacity: 0.75;
+  filter: brightness(0.85);
+  transform: scale(0.88) translateY(0px);
+}
+
+/* Hover lift per position */
+.ev-scard--0:hover {
+  transform: scale(1.03) translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+.ev-scard--1:hover {
+  transform: scale(0.99) translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+}
+.ev-scard--2:hover {
+  transform: scale(0.95) translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+}
+.ev-scard--3:hover {
+  transform: scale(0.91) translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* ── Navigation bar (bottom) ────────────────────────────────────────────── */
+.ev-nav {
+  position: absolute;
+  bottom: 2.2rem;
+  left: 0;
+  right: 0;
+  padding: 0 6vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+  z-index: 3;
+}
+
+/* Arrow buttons */
+.ev-arrows {
+  display: flex;
+  gap: 10px;
+}
+.ev-arr {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid var(--border-medium);
+  background: #FFFFFF;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  transition: all var(--transition-fast);
+}
+.ev-arr:hover:not(:disabled) {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(11, 93, 70, 0.15);
+}
+.ev-arr:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: var(--border-light);
+  box-shadow: none;
+}
+
+/* Slide counter */
+.ev-counter {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  user-select: none;
+}
+.ev-counter-curr {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 5vw, 4.2rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+}
+.ev-counter-sep,
+.ev-counter-total {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+
+
+/* ── RESPONSIVE ─────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .ev-stack { gap: 10px; }
+  .ev-scard { width: 148px; height: 216px; }
+  .ev-scard--3 { display: none; }
+}
+
+@media (max-width: 900px) {
+  .ev-stack { display: none; }
+  .ev-content { max-width: 90vw; }
+  .ev-title { font-size: clamp(2.8rem, 10vw, 5rem); }
+}
 
 @media (max-width: 768px) {
-  .events-page-container { padding: 140px 5vw 80px; }
-  .events-page-header { margin-bottom: 56px; }
-  .events-page-title { font-size: 2.2rem; }
-  .events-page-subtitle { font-size: 1rem; }
+  .ev-content {
+    left: 0;
+    max-width: 100%;
+    padding-left: 5vw;
+    padding-right: 5vw;
+    gap: 18px;
+  }
+  .ev-desc { font-size: 0.88rem; }
+  .ev-nav { bottom: 1.8rem; padding: 0 5vw; }
 }
 
 @media (max-width: 480px) {
-  .events-page-container { padding: 110px 4vw 60px; }
-  .events-page-header { margin-bottom: 40px; }
-  .events-page-title { font-size: clamp(1.8rem, 7vw, 2.4rem); margin-bottom: 16px; }
-  .events-page-subtitle { font-size: 0.92rem; }
-  .events-cards-wrapper { gap: 32px; }
-}
-
-@media (max-width: 360px) {
-  .events-page-container { padding: 100px 4vw 48px; }
+  .ev-title { font-size: clamp(2.4rem, 11vw, 3.8rem); }
 }

@@ -2,7 +2,7 @@
 
 .fan-section {
   width: 100%;
-  padding: 80px 5%;
+  padding: 140px 5%;
   background-color: var(--bg-primary);
   overflow: hidden;
 }
@@ -12,7 +12,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 60px;
+  margin-bottom: 80px;
   opacity: 0;
   transform: translateY(30px);
   transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
@@ -31,10 +31,11 @@
 
 .fan-title {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 4vw, 4rem);
-  font-weight: 500;
+  font-size: clamp(2.6rem, 5vw, 4.2rem); /* Enlarged */
+  font-weight: 750; /* Extra bold */
   line-height: 1.1;
-  color: var(--text-light);
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
 }
 
 .fan-accent {
@@ -48,38 +49,37 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 20px;
+  gap: 24px;
 }
 
 .fan-desc {
   font-family: var(--font-body);
-  font-size: 1.05rem;
-  line-height: 1.6;
+  font-size: 1.05rem; /* Larger body text */
+  line-height: 1.8;
   color: var(--text-secondary);
 }
 
 .fan-explore-btn {
   display: inline-block;
-  padding: 12px 32px;
+  padding: 14px 36px;
   background-color: var(--primary);
-  color: #111;
-  border-radius: 40px;
+  color: #fff;
+  border-radius: var(--radius-md);
   font-weight: 600;
   text-decoration: none;
   font-family: var(--font-body);
-  transition: background-color var(--transition-fast),
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast);
+  font-size: 0.95rem;
+  transition: all var(--transition-fast);
 }
 
 .fan-explore-btn:hover {
-  background-color: var(--primary-light);
-  color: #111;
+  background-color: var(--primary-dark);
+  color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(62, 207, 107, 0.3);
+  box-shadow: 0 12px 30px rgba(11, 93, 70, 0.2);
 }
 
-/* ---- Stage (the framed area with corner brackets) ---- */
+/* ---- Stage ---- */
 .fan-stage {
   position: relative;
   width: 100%;
@@ -102,7 +102,7 @@
   position: absolute;
   width: 52px;
   height: 52px;
-  border-color: var(--primary);
+  border-color: var(--border-medium);
   border-style: solid;
   border-radius: 4px;
 }
@@ -110,54 +110,54 @@
 .fan-corner--tl {
   top: 0;
   left: 0;
-  border-width: 3px 0 0 3px;
+  border-width: 2px 0 0 2px;
 }
 
 .fan-corner--tr {
   top: 0;
   right: 0;
-  border-width: 3px 3px 0 0;
+  border-width: 2px 2px 0 0;
 }
 
 .fan-corner--bl {
   bottom: 0;
   left: 0;
-  border-width: 0 0 3px 3px;
+  border-width: 0 0 2px 2px;
 }
 
 .fan-corner--br {
   bottom: 0;
   right: 0;
-  border-width: 0 3px 3px 0;
+  border-width: 0 2px 2px 0;
 }
 
 /* ---- Active card label ---- */
 .fan-label {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   min-height: 72px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  gap: 4px;
+  gap: 6px;
 }
 
 .fan-label-title {
   font-family: var(--font-display);
-  font-size: 1.9rem;
-  font-weight: 500;
-  color: var(--text-light);
-  letter-spacing: 0.01em;
+  font-size: 2.1rem; /* Enlarged */
+  font-weight: 750; /* Extra bold */
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 
 .fan-label-sub {
   font-family: var(--font-body);
-  font-size: 0.95rem;
-  color: var(--text-secondary);
-  font-style: italic;
+  font-size: 0.95rem; /* Larger */
+  color: var(--primary); /* Deep Forest Green for elegance */
+  font-weight: 600;
 }
 
-/* ---- Track (the fan spread area) ---- */
+/* ---- Track ---- */
 .fan-track {
   position: relative;
   width: 100%;
@@ -175,22 +175,25 @@
   border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
-  background: #1a1a1a;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
+  background: #fff;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.55s ease;
+    opacity 0.55s ease,
+    box-shadow 0.65s ease;
   will-change: transform, opacity;
 }
 
 .fan-card--active {
   cursor: default;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6),
-    0 0 0 4px #ffffff;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
+  border: 2px solid var(--primary);
 }
 
 .fan-card:not(.fan-card--active):hover {
-  filter: brightness(1.15);
+  filter: brightness(1.05);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
 }
 
 .fan-card-img {
@@ -208,7 +211,7 @@
 .fan-card-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, transparent 55%, rgba(0, 0, 0, 0.72));
+  background: linear-gradient(to bottom, transparent 55%, rgba(0, 0, 0, 0.55));
   pointer-events: none;
 }
 
@@ -217,12 +220,12 @@
   display: flex;
   gap: 14px;
   justify-content: center;
-  margin-top: 40px;
+  margin-top: 48px;
 }
 
 .fan-btn {
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
@@ -230,30 +233,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color var(--transition-fast),
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .fan-btn--prev {
-  background: var(--card-bg-subtle);
-  color: var(--text-light);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
   border: 1px solid var(--border-medium);
 }
 
 .fan-btn--prev:hover {
-  background: var(--card-bg-hover);
+  background: var(--bg-primary);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .fan-btn--next {
   background: var(--primary);
-  color: #111;
+  color: #fff;
 }
 
 .fan-btn--next:hover {
-  background: var(--primary-light);
+  background: var(--primary-dark);
   transform: translateX(3px);
-  box-shadow: 0 4px 16px rgba(62, 207, 107, 0.35);
+  box-shadow: 0 8px 20px rgba(11, 93, 70, 0.2);
 }
 
 /* ---- Responsive ---- */
@@ -287,7 +290,7 @@
 
 @media (max-width: 768px) {
   .fan-section {
-    padding: 60px 4%;
+    padding: 100px 4%;
   }
 
   .fan-stage {
@@ -323,7 +326,7 @@
 
 @media (max-width: 480px) {
   .fan-section {
-    padding: 48px 4%;
+    padding: 80px 4%;
   }
 
   .fan-stage {
