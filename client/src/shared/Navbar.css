@@ -302,14 +302,14 @@
 @media (max-width: 860px) {
   .navbar {
     top: 8px;
-    padding: 8px 16px;;
-    width: calc(100% - 24px);
-    border-radius: 16px;
+    padding: 8px 14px;
+    width: calc(100% - 32px);
+    border-radius: 18px;
   }
 
   .navbar.scrolled {
     top: 8px;
-    padding: 8px 16px;
+    padding: 8px 14px;
   }
 
   .nav-menu { 
@@ -317,44 +317,46 @@
   }
 
   .navbar-logo-img { 
-    height: 32px; 
+    height: 30px; 
   }
 
   .rgipt-logo {
-    height: 38px !important;
+    height: 32px !important;
     width: auto !important;
   }
 
+  /* Keep text logo but scale it down */
   .aiche-text-logo {
-    height: 36px !important;
+    height: 26px !important;
   }
 
   .aiche-round-logo {
-    height: 36px !important;
-    width: 36px !important;
+    height: 30px !important;
+    width: 30px !important;
   }
 
   .navbar-user-btn {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
+    margin-left: 2px;
   }
 
   .navbar-user-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 15px;
+    height: 15px;
   }
 
   .nav-brand {
-    gap: 8px;
+    gap: 4px;
   }
 
   /* Ensure the button stays on the far right */
   .mobile-menu-icon { 
     display: flex; 
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     padding: 6px;
-    margin-left: 12px;
+    margin-left: 8px;
   }
 
   .mobile-nav-overlay {
@@ -363,6 +365,7 @@
     inset: 0;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     background: rgba(248, 247, 242, 0.97);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);

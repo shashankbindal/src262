@@ -313,6 +313,7 @@
 .reg-simple-btn:hover:not(:disabled) {
   background: var(--primary-dark);
   border-color: var(--primary-dark);
+  color: #FFFFFF;
   transform: translateY(-2px);
   box-shadow: 0 12px 30px rgba(11, 93, 70, 0.2);
 }

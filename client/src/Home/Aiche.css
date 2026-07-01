@@ -35,7 +35,9 @@
 }
 
 @media (max-width: 600px) {
-  .ref-stats-row { gap: 24px; flex-wrap: wrap; }
+  .ref-stats-row { gap: 12px; flex-wrap: nowrap; justify-content: space-between; }
+  .ref-stat-num { font-size: 1.2rem; }
+  .ref-stat-label { font-size: 0.55rem; letter-spacing: 0.05em; }
 }
 
 /* ===== CTA SECTION ===== */

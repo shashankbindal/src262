@@ -180,17 +180,24 @@
 
 @media (max-width: 768px) {
   .src-section-ref { gap: 100px; padding: 100px 0; }
-  .ref-image-wrapper { width: 45%; height: 320px; }
+  .ref-block { 
+    display: flex !important; 
+    flex-direction: column-reverse !important; 
+    gap: 32px; 
+  }
+  .ref-image-wrapper { 
+    width: 100%; 
+    height: 320px; 
+    float: none !important;
+    margin: 0 !important;
+    border-radius: 20px !important;
+  }
   .ref-title { font-size: clamp(1.5rem, 5vw, 2.2rem); margin-bottom: 24px; }
-  .img-right { border-top-left-radius: 60px; border-bottom-left-radius: 60px; margin-left: 15px; }
-  .img-left  { border-top-right-radius: 60px; border-bottom-right-radius: 60px; margin-right: 15px; }
 }
 
 @media (max-width: 480px) {
   .src-section-ref { gap: 80px; padding: 80px 0; }
-  .ref-image-wrapper { width: 50%; height: 260px; }
+  .ref-image-wrapper { height: 260px; }
   .ref-subtitle { font-size: 0.68rem; gap: 10px; }
   .ref-line { width: 28px; }
-  .img-right { border-top-left-radius: 36px; border-bottom-left-radius: 36px; margin-left: 10px; }
-  .img-left  { border-top-right-radius: 36px; border-bottom-right-radius: 36px; margin-right: 10px; }
 }
