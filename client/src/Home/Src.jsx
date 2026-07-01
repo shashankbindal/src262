@@ -91,12 +91,12 @@ const Src = () => {
             <p>
               <em>
                 "Every great advancement begins with a revolution of thought. This year, AIChE
-                India SRC 2026 proudly presents Viplav — a call to transform ideas into impact,
+                India SRC 2026 proudly presents VIPLAV — a call to transform ideas into impact,
                 challenges into opportunities, and ambition into innovation."
               </em>
             </p>
             <p>
-              <strong>Viplav</strong>, a Sanskrit term signifying transformation, revolution,
+              <strong>VIPLAV</strong>, a Sanskrit term signifying transformation, revolution,
               and progressive change, captures the spirit of AIChE India SRC 2026.
             </p>
             <p>
@@ -108,7 +108,7 @@ const Src = () => {
             <p>
               SRC 2026 aims to inspire the next generation of engineers while addressing the
               evolving challenges and opportunities in the chemical, energy, and process
-              industries. More than a conference, <strong>Viplav</strong> is a celebration of
+              industries. More than a conference, <strong>VIPLAV</strong> is a celebration of
               transformation, innovation, and the collective vision shaping the future of
               engineering.
             </p>

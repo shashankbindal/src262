@@ -269,7 +269,7 @@ export default function AdminDashboard() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1400px', margin: '0 auto' }}>
           <div>
             <h1>Admin Dashboard</h1>
-            <p>Viplav '26 — Registration Management</p>
+            <p>VIPLAV '26 — Registration Management</p>
           </div>
           <button
             className="tbl-btn"

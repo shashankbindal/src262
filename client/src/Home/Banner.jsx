@@ -154,6 +154,12 @@ const Banner = () => {
       duration: 1.2,
       ease: 'power4.out',
     }, '-=0.5')
+    .from('.banner-subtitle', {
+      y: 20,
+      opacity: 0,
+      duration: 1,
+      ease: 'power3.out',
+    }, '-=0.4')
   }, { scope: containerRef })
 
   useBgParallax(bgWrapRef, parallaxReady)
@@ -176,6 +182,7 @@ const Banner = () => {
             </span>
           ))}
         </h1>
+        <p className="banner-subtitle">AIChE Student Regional Conference</p>
       </div>
       <ScrollCue />
     </div>

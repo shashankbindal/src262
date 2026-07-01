@@ -30,7 +30,7 @@ function baseTemplate({ title, body }) {
   <div class="wrapper">
     <div class="card">
       <div class="header">
-        <h1>Viplav '26</h1>
+        <h1>VIPLAV '26</h1>
         <p>AIChE India SRC 2026 — RGIPT</p>
       </div>
       <div class="body">${body}</div>

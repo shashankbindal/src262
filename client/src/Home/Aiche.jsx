@@ -124,7 +124,7 @@ const Aiche = () => {
               leading organisations such as IndianOil, GAIL, HPCL, ONGC, MRPL, NRL, Indorama,
               ISRO, and CSIR. Today, with the collective efforts of 200+ dedicated student
               volunteers, the chapter is proudly hosting AIChE India SRC 2026 –{' '}
-              <strong>Viplav</strong>, striving to deliver one of the most impactful and
+              <strong>VIPLAV</strong>, striving to deliver one of the most impactful and
               memorable editions of the conference while continuing its tradition of excellence,
               leadership, and innovation.
             </p>
