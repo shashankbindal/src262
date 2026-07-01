@@ -42,7 +42,7 @@
   height: 120px;
   background: #FFFFFF;
   border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12); /* Increased box shadow */
   border: 1px solid rgba(0, 0, 0, 0.06);
   transition: all 0.4s ease;
   cursor: pointer;
@@ -54,8 +54,8 @@
 }
 
 .sponsor-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2); /* Deepened box shadow on hover */
   border-color: var(--border-medium);
 }
 

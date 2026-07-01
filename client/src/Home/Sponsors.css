@@ -100,7 +100,7 @@
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12); /* Increased box shadow */
   position: relative;
   overflow: hidden;
 }
@@ -127,9 +127,9 @@
 }
 
 .premium-sponsor-card:hover {
-  transform: translateY(-4px) scale(1.02);
+  transform: translateY(-6px) scale(1.02);
   border-color: var(--border-medium);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2); /* Deepened box shadow on hover */
 }
 
 .sponsor-card-inner {
