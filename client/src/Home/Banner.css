@@ -168,7 +168,8 @@
 
 /* Content wrapper to ensure text stays on top */
 .banner-content {
-  z-index: 2;
+  position: relative;
+  z-index: 5;
   display: flex;
   flex-direction: column;
   justify-content: center;
