@@ -188,20 +188,8 @@ const Banner = () => {
             </span>
           ))}
         </h1>
-        <p className="banner-subtitle">AIChE Student Regional Conference</p>
-        
-        {/* CTA link */}
-        <a
-          href="https://www.aichergipt.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="banner-cta-link"
-        >
-          Explore AIChE RGIPT
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="cta-icon">
-            <path d="M7 17L17 7M7 7h10v10" />
-          </svg>
-        </a>
+        <p className="banner-subtitle">Engineering the
+Decarbonization Revolution</p>
       </div>
       <ScrollCue />
     </div>

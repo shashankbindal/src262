@@ -76,7 +76,7 @@ const Aiche = () => {
       <div ref={block4Ref} className={`ref-block block-left-image ${block4Visible ? 'visible' : ''}`}>
         <div className="ref-image-wrapper img-left">
           <img
-            src="/teams.jpg"
+            src="/teams.JPG"
             alt="AIChE RGIPT team"
             className="ref-img"
             loading="lazy"
@@ -111,7 +111,7 @@ const Aiche = () => {
               innovation, leadership, and professional excellence.
             </p>
             <p>
-              Recognized with the prestigious AIChE Outstanding Student Chapter Award for two
+              Recognized with the prestigious AIChE Outstanding Student Chapter Award for four
               consecutive years, the chapter serves as a proud AIChE Regional Center and has
               maintained a strong international presence through multiple members serving on the
               AIChE Executive Student Committee (ESC). The chapter has also strengthened global

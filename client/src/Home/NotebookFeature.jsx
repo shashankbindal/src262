@@ -21,9 +21,8 @@ const NotebookFeature = () => {
         <div className="notebook-content">
           <div className="notebook-inner-content">
             <div className="notebook-header">
-              <p className="notebook-subtitle">Theme of Viplav</p>
               <h1 className="notebook-title">
-                Engineering the<br />Decarbonization Revolution
+                AIChE Student Regional Conference
               </h1>
             </div>
             
@@ -37,11 +36,17 @@ const NotebookFeature = () => {
                 <span className="detail-value">Rajiv Gandhi Institute of Petroleum Technology</span>
               </div>
             </div>
-
-            <Link to="/register" className="notebook-register-btn" data-magnetic>
-              Register Now
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </Link>
+            <div className="notebook-actions">
+              <Link to="/register" className="notebook-register-btn" data-magnetic>
+                Register Now
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </Link>
+              
+              <a href="https://www.aichergipt.com/" target="_blank" rel="noopener noreferrer" className="notebook-explore-btn" data-magnetic>
+                Explore AIChE RGIPT
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17L17 7M7 7h10v10" /></svg>
+              </a>
+            </div>
           </div>
         </div>
         
