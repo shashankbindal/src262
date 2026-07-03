@@ -126,7 +126,7 @@
   padding: 12px 32px;
   height: 52px;
   background: var(--primary);
-  color: #FFFFFF;
+  color: #DADED8;
   font-family: var(--font-body);
   font-size: 0.9rem;
   font-weight: 600;
@@ -329,12 +329,12 @@
 .reg-action-btn.primary {
   background: var(--primary);
   border-color: var(--primary);
-  color: #FFFFFF;
+  color: #DADED8;
 }
 .reg-action-btn.primary:hover:not(:disabled) {
   background: var(--primary-dark);
   border-color: var(--primary-dark);
-  color: #FFFFFF;
+  color: #DADED8;
   transform: translateY(-1px);
 }
 .reg-action-btn:disabled { opacity: 0.45; cursor: not-allowed; }

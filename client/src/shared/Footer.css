@@ -1,7 +1,7 @@
 /* ===== FOOTER — DEEP GREEN PREMIUM ===== */
 .footer {
   padding: 0;
-  background-color: #0B5D46;
+  background-color: #2C3424;
   position: relative;
 }
 
@@ -12,18 +12,29 @@
   left: 0;
   right: 0;
   height: 80px; /* Decreased fade length */
-  background: linear-gradient(to bottom, #F8F7F2, #0B5D46);
+  background: linear-gradient(to bottom, #DADED8, #2C3424);
   pointer-events: none;
   z-index: 10;
 }
 
 .footer-card {
   position: relative;
-  background: #0B5D46;
+  background: #2C3424;
   padding: 90px 80px 48px 80px; /* Decreased top padding to compact the footer size */
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+.footer-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.25;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Glowing crosshair markers */
@@ -36,7 +47,7 @@
 .dot::before, .dot::after {
   content: '';
   position: absolute;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(218, 222, 216, );
   opacity: 0.3;
 }
 .dot::before { top: 5px; left: 0; width: 12px; height: 1px; }
@@ -70,7 +81,7 @@
   font-family: var(--font-display);
   font-size: 3.5rem;
   font-weight: 700;
-  color: #FFFFFF;
+  color: #DADED8;
   margin-bottom: 60px;
   letter-spacing: -0.02em;
 }
@@ -96,15 +107,15 @@
 }
 
 .footer-primary-link:hover {
-  color: #fff;
-  border-bottom-color: #fff;
+  color: #DADED8;
+  border-bottom-color: #DADED8;
   transform: translateY(-1px);
 }
 
 .footer-address {
   font-family: var(--font-body);
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(218, 222, 216, );
   font-weight: 400;
   line-height: 1.6;
 }
@@ -120,7 +131,7 @@
 .footer-copyright {
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(218, 222, 216, );
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -143,7 +154,7 @@
 .footer-link-row a {
   font-family: var(--font-body);
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(218, 222, 216, );
   text-decoration: none;
   font-weight: 500;
   padding: 4px 0;
@@ -152,8 +163,8 @@
 }
 
 .footer-link-row a:hover {
-  color: #fff;
-  border-bottom-color: rgba(255, 255, 255, 0.6);
+  color: #DADED8;
+  border-bottom-color: rgba(218, 222, 216, );
 }
 
 /* ===== GIANT INTERACTIVE TEXT ===== */
@@ -163,7 +174,7 @@
   font-weight: 700;
   text-align: center;
   line-height: 0.8;
-  color: rgba(255, 255, 255, 0.01); /* Reduced fill */
+  color: rgba(218, 222, 216, ); /* Reduced fill */
   margin-top: auto;
   user-select: none;
   pointer-events: none; /* Never interfere with readability/clicking */

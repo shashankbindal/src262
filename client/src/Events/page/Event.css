@@ -217,7 +217,7 @@
   padding: 16px 32px;
   height: 54px;
   background: var(--primary);
-  color: #FFFFFF;
+  color: #DADED8;
   font-family: var(--font-body);
   font-size: 0.88rem;
   font-weight: 600;
@@ -231,7 +231,7 @@
 .ev-cta:hover {
   transform: translateY(-3px);
   background: var(--primary-dark);
-  color: #FFFFFF;
+  color: #DADED8;
   box-shadow: 0 12px 28px rgba(11, 93, 70, 0.2);
 }
 .ev-cta-dot {
@@ -347,7 +347,7 @@
   font-family: var(--font-display);
   font-size: 0.85rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #DADED8;
   line-height: 1.25;
 }
 
@@ -432,7 +432,7 @@
 }
 .ev-arr:hover:not(:disabled) {
   background: var(--primary);
-  color: #ffffff;
+  color: #DADED8;
   border-color: var(--primary);
   transform: scale(1.05);
   box-shadow: 0 8px 20px rgba(11, 93, 70, 0.15);

@@ -18,7 +18,7 @@
 .magazine-spread {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background-color: #FFFFFF;
+  background-color: #DADED8;
   border-top: 1px solid var(--border-medium);
   border-bottom: 1px solid var(--border-medium);
   border-radius: var(--radius-lg);

@@ -65,7 +65,7 @@
   display: inline-block;
   padding: 14px 36px;
   background-color: var(--primary);
-  color: #fff;
+  color: #DADED8;
   border-radius: var(--radius-md);
   font-weight: 600;
   text-decoration: none;
@@ -76,7 +76,7 @@
 
 .fan-explore-btn:hover {
   background-color: var(--primary-dark);
-  color: #fff;
+  color: #DADED8;
   transform: translateY(-2px);
   box-shadow: 0 12px 30px rgba(11, 93, 70, 0.2);
 }
@@ -252,7 +252,7 @@
 
 .fan-btn--next {
   background: var(--primary);
-  color: #fff;
+  color: #DADED8;
 }
 
 .fan-btn--next:hover {

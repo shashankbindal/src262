@@ -125,7 +125,7 @@
   align-items: center;
   gap: 8px;
   background: var(--primary);
-  color: #FFFFFF;
+  color: #DADED8;
   padding: 14px 28px;
   height: 52px;
   border-radius: var(--radius-md);
@@ -144,7 +144,7 @@
   background: var(--primary-dark);
   transform: translateY(-2px);
   box-shadow: 0 12px 30px rgba(11, 93, 70, 0.25);
-  color: #FFFFFF;
+  color: #DADED8;
 }
 
 .competition-rulebook-btn svg { stroke: currentColor; transition: transform 0.3s ease; }

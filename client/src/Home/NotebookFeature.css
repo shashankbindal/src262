@@ -17,7 +17,7 @@
   height: auto;
   min-height: 400px;
   padding-bottom: 20px;
-  background-color: #FFFFFF;
+  background-color: #DADED8;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 20px;
@@ -156,7 +156,7 @@
   align-items: center;
   gap: 12px;
   background-color: var(--primary);
-  color: #FFFFFF;
+  color: #DADED8;
   padding: 16px 36px;
   border-radius: var(--radius-md);
   font-family: var(--font-body);
@@ -173,7 +173,7 @@
 .notebook-register-btn:hover {
   background-color: var(--primary-dark);
   border-color: var(--primary-dark);
-  color: #fff;
+  color: #DADED8;
   transform: translateY(-2px);
   box-shadow: 0 12px 30px rgba(11, 93, 70, 0.2);
 }

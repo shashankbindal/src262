@@ -133,7 +133,7 @@
   padding: 14px;
   margin-top: 8px;
   background: var(--primary);
-  color: #FFFFFF;
+  color: #DADED8;
   font-family: var(--font-body);
   font-size: 0.9rem;
   font-weight: 600;
@@ -271,7 +271,7 @@
   width: 16px;
   height: 16px;
   border: 2px solid rgba(11, 93, 70, 0.2);
-  border-top-color: #FFFFFF;
+  border-top-color: #DADED8;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   flex-shrink: 0;

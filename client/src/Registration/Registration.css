@@ -295,7 +295,7 @@
 .reg-simple-btn {
   background: var(--primary);
   border: 1px solid var(--primary);
-  color: #FFFFFF;
+  color: #DADED8;
   padding: 16px 40px;
   height: 52px;
   font-family: var(--font-body);
@@ -313,7 +313,7 @@
 .reg-simple-btn:hover:not(:disabled) {
   background: var(--primary-dark);
   border-color: var(--primary-dark);
-  color: #FFFFFF;
+  color: #DADED8;
   transform: translateY(-2px);
   box-shadow: 0 12px 30px rgba(11, 93, 70, 0.2);
 }
