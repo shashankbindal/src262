@@ -48,7 +48,7 @@ export default function Login() {
         <h1 className="auth-title">Registration Starting Soon</h1>
         <p className="auth-subtitle">We are currently setting up our servers. Sign in and registration will be available shortly.</p>
         
-        <Link to="/" className="auth-btn" style={{ display: 'block', textDecoration: 'none', marginTop: '24px' }}>
+        <Link to="/" className="auth-btn" style={{ textDecoration: 'none', marginTop: '24px' }}>
           Back to Home
         </Link>
       </div>
