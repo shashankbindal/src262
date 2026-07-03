@@ -47,7 +47,7 @@
 .dot::before, .dot::after {
   content: '';
   position: absolute;
-  background-color: rgba(218, 222, 216, );
+  background-color: #DADED8;
   opacity: 0.3;
 }
 .dot::before { top: 5px; left: 0; width: 12px; height: 1px; }
@@ -115,7 +115,7 @@
 .footer-address {
   font-family: var(--font-body);
   font-size: 0.95rem;
-  color: rgba(218, 222, 216, );
+  color: rgba(218, 222, 216, 0.6);
   font-weight: 400;
   line-height: 1.6;
 }
@@ -131,7 +131,7 @@
 .footer-copyright {
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.85rem;
-  color: rgba(218, 222, 216, );
+  color: rgba(218, 222, 216, 0.4);
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -154,7 +154,7 @@
 .footer-link-row a {
   font-family: var(--font-body);
   font-size: 0.95rem;
-  color: rgba(218, 222, 216, );
+  color: rgba(218, 222, 216, 0.6);
   text-decoration: none;
   font-weight: 500;
   padding: 4px 0;
@@ -164,7 +164,7 @@
 
 .footer-link-row a:hover {
   color: #DADED8;
-  border-bottom-color: rgba(218, 222, 216, );
+  border-bottom-color: rgba(218, 222, 216, 0.6);
 }
 
 /* ===== GIANT INTERACTIVE TEXT ===== */
@@ -174,7 +174,7 @@
   font-weight: 700;
   text-align: center;
   line-height: 0.8;
-  color: rgba(218, 222, 216, ); /* Reduced fill */
+  color: rgba(218, 222, 216, 0.02); /* Reduced fill */
   margin-top: auto;
   user-select: none;
   pointer-events: none; /* Never interfere with readability/clicking */
