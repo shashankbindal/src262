@@ -47,88 +47,16 @@ export default function Register() {
     }
   };
 
-  if (loading) return null;
-
-  if (success) {
-    return (
-      <div className="auth-page">
-        <div className="auth-card" style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📧</div>
-          <h1 className="auth-title">Check your inbox</h1>
-          <p className="auth-subtitle">{success}</p>
-          <Link to="/login" className="auth-btn" style={{ display: 'block', textDecoration: 'none', marginTop: '8px' }}>
-            Go to Login
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="auth-page">
-      <div className="auth-card">
+      <div className="auth-card" style={{ textAlign: 'center' }}>
         <span className="auth-eyebrow">Viplav '26</span>
-        <h1 className="auth-title">Create an account</h1>
-        <p className="auth-subtitle">Register to participate in AIChE India SRC 2026.</p>
-
-        {error && <div className="auth-error">{error}</div>}
-
-        <form className="auth-form" onSubmit={submit} noValidate>
-          <div className="auth-field">
-            <label className="auth-label" htmlFor="name">Full Name</label>
-            <input
-              id="name" name="name" type="text"
-              className="auth-input" placeholder="Your full name"
-              value={form.name} onChange={handle}
-              autoComplete="name" autoFocus
-            />
-          </div>
-
-          <div className="auth-field">
-            <label className="auth-label" htmlFor="email">Email</label>
-            <input
-              id="email" name="email" type="email"
-              className="auth-input" placeholder="you@example.com"
-              value={form.email} onChange={handle}
-              autoComplete="email"
-            />
-          </div>
-
-          <div className="auth-field">
-            <label className="auth-label" htmlFor="password">Password</label>
-            <input
-              id="password" name="password" type="password"
-              className="auth-input" placeholder="Min. 8 chars, 1 uppercase, 1 number"
-              value={form.password} onChange={handle}
-              autoComplete="new-password"
-            />
-          </div>
-
-          <div className="auth-field">
-            <label className="auth-label" htmlFor="confirm">Confirm Password</label>
-            <input
-              id="confirm" name="confirm" type="password"
-              className="auth-input" placeholder="Repeat your password"
-              value={form.confirm} onChange={handle}
-              autoComplete="new-password"
-            />
-          </div>
-
-          <button className="auth-btn" type="submit" disabled={busy} data-magnetic>
-            {busy ? <><span className="btn-spinner" /> Creating account…</> : 'Create Account'}
-          </button>
-        </form>
-
-        <div className="auth-divider"><span>or</span></div>
-
-        <a href="/api/v1/auth/google" className="auth-google-btn">
-          <GoogleIcon />
-          Continue with Google
-        </a>
-
-        <p className="auth-footer">
-          Already have an account? <Link to="/login">Sign in</Link>
-        </p>
+        <h1 className="auth-title">Registration Starting Soon</h1>
+        <p className="auth-subtitle">We are currently setting up our servers. Sign in and registration will be available shortly.</p>
+        
+        <Link to="/" className="auth-btn" style={{ display: 'block', textDecoration: 'none', marginTop: '24px' }}>
+          Back to Home
+        </Link>
       </div>
     </div>
   );

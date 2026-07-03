@@ -41,65 +41,16 @@ export default function Login() {
     }
   };
 
-  if (loading) return null;
-
   return (
     <div className="auth-page">
-      <div className="auth-card">
+      <div className="auth-card" style={{ textAlign: 'center' }}>
         <span className="auth-eyebrow">Viplav '26</span>
-        <h1 className="auth-title">Welcome back</h1>
-        <p className="auth-subtitle">Sign in to manage your registrations and track your submissions.</p>
-
-        {error && <div className="auth-error">{error}</div>}
-
-        <form className="auth-form" onSubmit={submit} noValidate>
-          <div className="auth-field">
-            <label className="auth-label" htmlFor="email">Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              className="auth-input"
-              placeholder="you@example.com"
-              value={form.email}
-              onChange={handle}
-              autoComplete="email"
-              autoFocus
-            />
-          </div>
-
-          <div className="auth-field">
-            <label className="auth-label" htmlFor="password">
-              Password
-              <Link to="/forgot-password">Forgot password?</Link>
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              className="auth-input"
-              placeholder="••••••••"
-              value={form.password}
-              onChange={handle}
-              autoComplete="current-password"
-            />
-          </div>
-
-          <button className="auth-btn" type="submit" disabled={busy} data-magnetic>
-            {busy ? <><span className="btn-spinner" /> Signing in…</> : 'Sign In'}
-          </button>
-        </form>
-
-        <div className="auth-divider"><span>or</span></div>
-
-        <a href="/api/v1/auth/google" className="auth-google-btn">
-          <GoogleIcon />
-          Continue with Google
-        </a>
-
-        <p className="auth-footer">
-          Don't have an account? <Link to="/register">Create one</Link>
-        </p>
+        <h1 className="auth-title">Registration Starting Soon</h1>
+        <p className="auth-subtitle">We are currently setting up our servers. Sign in and registration will be available shortly.</p>
+        
+        <Link to="/" className="auth-btn" style={{ display: 'block', textDecoration: 'none', marginTop: '24px' }}>
+          Back to Home
+        </Link>
       </div>
     </div>
   );

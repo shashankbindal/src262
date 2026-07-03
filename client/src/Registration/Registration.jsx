@@ -74,6 +74,18 @@ export default function Registration() {
     }
   }, [params, events]);
 
+  return (
+    <div className="reg-simple-container">
+      <div className="reg-content-wrapper" style={{ textAlign: 'center' }}>
+        <h1 className="reg-simple-title">Registration Starting Soon</h1>
+        <p className="reg-simple-desc">We are currently setting up our servers. Registration will be available shortly.</p>
+        <Link to="/" className="reg-simple-btn" style={{ textDecoration: 'none', marginTop: '24px', display: 'inline-block' }} data-magnetic>
+          Back to Home
+        </Link>
+      </div>
+    </div>
+  );
+
   /* Redirect to login if not authenticated */
   if (!authLoading && !isAuthenticated) {
     return (
