@@ -144,6 +144,13 @@
   color: var(--text-primary);
 }
 
+.notebook-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
 .notebook-register-btn {
   display: inline-flex;
   align-items: center;
@@ -159,7 +166,6 @@
   letter-spacing: 0.04em;
   text-decoration: none;
   width: fit-content;
-  margin-top: 10px;
   transition: all 0.3s ease;
   border: 2px solid var(--primary);
 }
@@ -170,6 +176,31 @@
   color: #fff;
   transform: translateY(-2px);
   box-shadow: 0 12px 30px rgba(11, 93, 70, 0.2);
+}
+
+.notebook-explore-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background-color: transparent;
+  color: var(--primary);
+  padding: 16px 36px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  width: fit-content;
+  transition: all 0.3s ease;
+  border: 2px solid var(--primary);
+}
+
+.notebook-explore-btn:hover {
+  background-color: rgba(11, 93, 70, 0.05);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(11, 93, 70, 0.1);
 }
 
 @media (max-width: 768px) {
@@ -192,7 +223,7 @@
   .detail-item { gap: 4px; }
   .detail-value { font-size: 1.15rem; }
   .detail-label { font-size: 0.75rem; }
-  .notebook-register-btn { padding: 12px 24px; font-size: 0.85rem; gap: 8px; margin-top: 4px; }
+  .notebook-register-btn, .notebook-explore-btn { padding: 12px 24px; font-size: 0.85rem; gap: 8px; margin-top: 4px; }
   .spirals-container { padding: 0 6px; }
   .spiral-unit { width: 18px; }
   .spiral-hole { width: 18px; height: 18px; }
