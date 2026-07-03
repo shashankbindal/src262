@@ -76,7 +76,7 @@ const Aiche = () => {
       <div ref={block4Ref} className={`ref-block block-left-image ${block4Visible ? 'visible' : ''}`}>
         <div className="ref-image-wrapper img-left">
           <img
-            src="/teams.JPG"
+            src="/teams.jpg"
             alt="AIChE RGIPT team"
             className="ref-img"
             loading="lazy"
