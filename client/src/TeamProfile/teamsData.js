@@ -159,7 +159,7 @@ export const bentoCards = [
     name: "Technical Paper Presentation Team",
     color: "#408059",
     description: "The Technical Paper Presentation Team facilitates the sharing of innovative research and technical advancements within the chemical engineering community. They manage the evaluation and presentation process with academic rigor. Their efforts promote intellectual growth and professional development.",
-    chairs: [{ role: "Chair", name: "Omika Singh", image: "" }],
+    chairs: [{ role: "Chair", name: "Omika Singh", image: "/team/Omika Singh .JPG" }],
     coordinators: [
       { role: "Coordinator", name: "Aditya Raj", image: "/team/Aditya Raj_Coordinator_Technical Paper Presentation.jpeg" },
       { role: "Coordinator", name: "Anshu Kumari", image: "/team/Anshu Kumari_Coordinator_Technical Paper Presentation.jpg" }
