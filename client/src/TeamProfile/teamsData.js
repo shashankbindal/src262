@@ -26,6 +26,18 @@ export const bentoCards = [
     span: "col-span-1"
   },
   {
+    id: "technical-paper",
+    name: "Technical Paper Presentation Team",
+    color: "#408059",
+    description: "The Technical Paper Presentation Team facilitates the sharing of innovative research and technical advancements within the chemical engineering community. They manage the evaluation and presentation process with academic rigor. Their efforts promote intellectual growth and professional development.",
+    chairs: [{ role: "Chair", name: "Omika Singh", image: "/team/Omika Singh .JPG" }],
+    coordinators: [
+      { role: "Coordinator", name: "Aditya Raj", image: "/team/Aditya Raj_Coordinator_Technical Paper Presentation.jpeg" },
+      { role: "Coordinator", name: "Anshu Kumari", image: "/team/Anshu Kumari_Coordinator_Technical Paper Presentation.jpg" }
+    ],
+    span: "col-span-2"
+  },
+  {
     id: "technical",
     name: "Technical Team",
     color: "#4D8B62",
@@ -34,6 +46,36 @@ export const bentoCards = [
     coordinators: [
       { role: "Coordinator", name: "Shashank", image: "" },
       { role: "Coordinator", name: "AVNS Rehan Sanddep", image: "/team/A V N S REHAN SANDEEP- Coordinater - Technical team.png" }
+    ],
+    span: "col-span-1"
+  },
+  {
+    id: "chem-e-car",
+    name: "Chem-E-Car Team",
+    color: "#489467",
+    description: "The Chem-E-Car Team oversees one of AIChE’s flagship competitions, promoting innovation at the intersection of chemical engineering and design. They coordinate technical evaluations, competition logistics, and participant engagement.",
+    chairs: [{ role: "Chair(Internal)", name: "Tapesh Kumar", image: "/team/Tapesh_jpeg.jpg" }],
+    coordinators: [{ role: "Coordinator", name: "Ananya Priyam Mishra", image: "" }],
+    span: "col-span-1"
+  },
+  {
+    id: "chem-e-jeopardy",
+    name: "Chem-E-Jeopardy Team",
+    color: "#275F3C",
+    description: "The Chem-E-Jeopardy Team organizes an interactive platform that tests participants’ technical knowledge and analytical thinking. Through a dynamic and competitive format, they encourage learning beyond the classroom. Their event fosters intellectual curiosity and academic excellence.",
+    chairs: [{ role: "Chair", name: "Shreeyanshi Tripathi", image: "/team/Shreeyanshi_chair_chem e jeopardy.jpg" }],
+    coordinators: [{ role: "Coordinator", name: "Haritha Sree Vakati", image: "/team/Vakati Haritha Sree_Coordinator_ChemE Jeopardy Team.jpeg" }],
+    span: "col-span-1"
+  },
+  {
+    id: "k-12",
+    name: "K-12 Team",
+    color: "#306A46",
+    description: "The K-12 Team focuses on inspiring young minds by introducing them to the fascinating world of science and engineering. Through outreach initiatives and engaging activities, they promote STEM education and innovation. Their efforts help cultivate the next generation of problem-solvers and leaders.",
+    chairs: [{ role: "Chair", name: "Kartik Gogia", image: "/team/Kartik Gogia_Chair_K12.jpg" }],
+    coordinators: [
+      { role: "Coordinator", name: "Prashant Vishwakarma", image: "/team/Prashant Vishwakarma_Coordinator_K12.jpg" },
+      { role: "Coordinator", name: "Deepti Tomar", image: "/team/deeptitomar.jpg" }
     ],
     span: "col-span-1"
   },
@@ -93,10 +135,10 @@ export const bentoCards = [
     name: "Travel & Coordination Team",
     color: "#215033",
     description: "The Travel & Coordination Team oversees transportation and movement logistics for delegates, speakers, and guests. By ensuring timely coordination and smooth travel arrangements, they facilitate a seamless conference journey. Their work enhances accessibility and overall event efficiency.",
-    chairs: [{ role: "Chair", name: "Abhimanyu Singh", image: "" }],
+    chairs: [{ role: "Chair", name: "Abhimanyu Singh", image: "/team/Abhimanyu_Singh.jpg" }],
     coordinators: [
       { role: "Coordinator", name: "Ankit Kumar Anjan", image: "/team/Ankit Anjan_coordinator_travel&coordination.png" },
-      { role: "Coordinator", name: "Ankit Raj", image: "" }
+      { role: "Coordinator", name: "Ankit Raj", image: "/team/Ankit  Singh Rajput _ coordinator _ travel & coordination_.png" }
     ],
     span: "col-span-1"
   },
@@ -117,54 +159,12 @@ export const bentoCards = [
     name: "Social Media Team",
     color: "#2E6744",
     description: "The Social Media Team amplifies the conference’s presence through engaging digital campaigns and strategic communication. They create impactful content, manage online interactions, and build excitement around SRC. Their efforts help strengthen visibility and connect with a wider audience.",
-    chairs: [{ role: "Chair", name: "Nikhil Pilania", image: "" }],
+    chairs: [{ role: "Chair", name: "Nikhil Pilania", image: "/team/Nikhil Pilania_.jpg" }],
     coordinators: [
       { role: "Coordinator", name: "Bhumi Keshari", image: "" },
       { role: "Coordinator", name: "Gourav", image: "/team/Gourav_Coordinator_Social media.jpg" }
     ],
     span: "col-span-1"
-  },
-  {
-    id: "chem-e-car",
-    name: "Chem-E-Car Team",
-    color: "#489467",
-    description: "The Chem-E-Car Team oversees one of AIChE’s flagship competitions, promoting innovation at the intersection of chemical engineering and design. They coordinate technical evaluations, competition logistics, and participant engagement.",
-    chairs: [{ role: "Chair(Internal)", name: "Tapesh Kumar", image: "" }],
-    coordinators: [{ role: "Coordinator", name: "Ananya Priyam Mishra", image: "" }],
-    span: "col-span-1"
-  },
-  {
-    id: "chem-e-jeopardy",
-    name: "Chem-E-Jeopardy Team",
-    color: "#275F3C",
-    description: "The Chem-E-Jeopardy Team organizes an interactive platform that tests participants’ technical knowledge and analytical thinking. Through a dynamic and competitive format, they encourage learning beyond the classroom. Their event fosters intellectual curiosity and academic excellence.",
-    chairs: [{ role: "Chair", name: "Shreeyanshi Tripathi", image: "/team/Shreeyanshi_chair_chem e jeopardy.jpg" }],
-    coordinators: [{ role: "Coordinator", name: "Haritha Sree Vakati", image: "/team/Vakati Haritha Sree_Coordinator_ChemE Jeopardy Team.jpeg" }],
-    span: "col-span-1"
-  },
-  {
-    id: "k-12",
-    name: "K-12 Team",
-    color: "#306A46",
-    description: "The K-12 Team focuses on inspiring young minds by introducing them to the fascinating world of science and engineering. Through outreach initiatives and engaging activities, they promote STEM education and innovation. Their efforts help cultivate the next generation of problem-solvers and leaders.",
-    chairs: [{ role: "Chair", name: "Kartik Gogia", image: "/team/Kartik Gogia_Chair_K12.jpg" }],
-    coordinators: [
-      { role: "Coordinator", name: "Prashant Vishwakarma", image: "/team/Prashant Vishwakarma_Coordinator_K12.jpg" },
-      { role: "Coordinator", name: "Deepti Tomar", image: "/team/deeptitomar.jpg" }
-    ],
-    span: "col-span-1"
-  },
-  {
-    id: "technical-paper",
-    name: "Technical Paper Presentation Team",
-    color: "#408059",
-    description: "The Technical Paper Presentation Team facilitates the sharing of innovative research and technical advancements within the chemical engineering community. They manage the evaluation and presentation process with academic rigor. Their efforts promote intellectual growth and professional development.",
-    chairs: [{ role: "Chair", name: "Omika Singh", image: "/team/Omika Singh .JPG" }],
-    coordinators: [
-      { role: "Coordinator", name: "Aditya Raj", image: "/team/Aditya Raj_Coordinator_Technical Paper Presentation.jpeg" },
-      { role: "Coordinator", name: "Anshu Kumari", image: "/team/Anshu Kumari_Coordinator_Technical Paper Presentation.jpg" }
-    ],
-    span: "col-span-2"
   },
   {
     id: "creativity",
