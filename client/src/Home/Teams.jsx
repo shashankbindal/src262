@@ -9,7 +9,7 @@ const Teams = () => {
   const previewAvatars = [
     { name: "Shubhendra Singh", image: "/team/Shubhendra Singh_Conference Chair.jpeg" },
     { name: "Rudrakesh", image: "/team/Rudrakesh_Conference Co-Chair.jpg" },
-    { name: "Chirantan Toley", image: "/team/Chirantan toley_Conference Co-chair.jpg" },
+    { name: "Chirantan Toley", image: "/team/Chirantan toley_Conference Co-chair.jpeg" },
     { name: "Divisha Tiwari", image: "/team/Divisha Tiwari_ Chem-E-Car Chair_.jpg" },
     { name: "Yashu Raj", image: "/team/Yashu Raj_Chair_Designing.jpg" }
   ];

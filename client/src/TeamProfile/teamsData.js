@@ -7,7 +7,7 @@ export const bentoCards = [
     chairs: [
       { role: "Conference Chair", name: "Shubhendra Singh", image: "/team/Shubhendra Singh_Conference Chair.jpeg" },
       { role: "Conference Co-Chair", name: "Rudrakesh", image: "/team/Rudrakesh_Conference Co-Chair.jpg" },
-      { role: "Conference Co-Chair", name: "Chirantan Toley", image: "/team/Chirantan toley_Conference Co-chair.jpg" },
+      { role: "Conference Co-Chair", name: "Chirantan Toley", image: "/team/Chirantan toley_Conference Co-chair.jpeg" },
       { role: "Chem-E-Car Chair (External)", name: "Divisha Tiwari", image: "/team/Divisha Tiwari_ Chem-E-Car Chair_.jpg" }
     ],
     coordinators: [],
@@ -102,7 +102,7 @@ export const bentoCards = [
     chairs: [{ role: "Chair", name: "Shikhar Gupta", image: "/team/Shikhar Gupta_Chair_Outreach.png" }],
     coordinators: [
       { role: "Coordinator", name: "Akanksha Yadav", image: "/team/Akanksha Yadav_Cordinator_Outreachteam.jpg" },
-      { role: "Coordinator", name: "Sakshi Verma", image: "" }
+      { role: "Coordinator", name: "Sakshi Verma", image: "/team/Sakshi.jpeg" }
     ],
     span: "col-span-2"
   },
@@ -111,7 +111,7 @@ export const bentoCards = [
     name: "Fooding Team",
     color: "#2A6340",
     description: "The Fooding Team is dedicated to ensuring a comfortable and enjoyable hospitality experience for all attendees. They coordinate meal planning, catering arrangements, and service logistics with precision. Their efforts contribute significantly to participant satisfaction throughout the event.",
-    chairs: [{ role: "Chair", name: "Divyanshu", image: "" }],
+    chairs: [{ role: "Chair", name: "Divyanshu", image: "/team/divyanshu.jpeg" }],
     coordinators: [
       { role: "Coordinator", name: "Animesh", image: "/team/Animesh_coordinator_fooding.jpg" },
       { role: "Coordinator", name: "Ankit Yadav", image: "/team/Ankit Kumar yadav_Coordinator_fooding team_.jpg" }

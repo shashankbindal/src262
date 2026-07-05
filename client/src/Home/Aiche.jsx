@@ -25,7 +25,7 @@ const Aiche = () => {
       <div ref={block3Ref} className={`ref-block block-right-image ${block3Visible ? 'visible' : ''}`}>
         <div className="ref-image-wrapper img-right">
           <img
-            src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1600&auto=format&fit=crop"
+            src="/about-aiche.jpeg"
             alt="Global tech network"
             className="ref-img"
             loading="lazy"

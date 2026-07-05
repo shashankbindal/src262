@@ -9,11 +9,11 @@ const Src = () => {
   const [block2Ref, block2Visible] = useReveal(0.15)
 
   /* ── Block 1 animations ── */
-  const sub1Ref   = useTextScramble('ABOUT SRC', block1Visible, 0.1)
+  const sub1Ref = useTextScramble('ABOUT SRC', block1Visible, 0.1)
   const title1Ref = useRevealWords(block1Visible, 0.35)
 
   /* ── Block 2 animations ── */
-  const sub2Ref   = useTextScramble('CONFERENCE', block2Visible, 0.1)
+  const sub2Ref = useTextScramble('CONFERENCE', block2Visible, 0.1)
   const title2Ref = useRevealWords(block2Visible, 0.35)
 
   return (
@@ -23,7 +23,7 @@ const Src = () => {
       <div ref={block1Ref} className={`ref-block block-right-image ${block1Visible ? 'visible' : ''}`}>
         <div className="ref-image-wrapper img-right">
           <img
-            src="/about-src.jpeg"
+            src="/about-src.png"
             alt="Student Regional Conference"
             className="ref-img"
             loading="lazy"
@@ -44,7 +44,7 @@ const Src = () => {
               AIChE student chapters across the India Region. Bringing together hundreds of
               students, researchers, academicians, and industry professionals, SRC serves as a
               platform for <strong>technical competitions, research presentations, professional
-              networking, and leadership development</strong>. The conference provides participants
+                networking, and leadership development</strong>. The conference provides participants
               with opportunities to showcase their innovations, exchange ideas, and engage with
               emerging trends shaping the future of chemical engineering and allied industries.
               Winners of several SRC competitions also earn the opportunity to represent the
@@ -72,7 +72,7 @@ const Src = () => {
       <div ref={block2Ref} className={`ref-block block-left-image ${block2Visible ? 'visible' : ''}`}>
         <div className="ref-image-wrapper img-left">
           <img
-            src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?q=80&w=1600&auto=format&fit=crop"
+            src="/about-viplav.jpeg"
             alt="Sustainable energy landscape"
             className="ref-img"
             loading="lazy"
@@ -85,13 +85,13 @@ const Src = () => {
             <span ref={sub2Ref} className="sub-text">CONFERENCE</span>
           </div>
           <h2 ref={title2Ref} className="ref-title">
-            VIPLAV — AIChE India SRC 2026
+            VIPLAV - AIChE India SRC 2026
           </h2>
           <div className="ref-desc">
             <p>
               <em>
                 "Every great advancement begins with a revolution of thought. This year, AIChE
-                India SRC 2026 proudly presents VIPLAV — a call to transform ideas into impact,
+                India SRC 2026 proudly presents VIPLAV - a call to transform ideas into impact,
                 challenges into opportunities, and ambition into innovation."
               </em>
             </p>
