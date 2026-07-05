@@ -241,7 +241,7 @@ function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile
 
             <Field label="AIChE Student Membership ID" required error={errors.aicheId}>
               <input className="cr-input" type="text" value={form.aicheId}
-                onChange={set('aicheId')} placeholder="e.g. AICHE-XXXXXXX" />
+                onChange={set('aicheId')} placeholder="e.g. 00990594XXXX" />
             </Field>
           </div>
         </div>
@@ -434,8 +434,7 @@ function PaymentStage({ config, transactionId, setTransactionId, screenshotFile,
         <div className="cr-qr-column">
           <p className="cr-qr-label">Scan to pay via any UPI app</p>
           <div className="cr-qr-frame">
-            {/* Replace <div> with <img src="/payment-qr.png"> once QR is ready */}
-            <div className="cr-qr-placeholder">QR Code<br />(v{config?.qrVersion || '1'})</div>
+            <img src="/qr-code.png" alt="Payment QR Code" className="cr-qr-image" />
           </div>
         </div>
         <div className="cr-upi-column">
