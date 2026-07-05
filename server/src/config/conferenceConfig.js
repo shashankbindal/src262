@@ -7,7 +7,7 @@
  */
 module.exports = {
   fee: parseInt(process.env.CONF_FEE || '5500', 10),
-  upiId: process.env.CONF_UPI_ID || 'viplav2026@sbi',
+  upiId: process.env.CONF_UPI_ID || 'rgiptjais@sbi',
   qrVersion: process.env.CONF_QR_VERSION || 'v1',
 
 

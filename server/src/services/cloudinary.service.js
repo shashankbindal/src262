@@ -13,15 +13,6 @@ const { env } = require('../config/env');
  */
 function uploadFile(buffer, folder, originalName = '') {
   return new Promise((resolve, reject) => {
-    // Bypass Cloudinary for dummy credentials
-    if (env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_KEY.includes('dummy')) {
-      logger.info(`[Testing Bypass] Mocking upload to folder: ${folder}`);
-      return resolve({
-        secure_url: `https://dummy.cloudinary.com/${folder}/${Date.now()}_${originalName}`,
-        public_id: `dummy_${folder}_${Date.now()}`,
-        resource_type: 'auto'
-      });
-    }
     // Determine resource_type based on file extension to prevent uploading arbitrary executables
     let resource_type = 'image';
     const ext = originalName.toLowerCase().split('.').pop();
@@ -53,12 +44,6 @@ function uploadFile(buffer, folder, originalName = '') {
  */
 async function deleteFile(publicId) {
   if (!publicId) return;
-
-  // Bypass Cloudinary for dummy credentials
-  if (env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_KEY.includes('dummy')) {
-    logger.info(`[Testing Bypass] Mocking deletion for publicId: ${publicId}`);
-    return;
-  }
 
   try {
     // If it's a PDF uploaded as raw, resource_type must be 'raw'.
