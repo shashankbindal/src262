@@ -1,13 +1,55 @@
 'use strict';
-const asyncHandler  = require('../utils/asyncHandler');
-const ApiResponse   = require('../utils/ApiResponse');
-const ApiError      = require('../utils/ApiError');
-const adminService  = require('../services/admin.service');
+const asyncHandler = require('../utils/asyncHandler');
+const ApiResponse  = require('../utils/ApiResponse');
+const adminService = require('../services/admin.service');
+
+/* ─── Overview ───────────────────────────────────────────────────────────── */
 
 const getOverview = asyncHandler(async (_req, res) => {
-  const data = await adminService.getEventOverview();
+  const data = await adminService.getFullOverview();
   ApiResponse.ok(res, 'Overview fetched', data);
 });
+
+/* ─── Conference Registration ────────────────────────────────────────────── */
+
+const getConferenceRegistrations = asyncHandler(async (req, res) => {
+  const { status, page, limit } = req.query;
+  const data = await adminService.getConferenceRegistrations({
+    status,
+    page:  parseInt(page)  || 1,
+    limit: parseInt(limit) || 50,
+  });
+  ApiResponse.ok(res, 'Conference registrations fetched', data);
+});
+
+const decideConferenceRegistration = asyncHandler(async (req, res) => {
+  const { confRegId } = req.params;
+  const { action, srcId, reason } = req.body;
+
+  let result;
+  if (action === 'approve') {
+    result = await adminService.approveConferenceRegistration(req.user._id, confRegId, { srcId });
+    ApiResponse.ok(res, 'Conference registration approved', result);
+  } else if (action === 'reject') {
+    result = await adminService.rejectConferenceRegistration(req.user._id, confRegId, { reason });
+    ApiResponse.ok(res, 'Conference registration rejected', result);
+  } else {
+    const { ApiError } = require('../utils/ApiError');
+    throw ApiError.badRequest('Action must be "approve" or "reject"');
+  }
+});
+
+const getConfPaymentScreenshot = asyncHandler(async (req, res) => {
+  const data = await adminService.getConfPaymentScreenshot(req.params.confRegId);
+  ApiResponse.ok(res, 'Screenshot URL generated', data);
+});
+
+const getConfIdCard = asyncHandler(async (req, res) => {
+  const data = await adminService.getConfIdCard(req.params.confRegId);
+  ApiResponse.ok(res, 'ID card URL generated', data);
+});
+
+/* ─── Event Registrations ────────────────────────────────────────────────── */
 
 const getRegistrations = asyncHandler(async (req, res) => {
   const { eventId } = req.params;
@@ -18,18 +60,6 @@ const getRegistrations = asyncHandler(async (req, res) => {
     limit: parseInt(limit) || 50,
   });
   ApiResponse.ok(res, 'Registrations fetched', data);
-});
-
-const decidePayment = asyncHandler(async (req, res) => {
-  const { registrationId } = req.params;
-  const { action, reason } = req.body;
-  const reg = await adminService.decidePayment(req.user._id, registrationId, { action, reason });
-  ApiResponse.ok(res, `Payment ${action}d successfully`, reg);
-});
-
-const getPaymentScreenshot = asyncHandler(async (req, res) => {
-  const data = await adminService.getPaymentScreenshot(req.params.registrationId);
-  ApiResponse.ok(res, 'Screenshot URL generated', data);
 });
 
 const getSubmissionFile = asyncHandler(async (req, res) => {
@@ -55,6 +85,8 @@ const markSubmissionComplete = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, 'Submission marked as completed', sub);
 });
 
+/* ─── Exports ────────────────────────────────────────────────────────────── */
+
 const exportCSV = asyncHandler(async (req, res) => {
   const { eventId } = req.params;
   const { status }  = req.query;
@@ -76,9 +108,11 @@ const exportExcel = asyncHandler(async (req, res) => {
 
 module.exports = {
   getOverview,
+  getConferenceRegistrations,
+  decideConferenceRegistration,
+  getConfPaymentScreenshot,
+  getConfIdCard,
   getRegistrations,
-  decidePayment,
-  getPaymentScreenshot,
   getSubmissionFile,
   getSubmissions,
   markSubmissionComplete,

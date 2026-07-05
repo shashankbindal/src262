@@ -36,34 +36,61 @@
   text-align: left; /* Clean left alignment */
 }
 
-/* ── Event select grid ── */
+/* ── Event select row (horizontal wrap) ── */
 .event-select-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
 }
 
 .event-select-card {
+  flex: 1 1 280px;
+  max-width: 400px;
   background: #FFFFFF;
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: var(--radius-lg);
   padding: 28px;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-medium);
   position: relative;
   outline: none;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  z-index: 1;
 }
+
+/* Background image pseudo-element for smooth transition */
+.event-select-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: var(--bg-img, url('/bg.png'));
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+  border-radius: var(--radius-lg);
+}
+
+.event-select-card:hover::before,
+.event-select-card:focus::before,
+.event-select-card.selected::before {
+  opacity: 0.15; /* Subtle background image blend */
+}
+
 .event-select-card:hover,
 .event-select-card:focus,
 .event-select-card.selected {
   border-color: var(--primary);
   box-shadow: 0 0 0 1px var(--primary), 0 12px 30px rgba(0, 0, 0, 0.06);
-  background: #FFFFFF;
+  transform: translateY(-4px);
 }
 .event-select-card.disabled {
   opacity: 0.45;
   cursor: not-allowed;
+  transform: none;
 }
 
 .esc-header {

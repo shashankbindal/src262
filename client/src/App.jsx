@@ -31,6 +31,7 @@ import VerifyEmail from "./auth/VerifyEmail.jsx";
 /* Dashboard & Admin */
 import Dashboard from "./dashboard/Dashboard.jsx";
 import AdminDashboard from "./admin/AdminDashboard.jsx";
+import ConferenceRegistration from "./ConferenceRegistration/ConferenceRegistration.jsx";
 
 /* ── Page transition wrapper ── */
 const PageTransition = ({ children }) => (
@@ -146,6 +147,14 @@ const AppContent = () => {
             <Route path="/verify-email"    element={<PageTransition><VerifyEmail /></PageTransition>} />
 
             {/* ── Protected: User ── */}
+            <Route
+              path="/conference-registration"
+              element={
+                <ProtectedRoute>
+                  <PageTransition><ConferenceRegistration /></PageTransition>
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/dashboard"
               element={

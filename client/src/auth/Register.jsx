@@ -1,17 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { ApiError } from '../lib/api.js';
+import { api, ApiError } from '../lib/api.js';
 import './auth.css';
 
 export default function Register() {
   const navigate = useNavigate();
   const { register: registerUser, isAuthenticated, loading } = useAuth();
 
-  const [form, setForm]     = useState({ name: '', email: '', password: '', confirm: '' });
-  const [error, setError]   = useState('');
-  const [success, setSuccess] = useState('');
-  const [busy, setBusy]     = useState(false);
+  const [step, setStep]       = useState(1); // 1 = form, 2 = otp
+  const [registeredEmail, setRegisteredEmail] = useState('');
+
+  /* Step 1 */
+  const [form, setForm]       = useState({ name: '', email: '', password: '', confirm: '' });
+  const [error, setError]     = useState('');
+  const [busy, setBusy]       = useState(false);
+
+  /* Step 2 */
+  const [otp, setOtp]         = useState('');
+  const [otpError, setOtpError] = useState('');
+  const [otpBusy, setOtpBusy] = useState(false);
+  const [resendBusy, setResendBusy] = useState(false);
+  const [resendMsg, setResendMsg]   = useState('');
 
   useEffect(() => {
     if (!loading && isAuthenticated) navigate('/', { replace: true });
@@ -30,7 +40,7 @@ export default function Register() {
     return null;
   };
 
-  const submit = async (e) => {
+  const submitStep1 = async (e) => {
     e.preventDefault();
     const err = validate();
     if (err) { setError(err); return; }
@@ -39,7 +49,9 @@ export default function Register() {
     setError('');
     try {
       await registerUser({ name: form.name.trim(), email: form.email.trim(), password: form.password });
-      setSuccess('Account created! Please check your email to verify your account before logging in.');
+      await api.post('/auth/send-otp', { email: form.email.trim() });
+      setRegisteredEmail(form.email.trim());
+      setStep(2);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Registration failed. Please try again.');
     } finally {
@@ -47,28 +59,163 @@ export default function Register() {
     }
   };
 
+  const submitOTP = async (e) => {
+    e.preventDefault();
+    if (otp.length !== 6) { setOtpError('Please enter the 6-digit code.'); return; }
+    setOtpBusy(true);
+    setOtpError('');
+    try {
+      await api.post('/auth/verify-otp', { email: registeredEmail, otp: otp.trim() });
+      navigate('/login', { state: { registered: true } });
+    } catch (err) {
+      setOtpError(err instanceof ApiError ? err.message : 'Verification failed. Please try again.');
+    } finally {
+      setOtpBusy(false);
+    }
+  };
+
+  const resendOTP = async () => {
+    setResendBusy(true);
+    setResendMsg('');
+    setOtpError('');
+    try {
+      await api.post('/auth/send-otp', { email: registeredEmail });
+      setResendMsg('A new code has been sent to your email.');
+    } catch (err) {
+      setOtpError(err instanceof ApiError ? err.message : 'Could not resend. Try again shortly.');
+    } finally {
+      setResendBusy(false);
+    }
+  };
+
+  /* ── Step 2: OTP verification ── */
+  if (step === 2) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card">
+          <span className="auth-eyebrow">AIChE India SRC 2026</span>
+          <h1 className="auth-title">Verify your email</h1>
+          <p className="auth-subtitle">
+            We sent a 6-digit code to <strong>{registeredEmail}</strong>. Enter it below to activate your account.
+          </p>
+
+          {otpError && <div className="auth-error">{otpError}</div>}
+          {resendMsg && <div className="auth-success">{resendMsg}</div>}
+
+          <form className="auth-form" onSubmit={submitOTP} noValidate>
+            <div className="auth-field">
+              <label className="auth-label" htmlFor="otp">Verification Code</label>
+              <input
+                id="otp"
+                className="auth-input otp-input"
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={6}
+                placeholder="000000"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                autoFocus
+              />
+            </div>
+
+            <button className="auth-btn" type="submit" disabled={otpBusy} data-magnetic>
+              {otpBusy ? <><span className="btn-spinner" /> Verifying…</> : 'Verify Email'}
+            </button>
+          </form>
+
+          <p className="auth-footer">
+            Didn't get the code?{' '}
+            <button
+              className="auth-link-btn"
+              onClick={resendOTP}
+              disabled={resendBusy}
+              type="button"
+            >
+              {resendBusy ? 'Sending…' : 'Resend'}
+            </button>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Step 1: Registration form ── */
   return (
     <div className="auth-page">
-      <div className="auth-card" style={{ textAlign: 'center' }}>
-        <span className="auth-eyebrow">Viplav '26</span>
-        <h1 className="auth-title">Registration Starting Soon</h1>
-        <p className="auth-subtitle">We are currently setting up our servers. Sign in and registration will be available shortly.</p>
-        
-        <Link to="/" className="auth-btn" style={{ textDecoration: 'none', marginTop: '24px' }}>
-          Back to Home
-        </Link>
+      <div className="auth-card">
+        <span className="auth-eyebrow">AIChE India SRC 2026</span>
+        <h1 className="auth-title">Create account</h1>
+        <p className="auth-subtitle">Join VIPLAV '26 — AIChE India Student Regional Conference.</p>
+
+        {error && <div className="auth-error">{error}</div>}
+
+        <form className="auth-form" onSubmit={submitStep1} noValidate>
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="name">Full Name</label>
+            <input
+              id="name"
+              name="name"
+              className="auth-input"
+              type="text"
+              autoComplete="name"
+              placeholder="Your full name"
+              value={form.name}
+              onChange={handle}
+            />
+          </div>
+
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="email">Email</label>
+            <input
+              id="email"
+              name="email"
+              className="auth-input"
+              type="email"
+              autoComplete="email"
+              placeholder="you@example.com"
+              value={form.email}
+              onChange={handle}
+            />
+          </div>
+
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="password">Password</label>
+            <input
+              id="password"
+              name="password"
+              className="auth-input"
+              type="password"
+              autoComplete="new-password"
+              placeholder="Min 8 chars, one uppercase, one number"
+              value={form.password}
+              onChange={handle}
+            />
+          </div>
+
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="confirm">Confirm Password</label>
+            <input
+              id="confirm"
+              name="confirm"
+              className="auth-input"
+              type="password"
+              autoComplete="new-password"
+              placeholder="Re-enter your password"
+              value={form.confirm}
+              onChange={handle}
+            />
+          </div>
+
+          <button className="auth-btn" type="submit" disabled={busy} data-magnetic>
+            {busy ? <><span className="btn-spinner" /> Creating account…</> : 'Create Account'}
+          </button>
+        </form>
+
+        <p className="auth-footer">
+          Already have an account? <Link to="/login">Sign in</Link>
+        </p>
       </div>
     </div>
-  );
-}
-
-function GoogleIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-    </svg>
   );
 }

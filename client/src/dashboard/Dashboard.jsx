@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api, ApiError } from '../lib/api.js';
 import './Dashboard.css';
 
 /* ── helpers ── */
 const STATUS_LABELS = {
-  pending_payment:    'Awaiting Payment',
-  payment_submitted:  'Payment Submitted',
-  payment_approved:   'Payment Approved',
-  payment_rejected:   'Payment Rejected',
+  registered:         'Registered',
   waiting_submission: 'Awaiting Submission',
   submitted:          'Submitted',
   completed:          'Completed',
@@ -100,68 +97,110 @@ function ProfileTab({ user, refreshUser }) {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════ PAYMENT UPLOAD */
-function PaymentUploadForm({ registrationId, onDone }) {
-  const [txId, setTxId]   = useState('');
-  const [file, setFile]   = useState(null);
-  const [busy, setBusy]   = useState(false);
-  const [error, setError] = useState('');
+/* ═══════════════════════════════════════════ CONFERENCE REGISTRATION BANNER */
+function ConferenceRegBanner() {
+  const [confReg, setConfReg] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const submit = async (e) => {
-    e.preventDefault();
-    if (!txId.trim()) { setError('Transaction ID is required.'); return; }
-    if (!file) { setError('Please select a screenshot.'); return; }
-    setBusy(true);
-    setError('');
-    const fd = new FormData();
-    fd.append('screenshot', file);
-    fd.append('transactionId', txId.trim());
-    try {
-      await api.upload(`/registrations/${registrationId}/payment`, fd);
-      onDone();
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Upload failed. Please try again.');
-    } finally {
-      setBusy(false);
-    }
-  };
+  useEffect(() => {
+    api.get('/conference-registration')
+      .then((res) => setConfReg(res.data || null))
+      .catch(() => setConfReg(null))
+      .finally(() => setLoading(false));
+  }, []);
 
-  return (
-    <form className="payment-form" onSubmit={submit}>
-      {error && <div className="auth-error" style={{ margin: 0 }}>{error}</div>}
+  if (loading) return null;
 
-      <div style={{ textAlign: 'center', marginBottom: '24px', padding: '16px', background: '#FFFFFF', borderRadius: '12px', border: '1px solid var(--border-medium)' }}>
-        <p style={{ margin: '0 0 16px 0', fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
-          Scan the QR Code below to pay using any UPI app.
-        </p>
-        <div style={{ width: '180px', height: '180px', margin: '0 auto', background: '#fff', borderRadius: '8px', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {/* Replace this div with an actual <img src="/qr.jpg" /> when you have your real QR code! */}
-          <div style={{ border: '2px dashed #ccc', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', fontSize: '0.9rem', textAlign: 'center' }}>
-            Payment<br/>QR Code<br/>Placeholder
+  if (!confReg) {
+    return (
+      <div className="confbanner confbanner-none">
+        <div className="confbanner-body">
+          <span className="confbanner-label">Conference Registration</span>
+          <p className="confbanner-msg">You haven't registered for the conference yet. Pay the conference fee to unlock event registration.</p>
+        </div>
+        <Link to="/conference-registration" className="confbanner-btn">Register Now</Link>
+      </div>
+    );
+  }
+
+  if (confReg.status === 'pending') {
+    return (
+      <div className="confbanner confbanner-pending">
+        <div className="confbanner-body">
+          <span className="confbanner-label">Conference Registration · Under Review</span>
+          <p className="confbanner-msg">Your payment has been submitted and is being reviewed. Approval usually takes 1–2 business days.</p>
+          <div className="confbanner-meta">
+            {confReg.referenceNumber && (
+              <span className="confbanner-meta-item">
+                <span className="confbanner-meta-key">Ref No.</span>
+                <span className="confbanner-meta-val confbanner-mono">{confReg.referenceNumber}</span>
+              </span>
+            )}
+            {confReg.transactionId && (
+              <span className="confbanner-meta-item">
+                <span className="confbanner-meta-key">UTR</span>
+                <span className="confbanner-meta-val confbanner-mono">{confReg.transactionId}</span>
+              </span>
+            )}
+            {confReg.paymentTimestamp && (
+              <span className="confbanner-meta-item">
+                <span className="confbanner-meta-key">Submitted</span>
+                <span className="confbanner-meta-val">{new Date(confReg.paymentTimestamp).toLocaleDateString('en-IN')}</span>
+              </span>
+            )}
           </div>
         </div>
-        <p style={{ margin: '16px 0 0 0', fontSize: '0.9rem', fontFamily: 'var(--font-mono)', color: 'var(--primary)' }}>
-          UPI ID: your-upi-id@bank
-        </p>
+        <Link to="/conference-registration" className="confbanner-btn outlined">View Details</Link>
       </div>
+    );
+  }
 
-      <div>
-        <label>Transaction ID</label>
-        <input type="text" placeholder="Enter UPI/bank transaction ID" value={txId} onChange={(e) => setTxId(e.target.value)} />
+  if (confReg.status === 'rejected') {
+    return (
+      <div className="confbanner confbanner-rejected">
+        <div className="confbanner-body">
+          <span className="confbanner-label">Conference Registration · Rejected</span>
+          {confReg.rejectionReason && (
+            <p className="confbanner-msg"><strong>Reason:</strong> {confReg.rejectionReason}</p>
+          )}
+          {confReg.referenceNumber && (
+            <div className="confbanner-meta">
+              <span className="confbanner-meta-item">
+                <span className="confbanner-meta-key">Ref No.</span>
+                <span className="confbanner-meta-val confbanner-mono">{confReg.referenceNumber}</span>
+              </span>
+            </div>
+          )}
+        </div>
+        <Link to="/conference-registration" className="confbanner-btn">Re-submit</Link>
       </div>
-      <div>
-        <label>Payment Screenshot</label>
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp,application/pdf"
-          onChange={(e) => setFile(e.target.files[0])}
-        />
+    );
+  }
+
+  if (confReg.status === 'approved') {
+    return (
+      <div className="confbanner confbanner-approved">
+        <div className="confbanner-body">
+          <span className="confbanner-label">Conference Registration · Approved</span>
+          <div className="confbanner-srcid-row">
+            <span className="confbanner-srcid-label">SRC ID</span>
+            <strong className="confbanner-srcid">{confReg.srcId}</strong>
+          </div>
+          <div className="confbanner-meta">
+            {confReg.referenceNumber && (
+              <span className="confbanner-meta-item">
+                <span className="confbanner-meta-key">Ref No.</span>
+                <span className="confbanner-meta-val confbanner-mono">{confReg.referenceNumber}</span>
+              </span>
+            )}
+          </div>
+        </div>
+        <Link to="/register" className="confbanner-btn outlined">Register for Events</Link>
       </div>
-      <button className="reg-action-btn primary" type="submit" disabled={busy}>
-        {busy ? <><span className="btn-spinner" /> Uploading…</> : 'Submit Payment'}
-      </button>
-    </form>
-  );
+    );
+  }
+
+  return null;
 }
 
 /* ═══════════════════════════════════════════════════════ SUBMISSION UPLOAD */
@@ -264,14 +303,12 @@ function EditRegistrationForm({ reg, onDone }) {
 
 /* ═══════════════════════════════════════════════════════ REGISTRATION CARD */
 function RegCard({ reg, onRefresh }) {
-  const [showPayment, setShowPayment]       = useState(false);
   const [showSubmission, setShowSubmission] = useState(false);
   const [showEdit, setShowEdit]             = useState(false);
 
-  const event = reg.eventId;
-  const canPayment   = ['pending_payment', 'payment_rejected'].includes(reg.status);
-  const canSubmit    = ['waiting_submission', 'submitted'].includes(reg.status) && event?.fileUploadRequired;
-  const isRejected   = reg.status === 'payment_rejected';
+  const event    = reg.eventId;
+  const canEdit  = ['registered', 'waiting_submission'].includes(reg.status) && event?.type === 'team';
+  const canSubmit = ['waiting_submission', 'submitted'].includes(reg.status) && event?.fileUploadRequired;
 
   return (
     <div className="reg-card">
@@ -289,11 +326,11 @@ function RegCard({ reg, onRefresh }) {
           <span className="reg-meta-label">Registered</span>
           <span className="reg-meta-value">{new Date(reg.createdAt).toLocaleDateString('en-IN')}</span>
         </div>
-        {reg.transactionId && (
+        {reg.srcId && (
           <div className="reg-meta-item">
-            <span className="reg-meta-label">Transaction ID</span>
-            <span className="reg-meta-value" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
-              {reg.transactionId}
+            <span className="reg-meta-label">SRC ID</span>
+            <span className="reg-meta-value" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', color: 'var(--primary)', fontWeight: '600' }}>
+              {reg.srcId}
             </span>
           </div>
         )}
@@ -313,26 +350,15 @@ function RegCard({ reg, onRefresh }) {
         )}
       </div>
 
-      {isRejected && reg.paymentRejectedReason && (
-        <div className="auth-error" style={{ marginBottom: '12px', fontSize: '0.85rem' }}>
-          <strong>Reason:</strong> {reg.paymentRejectedReason}
-        </div>
-      )}
-
-      {(canPayment || canSubmit) && (
+      {(canEdit || canSubmit) && (
         <div className="reg-card-actions">
-          {canPayment && event?.type === 'team' && (
-            <button className="reg-action-btn" onClick={() => { setShowEdit((v) => !v); setShowPayment(false); setShowSubmission(false); }}>
+          {canEdit && (
+            <button className="reg-action-btn" onClick={() => { setShowEdit((v) => !v); setShowSubmission(false); }}>
               {showEdit ? 'Cancel Edit' : 'Edit Team'}
             </button>
           )}
-          {canPayment && (
-            <button className="reg-action-btn primary" onClick={() => { setShowPayment((v) => !v); setShowSubmission(false); setShowEdit(false); }}>
-              {showPayment ? 'Cancel' : (isRejected ? '↺ Re-submit Payment' : 'Submit Payment')}
-            </button>
-          )}
           {canSubmit && (
-            <button className="reg-action-btn primary" onClick={() => { setShowSubmission((v) => !v); setShowPayment(false); setShowEdit(false); }}>
+            <button className="reg-action-btn primary" onClick={() => { setShowSubmission((v) => !v); setShowEdit(false); }}>
               {showSubmission ? 'Cancel' : (reg.status === 'submitted' ? '↺ Replace File' : 'Upload Submission')}
             </button>
           )}
@@ -343,12 +369,6 @@ function RegCard({ reg, onRefresh }) {
         <EditRegistrationForm
           reg={reg}
           onDone={() => { setShowEdit(false); onRefresh(); }}
-        />
-      )}
-      {showPayment && (
-        <PaymentUploadForm
-          registrationId={reg._id}
-          onDone={() => { setShowPayment(false); onRefresh(); }}
         />
       )}
       {showSubmission && (
@@ -382,14 +402,16 @@ function RegistrationsTab() {
 
   return (
     <div>
+      <ConferenceRegBanner />
+
       <div className="dash-section-header">
-        <h2 className="dash-section-title">My Registrations</h2>
+        <h2 className="dash-section-title">My Event Registrations</h2>
       </div>
 
       {regs.length === 0 ? (
         <div className="reg-empty">
-          <h3>No registrations yet</h3>
-          <p>Head over to the <a href="/register" style={{ color: 'var(--primary)' }}>Registration</a> page to sign up for events.</p>
+          <h3>No event registrations yet</h3>
+          <p>Once your conference registration is approved, head to the <a href="/register" style={{ color: 'var(--primary)' }}>Registration</a> page to sign up for events.</p>
         </div>
       ) : (
         <div className="reg-cards-grid">

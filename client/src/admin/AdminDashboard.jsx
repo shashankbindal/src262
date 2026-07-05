@@ -3,38 +3,37 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { api, ApiError } from '../lib/api.js';
 import './AdminDashboard.css';
 
-/* ── Status badge (reuse pattern) ── */
-const STATUS_LABELS = {
-  pending_payment:    'Pending Payment',
-  payment_submitted:  'Payment Submitted',
-  payment_approved:   'Approved',
-  payment_rejected:   'Rejected',
+/* ── Event registration status labels ── */
+const EVENT_STATUS_LABELS = {
+  registered:         'Registered',
   waiting_submission: 'Awaiting Submission',
   submitted:          'Submitted',
   completed:          'Completed',
 };
 
-/* Status tabs shown per event — groups that admin cares about */
-const STATUS_TABS = [
-  { id: 'payment_submitted',  label: 'Review Payments' },
-  { id: 'payment_approved',   label: 'Approved' },
-  { id: 'payment_rejected',   label: 'Rejected' },
+const EVENT_STATUS_TABS = [
+  { id: 'registered',         label: 'Registered' },
   { id: 'waiting_submission', label: 'Awaiting Submission' },
   { id: 'submitted',          label: 'Submissions' },
   { id: 'completed',          label: 'Completed' },
 ];
 
-/* ── Reject Modal ── */
-function RejectModal({ regId, onClose, onDone }) {
+/* ══════════════════════════════════════ CONFERENCE REGISTRATION COMPONENTS */
+
+/* ── Conf Reg: Reject Modal ── */
+function ConfRejectModal({ confRegId, onClose, onDone }) {
   const [reason, setReason] = useState('');
   const [busy, setBusy]     = useState(false);
   const [error, setError]   = useState('');
 
   const submit = async () => {
-    if (!reason.trim()) { setError('Please provide a rejection reason.'); return; }
+    if (!reason.trim()) { setError('Rejection reason is required.'); return; }
     setBusy(true);
     try {
-      await api.patch(`/admin/registrations/${regId}/payment-decision`, { action: 'reject', reason: reason.trim() });
+      await api.patch(`/admin/conference-registrations/${confRegId}/decision`, {
+        action: 'reject',
+        reason: reason.trim(),
+      });
       onDone();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Failed to reject.');
@@ -46,8 +45,8 @@ function RejectModal({ regId, onClose, onDone }) {
   return (
     <div className="admin-modal-bg" onClick={onClose}>
       <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
-        <h3>Reject Payment</h3>
-        <p>Provide a clear reason. The participant will see this in their email and dashboard.</p>
+        <h3>Reject Conference Registration</h3>
+        <p>Provide a clear reason so the participant knows what to fix when re-submitting.</p>
         {error && <div className="auth-error" style={{ marginBottom: '12px' }}>{error}</div>}
         <textarea
           placeholder="e.g. Screenshot is unclear. Please re-upload a clearer image."
@@ -66,71 +65,108 @@ function RejectModal({ regId, onClose, onDone }) {
   );
 }
 
-/* ── Registration Row ── */
-function RegRow({ reg, onRefresh }) {
-  const [loadingApprove, setLoadingApprove] = useState(false);
-  const [showReject, setShowReject]         = useState(false);
-  const [screenshotUrl, setScreenshotUrl]   = useState(null);
+/* ── Conf Reg: Approve Modal ── */
+function ConfApproveModal({ confRegId, onClose, onDone }) {
+  const [srcId, setSrcId]   = useState('');
+  const [busy, setBusy]     = useState(false);
+  const [error, setError]   = useState('');
 
-  const approve = async () => {
-    if (!window.confirm('Approve this payment?')) return;
-    setLoadingApprove(true);
+  const submit = async () => {
+    if (!srcId.trim()) { setError('SRC ID is required.'); return; }
+    setBusy(true);
     try {
-      await api.patch(`/admin/registrations/${reg._id}/payment-decision`, { action: 'approve' });
-      onRefresh();
+      await api.patch(`/admin/conference-registrations/${confRegId}/decision`, {
+        action: 'approve',
+        srcId: srcId.trim(),
+      });
+      onDone();
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : 'Approval failed.');
+      setError(err instanceof ApiError ? err.message : 'Failed to approve.');
     } finally {
-      setLoadingApprove(false);
+      setBusy(false);
     }
   };
+
+  return (
+    <div className="admin-modal-bg" onClick={onClose}>
+      <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+        <h3>Approve Conference Registration</h3>
+        <p>Assign a unique SRC ID. This cannot be changed after approval.</p>
+        {error && <div className="auth-error" style={{ marginBottom: '12px' }}>{error}</div>}
+        <input
+          className="admin-modal-input"
+          type="text"
+          placeholder="e.g. SRC-2026-001"
+          value={srcId}
+          onChange={(e) => setSrcId(e.target.value)}
+          autoFocus
+        />
+        <div className="admin-modal-actions">
+          <button className="tbl-btn" onClick={onClose}>Cancel</button>
+          <button className="tbl-btn approve" onClick={submit} disabled={busy}>
+            {busy ? 'Approving…' : 'Confirm Approval'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Conf Reg: Row in table ── */
+function ConfRegRow({ confReg, onRefresh }) {
+  const [showApprove, setShowApprove] = useState(false);
+  const [showReject, setShowReject]   = useState(false);
+  const [screenshotUrl, setScreenshotUrl] = useState(null);
 
   const viewScreenshot = async () => {
     if (screenshotUrl) { window.open(screenshotUrl, '_blank'); return; }
     try {
-      const res = await api.get(`/admin/registrations/${reg._id}/payment-screenshot`);
-      const url = res.data?.signedUrl;
-      setScreenshotUrl(url);
-      window.open(url, '_blank');
+      const res = await api.get(`/admin/conference-registrations/${confReg._id}/screenshot`);
+      setScreenshotUrl(res.data?.signedUrl);
+      window.open(res.data?.signedUrl, '_blank');
     } catch {
       alert('Could not load screenshot.');
     }
   };
 
-  const participant = reg.participantSnapshot || reg.userId || {};
-  const team        = reg.teamId;
+  const u = confReg.userId || {};
 
   return (
     <>
       <tr>
-        <td className="name-cell">{participant.name || '—'}</td>
-        <td>{participant.email || '—'}</td>
-        <td>{participant.college || '—'}</td>
-        <td>{team ? `${team.teamName} (${(team.members?.length || 0) + 1})` : '—'}</td>
-        <td>{reg.transactionId || '—'}</td>
-        <td>{new Date(reg.createdAt).toLocaleDateString('en-IN')}</td>
+        <td className="name-cell">{u.name || '—'}</td>
+        <td>{u.email || '—'}</td>
+        <td>{u.college || '—'}</td>
+        <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
+          {confReg.transactionId || '—'}
+        </td>
+        <td>{confReg.srcId ? <strong style={{ color: 'var(--primary)' }}>{confReg.srcId}</strong> : '—'}</td>
+        <td>{new Date(confReg.createdAt).toLocaleDateString('en-IN')}</td>
         <td>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {reg.paymentScreenshotUrl && (
-              <button className="tbl-btn" onClick={viewScreenshot}>View Screenshot</button>
+            {confReg.paymentScreenshotUrl && (
+              <button className="tbl-btn" onClick={viewScreenshot}>Screenshot</button>
             )}
-            {reg.status === 'payment_submitted' && (
+            {confReg.status === 'pending' && (
               <>
-                <button className="tbl-btn approve" onClick={approve} disabled={loadingApprove}>
-                  {loadingApprove ? '…' : 'Approve'}
-                </button>
+                <button className="tbl-btn approve" onClick={() => setShowApprove(true)}>Approve</button>
                 <button className="tbl-btn reject" onClick={() => setShowReject(true)}>Reject</button>
               </>
-            )}
-            {reg.status === 'submitted' && (
-              <SubmissionCell registrationId={reg._id} />
             )}
           </div>
         </td>
       </tr>
+
+      {showApprove && (
+        <ConfApproveModal
+          confRegId={confReg._id}
+          onClose={() => setShowApprove(false)}
+          onDone={() => { setShowApprove(false); onRefresh(); }}
+        />
+      )}
       {showReject && (
-        <RejectModal
-          regId={reg._id}
+        <ConfRejectModal
+          confRegId={confReg._id}
           onClose={() => setShowReject(false)}
           onDone={() => { setShowReject(false); onRefresh(); }}
         />
@@ -139,7 +175,80 @@ function RegRow({ reg, onRefresh }) {
   );
 }
 
-/* ── Submission download link in table row ── */
+/* ── Conference Registrations Section ── */
+function ConfRegSection({ counts }) {
+  const [activeTab, setActiveTab] = useState('pending');
+  const [rows, setRows]           = useState([]);
+  const [loading, setLoading]     = useState(false);
+
+  const CONF_TABS = [
+    { id: 'pending',  label: 'Pending',  count: counts?.pending  || 0 },
+    { id: 'approved', label: 'Approved', count: counts?.approved || 0 },
+    { id: 'rejected', label: 'Rejected', count: counts?.rejected || 0 },
+  ];
+
+  const load = useCallback(() => {
+    setLoading(true);
+    api.get(`/admin/conference-registrations?status=${activeTab}&limit=100`)
+      .then((res) => setRows(res.data?.docs || []))
+      .catch(() => setRows([]))
+      .finally(() => setLoading(false));
+  }, [activeTab]);
+
+  useEffect(() => { load(); }, [load]);
+
+  return (
+    <div className="admin-event-section">
+      <h2 className="admin-event-title">
+        Conference Registrations
+        <span style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', fontWeight: 400 }}>
+          {(counts?.total || 0)} total
+        </span>
+      </h2>
+
+      <div className="admin-status-tabs">
+        {CONF_TABS.map((t) => (
+          <button
+            key={t.id}
+            className={`admin-status-tab${activeTab === t.id ? ' active' : ''}`}
+            onClick={() => setActiveTab(t.id)}
+          >
+            {t.label}{t.count > 0 ? ` (${t.count})` : ''}
+          </button>
+        ))}
+      </div>
+
+      {loading ? (
+        <div style={{ padding: '32px', textAlign: 'center' }}><div className="auth-spinner" style={{ margin: '0 auto' }} /></div>
+      ) : rows.length === 0 ? (
+        <div className="admin-empty">No registrations in this category.</div>
+      ) : (
+        <div className="admin-table-wrap">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>College</th>
+                <th>Transaction ID</th>
+                <th>SRC ID</th>
+                <th>Submitted</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => <ConfRegRow key={r._id} confReg={r} onRefresh={load} />)}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════ EVENT REGISTRATION COMPONENTS */
+
+/* ── Submission download cell ── */
 function SubmissionCell({ registrationId }) {
   const [url, setUrl] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -165,9 +274,72 @@ function SubmissionCell({ registrationId }) {
   );
 }
 
+/* ── Event Registration Row ── */
+function RegRow({ reg, onRefresh }) {
+  const participant = reg.participantSnapshot || reg.userId || {};
+  const team        = reg.teamId;
+
+  if (team) {
+    return (
+      <>
+        <tr className="team-header-row" style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}>
+          <td colSpan="7" style={{ padding: '12px 16px', fontWeight: 'bold', color: 'var(--primary)' }}>
+            Team: {team.teamName} <span style={{ fontSize: '0.85em', color: 'var(--text-muted)' }}>({(team.members?.length || 0) + 1} members)</span>
+          </td>
+        </tr>
+        <tr>
+          <td className="name-cell">
+            {participant.name || '—'}
+            <span style={{ fontSize: '0.65rem', padding: '2px 6px', background: 'rgba(56, 189, 114, 0.2)', color: 'var(--primary)', borderRadius: '4px', marginLeft: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Leader</span>
+          </td>
+          <td>{participant.email || '—'}</td>
+          <td>{participant.college || '—'}</td>
+          <td>—</td>
+          <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--primary)', fontWeight: '600' }}>
+            {reg.srcId || '—'}
+          </td>
+          <td>{new Date(reg.createdAt).toLocaleDateString('en-IN')}</td>
+          <td>
+            {reg.status === 'submitted' && <SubmissionCell registrationId={reg._id} />}
+          </td>
+        </tr>
+        {team.members?.map((m) => (
+          <tr key={m.userId || m._id || m.email} style={{ opacity: 0.85 }}>
+            <td className="name-cell" style={{ paddingLeft: '24px' }}>
+              ↳ {m.name || '—'}
+            </td>
+            <td>{m.email || '—'}</td>
+            <td>{m.college || '—'}</td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+        ))}
+      </>
+    );
+  }
+
+  return (
+    <tr>
+      <td className="name-cell">{participant.name || '—'}</td>
+      <td>{participant.email || '—'}</td>
+      <td>{participant.college || '—'}</td>
+      <td>—</td>
+      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--primary)', fontWeight: '600' }}>
+        {reg.srcId || '—'}
+      </td>
+      <td>{new Date(reg.createdAt).toLocaleDateString('en-IN')}</td>
+      <td>
+        {reg.status === 'submitted' && <SubmissionCell registrationId={reg._id} />}
+      </td>
+    </tr>
+  );
+}
+
 /* ── Event Section with tabs ── */
 function EventSection({ evt }) {
-  const [activeTab, setActiveTab] = useState('payment_submitted');
+  const [activeTab, setActiveTab] = useState('registered');
   const [regs, setRegs]           = useState([]);
   const [loading, setLoading]     = useState(false);
 
@@ -190,7 +362,6 @@ function EventSection({ evt }) {
         </span>
       </h2>
 
-      {/* Export bar */}
       <div className="export-bar">
         <a
           href={`/api/v1/admin/events/${evt.event._id}/export/csv?status=${activeTab}`}
@@ -211,7 +382,7 @@ function EventSection({ evt }) {
       </div>
 
       <div className="admin-status-tabs">
-        {STATUS_TABS.map((t) => (
+        {EVENT_STATUS_TABS.map((t) => (
           <button
             key={t.id}
             className={`admin-status-tab${activeTab === t.id ? ' active' : ''}`}
@@ -236,7 +407,7 @@ function EventSection({ evt }) {
                 <th>Email</th>
                 <th>College</th>
                 <th>Team</th>
-                <th>Transaction ID</th>
+                <th>SRC ID</th>
                 <th>Date</th>
                 <th>Actions</th>
               </tr>
@@ -254,14 +425,17 @@ function EventSection({ evt }) {
 /* ═══════════════════════════════════════════════════════════ ADMIN ROOT */
 export default function AdminDashboard() {
   const { logout } = useAuth();
-  const [overview, setOverview] = useState([]);
-  const [loading, setLoading]   = useState(true);
+  const [data, setData]       = useState({ conferenceRegistrations: null, events: [] });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     api.get('/admin/overview')
-      .then((res) => setOverview(res.data || []))
+      .then((res) => setData(res.data || { conferenceRegistrations: null, events: [] }))
       .finally(() => setLoading(false));
   }, []);
+
+  const confCounts = data.conferenceRegistrations || {};
+  const events     = data.events || [];
 
   return (
     <div className="admin-layout">
@@ -287,7 +461,31 @@ export default function AdminDashboard() {
           <>
             {/* Overview tiles */}
             <div className="overview-grid">
-              {overview.map(({ event, counts, total }) => (
+              {/* Conference registrations tile */}
+              <div className="overview-card" style={{ borderTop: '3px solid var(--primary)' }}>
+                <div className="overview-card-event">Conference Registrations</div>
+                <div className="overview-counts">
+                  <div className="oc-item">
+                    <span className="oc-label">Total</span>
+                    <span className="oc-value">{confCounts.total || 0}</span>
+                  </div>
+                  <div className="oc-item">
+                    <span className="oc-label">Pending</span>
+                    <span className="oc-value" style={{ color: '#60a5fa' }}>{confCounts.pending || 0}</span>
+                  </div>
+                  <div className="oc-item">
+                    <span className="oc-label">Approved</span>
+                    <span className="oc-value" style={{ color: 'var(--primary)' }}>{confCounts.approved || 0}</span>
+                  </div>
+                  <div className="oc-item">
+                    <span className="oc-label">Rejected</span>
+                    <span className="oc-value" style={{ color: '#f87171' }}>{confCounts.rejected || 0}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Per-event tiles */}
+              {events.map(({ event, counts, total }) => (
                 <div className="overview-card" key={event._id}>
                   <div className="overview-card-event">{event.name}</div>
                   <div className="overview-counts">
@@ -296,24 +494,27 @@ export default function AdminDashboard() {
                       <span className="oc-value">{total}</span>
                     </div>
                     <div className="oc-item">
-                      <span className="oc-label">Review</span>
-                      <span className="oc-value" style={{ color: '#60a5fa' }}>{counts.payment_submitted || 0}</span>
-                    </div>
-                    <div className="oc-item">
-                      <span className="oc-label">Approved</span>
-                      <span className="oc-value" style={{ color: 'var(--primary)' }}>{counts.payment_approved || 0}</span>
+                      <span className="oc-label">Waiting</span>
+                      <span className="oc-value" style={{ color: '#60a5fa' }}>{counts.waiting_submission || 0}</span>
                     </div>
                     <div className="oc-item">
                       <span className="oc-label">Submitted</span>
-                      <span className="oc-value" style={{ color: '#6ee7b7' }}>{counts.submitted || 0}</span>
+                      <span className="oc-value" style={{ color: 'var(--primary)' }}>{counts.submitted || 0}</span>
+                    </div>
+                    <div className="oc-item">
+                      <span className="oc-label">Completed</span>
+                      <span className="oc-value" style={{ color: '#6ee7b7' }}>{counts.completed || 0}</span>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
 
+            {/* Conference registrations management section */}
+            <ConfRegSection counts={confCounts} />
+
             {/* Per-event sections */}
-            {overview.map((item) => (
+            {events.map((item) => (
               <EventSection key={item.event._id} evt={item} />
             ))}
           </>

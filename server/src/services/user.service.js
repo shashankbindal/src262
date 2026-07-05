@@ -2,7 +2,11 @@
 const User     = require('../models/User');
 const ApiError = require('../utils/ApiError');
 
-const ALLOWED_UPDATE_FIELDS = ['name', 'college', 'department', 'phone'];
+const ALLOWED_UPDATE_FIELDS = [
+  'name', 'college', 'department', 'phone',
+  'dateOfBirth', 'gender', 'course', 'yearOfStudy',
+  'aicheId', 'city', 'state', 'country',
+];
 
 async function getProfile(userId) {
   const user = await User.findById(userId).lean();

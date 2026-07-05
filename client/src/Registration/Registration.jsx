@@ -11,10 +11,19 @@ function formatDate(d) {
   return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
+const EVENT_IMAGES = {
+  'Chem-E-Car': 'https://www.aiche.org/sites/default/files/images/conference/event/23370477461_f16f1dd228_z.jpg',
+  'K-12 STEM': 'https://learningliftoff.com/wp-content/uploads/2023/01/pexels-artem-podrez-6941450-1536x864.jpg.webp',
+  'Poster Presentation': 'https://images.unsplash.com/photo-1771344488060-f6b32a503b34?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0',
+  'Paper Presentation': 'https://images.unsplash.com/photo-1515603403036-f3d35f75ca52?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0',
+  'Chem-E-Jeopardy': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5jUsij8b-x-PBqn3yMZbAYUwfyACiF3GPAw&s'
+};
+
 /* ── Event selector card ── */
 function EventCard({ event, selected, onClick }) {
   const isPast = event.registrationDeadline && new Date() > new Date(event.registrationDeadline);
   const disabled = !event.registrationEnabled || isPast;
+  const bgImg = EVENT_IMAGES[event.name] || '/bg.png';
 
   return (
     <div
@@ -23,14 +32,11 @@ function EventCard({ event, selected, onClick }) {
       role="button"
       tabIndex={disabled ? -1 : 0}
       onKeyDown={(e) => e.key === 'Enter' && !disabled && onClick(event)}
+      style={{ '--bg-img': `url(${bgImg})` }}
     >
       <div className="esc-header">
         <span className="esc-name">{event.name}</span>
         <span className="esc-type">{event.type}</span>
-      </div>
-      <div className="esc-meta">
-        <span>Fee: ₹{event.fee || 0}</span>
-        <span>Deadline: {formatDate(event.registrationDeadline)}</span>
       </div>
       {disabled && (
         <span className="esc-closed">{isPast ? 'Closed' : 'Disabled'}</span>
@@ -47,16 +53,47 @@ export default function Registration() {
 
   const [events, setEvents]         = useState([]);
   const [eventsLoading, setEventsLoading] = useState(true);
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('er_event');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return null;
+  });
 
-  const [step, setStep]     = useState(1); // 1 = pick event, 2 = form, 3 = success
+  const [step, setStep] = useState(() => Number(sessionStorage.getItem('er_step')) || 1); // 1 = pick event, 2 = form, 3 = success
   const [busy, setBusy]     = useState(false);
   const [error, setError]   = useState('');
   const [successReg, setSuccessReg] = useState(null);
 
+  /* Conference registration status */
+  const [confReg, setConfReg]           = useState(null);
+  const [confRegLoading, setConfRegLoading] = useState(true);
+
   /* Form state */
-  const [teamName, setTeamName]           = useState('');
-  const [memberEmails, setMemberEmails]   = useState(['']);
+  const [teamName, setTeamName]         = useState(() => sessionStorage.getItem('er_teamName') || '');
+  const [memberEmails, setMemberEmails] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('er_members');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [''];
+  });
+
+  /* Persist state */
+  useEffect(() => {
+    sessionStorage.setItem('er_step', step);
+  }, [step]);
+  useEffect(() => {
+    if (selectedEvent) sessionStorage.setItem('er_event', JSON.stringify(selectedEvent));
+    else sessionStorage.removeItem('er_event');
+  }, [selectedEvent]);
+  useEffect(() => {
+    sessionStorage.setItem('er_teamName', teamName);
+  }, [teamName]);
+  useEffect(() => {
+    sessionStorage.setItem('er_members', JSON.stringify(memberEmails));
+  }, [memberEmails]);
 
   /* Load events */
   useEffect(() => {
@@ -64,6 +101,18 @@ export default function Registration() {
       .then((res) => setEvents(res.data || []))
       .finally(() => setEventsLoading(false));
   }, []);
+
+  /* Load conference registration status */
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      api.get('/conference-registration')
+        .then((res) => setConfReg(res.data || null))
+        .catch(() => setConfReg(null))
+        .finally(() => setConfRegLoading(false));
+    } else if (!authLoading) {
+      setConfRegLoading(false);
+    }
+  }, [authLoading, isAuthenticated]);
 
   /* Pre-select event from ?event= query param */
   useEffect(() => {
@@ -73,18 +122,6 @@ export default function Registration() {
       if (found) { setSelectedEvent(found); setStep(2); }
     }
   }, [params, events]);
-
-  return (
-    <div className="reg-simple-container">
-      <div className="reg-content-wrapper" style={{ textAlign: 'center' }}>
-        <h1 className="reg-simple-title">Registration Starting Soon</h1>
-        <p className="reg-simple-desc">We are currently setting up our servers. Registration will be available shortly.</p>
-        <Link to="/" className="reg-simple-btn" style={{ textDecoration: 'none', marginTop: '24px' }} data-magnetic>
-          Back to Home
-        </Link>
-      </div>
-    </div>
-  );
 
   /* Redirect to login if not authenticated */
   if (!authLoading && !isAuthenticated) {
@@ -104,7 +141,7 @@ export default function Registration() {
     );
   }
 
-  if (authLoading || eventsLoading) {
+  if (authLoading || eventsLoading || confRegLoading) {
     return (
       <div className="reg-simple-container">
         <div className="auth-spinner" />
@@ -112,20 +149,45 @@ export default function Registration() {
     );
   }
 
-  /* Email verification gate */
-  if (!user?.isEmailVerified) {
+
+  /* Conference registration gate */
+  if (!confReg || confReg.status !== 'approved') {
+    const isPending  = confReg?.status === 'pending';
+    const isRejected = confReg?.status === 'rejected';
+
     return (
       <div className="reg-simple-container">
         <div className="reg-content-wrapper" style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📧</div>
-          <h1 className="reg-simple-title">Verify your email first</h1>
-          <p className="reg-simple-desc">
-            Please verify your email address before registering for events.
-            Check your inbox for the verification link.
-          </p>
-          <button className="reg-simple-btn" onClick={() => navigate('/dashboard')}>
-            Go to Dashboard
-          </button>
+          {isPending ? (
+            <>
+              <div style={{ fontSize: '3rem', marginBottom: '16px' }}>⏳</div>
+              <h1 className="reg-simple-title">Registration Under Review</h1>
+              <p className="reg-simple-desc">
+                Your conference registration payment is being reviewed by the organizing team.
+                You'll be able to register for events once it's approved.
+              </p>
+            </>
+          ) : isRejected ? (
+            <>
+              <div style={{ fontSize: '3rem', marginBottom: '16px' }}>⚠</div>
+              <h1 className="reg-simple-title">Conference Registration Rejected</h1>
+              <p className="reg-simple-desc">
+                Your conference registration was rejected. Please re-submit with the correct payment details.
+              </p>
+            </>
+          ) : (
+            <>
+              <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🎫</div>
+              <h1 className="reg-simple-title">Register for the Conference First</h1>
+              <p className="reg-simple-desc">
+                You need an approved conference registration to sign up for events.
+                Pay the conference fee to get started.
+              </p>
+            </>
+          )}
+          <Link to="/conference-registration" className="reg-simple-btn" style={{ textDecoration: 'none', marginTop: '16px' }} data-magnetic>
+            {isPending ? 'View Status' : isRejected ? 'Re-submit Payment' : 'Register for Conference'}
+          </Link>
         </div>
       </div>
     );
@@ -141,12 +203,10 @@ export default function Registration() {
           <p className="reg-simple-desc">
             You're registered for <strong style={{ color: 'var(--primary)' }}>{selectedEvent?.name}</strong>.
             <br /><br />
-            Your registration is now <strong>pending payment verification</strong>.
-            Please go to your dashboard to upload your payment screenshot and transaction ID.
+            Head to your dashboard to track your registration status and upload submission files when required.
           </p>
           <div className="reg-notice" style={{ margin: '20px 0', textAlign: 'left' }}>
-            Your registration details may be edited until payment approval. Payment approval is done manually
-            by the organizing team and may take some time. Once approved, registration details become locked.
+            Team details can be edited while your registration is in the <em>Registered</em> or <em>Awaiting Submission</em> state.
           </div>
           <button className="reg-simple-btn" onClick={() => navigate('/dashboard')}>
             Go to Dashboard
@@ -164,11 +224,24 @@ export default function Registration() {
           <div className="reg-page-header">
             <span className="auth-eyebrow">AIChE India SRC 2026</span>
             <h1 className="reg-page-title">Event Registration</h1>
-            <p className="reg-page-sub">Select an event to register for.</p>
+            <p className="reg-page-sub">Select an event to register for. Your SRC ID: <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--primary)' }}>{confReg.srcId}</strong></p>
           </div>
 
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: '800', marginBottom: '20px', color: 'var(--text-primary)' }}>Team Events</h2>
+          <div className="event-select-grid" style={{ marginBottom: '48px' }}>
+            {events.filter(e => e.type === 'team').map((evt) => (
+              <EventCard
+                key={evt._id}
+                event={evt}
+                selected={selectedEvent?._id === evt._id}
+                onClick={(e) => { setSelectedEvent(e); setStep(2); setError(''); }}
+              />
+            ))}
+          </div>
+
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: '800', marginBottom: '20px', color: 'var(--text-primary)' }}>Solo Events</h2>
           <div className="event-select-grid">
-            {events.map((evt) => (
+            {events.filter(e => e.type === 'solo').map((evt) => (
               <EventCard
                 key={evt._id}
                 event={evt}
@@ -221,6 +294,12 @@ export default function Registration() {
       }
 
       const res = await api.post(`/registrations/event/${selectedEvent._id}`, body);
+      
+      sessionStorage.removeItem('er_step');
+      sessionStorage.removeItem('er_event');
+      sessionStorage.removeItem('er_teamName');
+      sessionStorage.removeItem('er_members');
+
       setSuccessReg(res.data);
       setStep(3);
     } catch (err) {
@@ -245,11 +324,6 @@ export default function Registration() {
             <h2 className="reg-form-title">{selectedEvent?.name}</h2>
             <div className="reg-form-meta">
               <span>Type: <strong>{selectedEvent?.type}</strong></span>
-              <span>Fee: <strong>₹{selectedEvent?.fee || 0}</strong></span>
-              <span>Deadline: <strong>{formatDate(selectedEvent?.registrationDeadline)}</strong></span>
-              {selectedEvent?.submissionDeadline && (
-                <span>Submission Deadline: <strong>{formatDate(selectedEvent.submissionDeadline)}</strong></span>
-              )}
             </div>
           </div>
 
@@ -301,12 +375,15 @@ export default function Registration() {
                 <label className="auth-label">
                   Team Members (min {minMembers}, max {maxMembers} besides you)
                 </label>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 10px', lineHeight: 1.5 }}>
+                  All members must have an account with an approved conference registration.
+                </p>
                 {memberEmails.map((email, i) => (
                   <div key={i} style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
                     <input
                       className="auth-input"
                       type="email"
-                      placeholder={`Member ${i + 1} email (must have an account)`}
+                      placeholder={`Member ${i + 1} email`}
                       value={email}
                       onChange={(e) => updateMember(i, e.target.value)}
                       style={{ flex: 1 }}
@@ -329,19 +406,6 @@ export default function Registration() {
               </div>
             </div>
           )}
-
-          {/* Payment info */}
-          <div className="reg-section reg-payment-info">
-            <h3 className="reg-section-title">Payment</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '12px', lineHeight: 1.6 }}>
-              After submitting this form, you'll be directed to your dashboard where you can upload your payment
-              screenshot and transaction ID. A QR code for payment will be shown there.
-            </p>
-            <div className="reg-notice">
-              Your registration details may be edited until payment approval. Payment approval is done manually
-              by the organizing team and may take some time. Once approved, registration details become locked.
-            </div>
-          </div>
 
           {error && <div className="auth-error">{error}</div>}
 

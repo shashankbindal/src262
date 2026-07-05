@@ -1,19 +1,16 @@
 'use strict';
-const mongoose       = require('mongoose');
+const mongoose         = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2');
 
 /**
- * Lifecycle states (linear progression):
+ * Lifecycle states:
+ * registered → waiting_submission → submitted → completed
  *
- * pending_payment → payment_submitted → payment_approved
- *                                    ↘ payment_rejected (can re-submit)
- * payment_approved → waiting_submission → submitted → completed
+ * Note: "registered" covers both "no file required" and initial state.
+ * If fileUploadRequired, status starts as "waiting_submission".
  */
 const STATUS = [
-  'pending_payment',
-  'payment_submitted',
-  'payment_approved',
-  'payment_rejected',
+  'registered',
   'waiting_submission',
   'submitted',
   'completed',
@@ -39,18 +36,11 @@ const registrationSchema = new mongoose.Schema(
     status: {
       type:    String,
       enum:    STATUS,
-      default: 'pending_payment',
+      default: 'registered',
     },
-    /* Payment proof */
-    paymentScreenshotUrl: { type: String, default: '' },
-    paymentScreenshotKey: { type: String, default: '' }, // S3 object key for deletion
-    transactionId:        { type: String, trim: true, default: '' },
 
-    /* Admin rejection reason */
-    paymentRejectedReason: { type: String, default: '' },
-
-    /* Once approved, details are locked */
-    isLocked: { type: Boolean, default: false },
+    /* SRC ID of the registrant at the time of registration (immutable snapshot) */
+    srcId: { type: String, trim: true, default: '' },
 
     /* Snapshot of registrant info at time of registration */
     participantSnapshot: {
@@ -63,7 +53,7 @@ const registrationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-/* Prevent duplicate solo registrations */
+/* Prevent duplicate registrations for the same event */
 registrationSchema.index({ userId: 1, eventId: 1 }, { unique: true });
 registrationSchema.index({ eventId: 1, status: 1 });
 registrationSchema.index({ teamId: 1 });

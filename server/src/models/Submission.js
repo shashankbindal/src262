@@ -1,5 +1,6 @@
 'use strict';
-const mongoose = require('mongoose');
+const mongoose         = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const submissionSchema = new mongoose.Schema(
   {
@@ -20,7 +21,7 @@ const submissionSchema = new mongoose.Schema(
       required: true,
     },
     fileUrl:      { type: String, required: true },
-    fileKey:      { type: String, required: true },  // S3 object key for deletion/replacement
+    fileKey:      { type: String, required: true },  // Cloudinary public_id for deletion/replacement
     fileName:     { type: String, required: true },
     fileMimeType: { type: String, required: true },
     fileSizeBytes: { type: Number, required: true },
@@ -37,5 +38,7 @@ const submissionSchema = new mongoose.Schema(
 
 submissionSchema.index({ eventId: 1, status: 1 });
 submissionSchema.index({ userId: 1 });
+
+submissionSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model('Submission', submissionSchema);

@@ -286,13 +286,10 @@
   padding: 4px 10px;
   border-radius: 20px;
 }
-.status-badge.pending_payment    { background: rgba(245, 158, 11, 0.08); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.15); }
-.status-badge.payment_submitted  { background: rgba(59, 130, 246, 0.08); color: #2563eb; border: 1px solid rgba(59,130,246,0.15); }
-.status-badge.payment_approved   { background: rgba(11, 93, 70, 0.08); color: var(--primary); border: 1px solid rgba(11, 93, 70, 0.15); }
-.status-badge.payment_rejected   { background: rgba(239, 68, 68, 0.08); color: #dc2626; border: 1px solid rgba(239,68,68,0.15); }
+.status-badge.registered         { background: rgba(59, 130, 246, 0.08); color: #2563eb; border: 1px solid rgba(59,130,246,0.15); }
 .status-badge.waiting_submission { background: rgba(139, 92, 246, 0.08); color: #7c3aed; border: 1px solid rgba(139,92,246,0.15); }
 .status-badge.submitted          { background: rgba(16, 185, 129, 0.08); color: #059669; border: 1px solid rgba(16,185,129,0.15); }
-.status-badge.completed          { background: rgba(11, 93, 70, 0.12); color: var(--primary-dark); border: 1px solid rgba(11, 93, 70, 0.2); }
+.status-badge.completed          { background: rgba(11, 93, 70, 0.12); color: var(--primary); border: 1px solid rgba(11, 93, 70, 0.2); }
 
 /* ── Inline action buttons in reg card ── */
 .reg-card-actions {
@@ -396,4 +393,142 @@
   .reg-cards-grid { grid-template-columns: 1fr; }
   .reg-meta { grid-template-columns: 1fr; }
   .profile-card { padding: 24px 20px; }
+}
+
+/* ══ Conference Registration Banner ══ */
+.confbanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  border-radius: 16px;
+  margin-bottom: 28px;
+  border: 1px solid rgba(0,0,0,.06);
+  flex-wrap: wrap;
+}
+
+.confbanner-none {
+  background: rgba(11,93,70,.05);
+  border-color: rgba(11,93,70,.12);
+}
+
+.confbanner-pending {
+  background: rgba(96,165,250,.07);
+  border-color: rgba(96,165,250,.2);
+}
+
+.confbanner-rejected {
+  background: rgba(248,113,113,.07);
+  border-color: rgba(248,113,113,.2);
+}
+
+.confbanner-approved {
+  background: rgba(110,231,183,.08);
+  border-color: rgba(11,93,70,.15);
+}
+
+.confbanner-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.confbanner-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.confbanner-msg {
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.confbanner-srcid-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 4px;
+}
+
+.confbanner-srcid-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.confbanner-srcid {
+  font-family: var(--font-mono);
+  color: var(--primary);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.confbanner-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.confbanner-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+}
+
+.confbanner-meta-key {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.confbanner-meta-val {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.confbanner-mono {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.confbanner-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 20px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.confbanner-btn:hover {
+  background: #0a5240;
+  transform: translateY(-1px);
+}
+
+.confbanner-btn.outlined {
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+}
+
+.confbanner-btn.outlined:hover {
+  background: rgba(11,93,70,.08);
 }

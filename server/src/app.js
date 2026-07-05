@@ -15,12 +15,14 @@ const logger            = require('./utils/logger');
 const { env }           = require('./config/env');
 
 /* ─── Route imports ──────────────────────────────────────────────────────── */
-const authRoutes         = require('./routes/auth.routes');
-const userRoutes         = require('./routes/user.routes');
-const eventRoutes        = require('./routes/event.routes');
-const registrationRoutes = require('./routes/registration.routes');
-const submissionRoutes   = require('./routes/submission.routes');
-const adminRoutes        = require('./routes/admin.routes');
+const authRoutes                   = require('./routes/auth.routes');
+const userRoutes                   = require('./routes/user.routes');
+const eventRoutes                  = require('./routes/event.routes');
+const conferenceRegistrationRoutes = require('./routes/conferenceRegistration.routes');
+const registrationRoutes           = require('./routes/registration.routes');
+const submissionRoutes             = require('./routes/submission.routes');
+const adminRoutes                  = require('./routes/admin.routes');
+const contactRoutes                = require('./routes/contact.routes');
 
 const app = express();
 
@@ -66,12 +68,14 @@ app.get('/health', (_req, res) => {
 /* ─── API routes ─────────────────────────────────────────────────────────── */
 const V1 = '/api/v1';
 
-app.use(`${V1}/auth`,          authRoutes);
-app.use(`${V1}/users`,         userRoutes);
-app.use(`${V1}/events`,        eventRoutes);
-app.use(`${V1}/registrations`, registrationRoutes);
-app.use(`${V1}/submissions`,   submissionRoutes);
-app.use(`${V1}/admin`,         adminRoutes);
+app.use(`${V1}/auth`,                    authRoutes);
+app.use(`${V1}/users`,                   userRoutes);
+app.use(`${V1}/events`,                  eventRoutes);
+app.use(`${V1}/conference-registration`, conferenceRegistrationRoutes);
+app.use(`${V1}/registrations`,           registrationRoutes);
+app.use(`${V1}/submissions`,             submissionRoutes);
+app.use(`${V1}/admin`,                   adminRoutes);
+app.use(`${V1}/contact`,                 contactRoutes);
 
 /* ─── 404 handler ────────────────────────────────────────────────────────── */
 app.use((_req, res) => {

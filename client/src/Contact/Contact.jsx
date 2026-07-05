@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { api } from '../lib/api.js'
 import { useReveal } from '../Home/useReveal.js'
 import { useStaggerLines } from '../Home/useStaggerLines.js'
 import '../Home/animations.css'
@@ -6,6 +7,23 @@ import './Contact.css'
 
 const Contact = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.name || !form.email || !form.message) return;
+    setLoading(true);
+    try {
+      await api.post('/contact', form);
+      setIsSubmitted(true);
+      setForm({ name: '', email: '', message: '' });
+    } catch (err) {
+      alert(err.message || 'Failed to send message. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
   
   const [headerRef, headerVisible] = useReveal(0.1);
   const textRef = useStaggerLines('p', 0.1);
@@ -72,13 +90,20 @@ const Contact = () => {
               <button onClick={() => setIsSubmitted(false)} className="submit-btn">Send Another Message</button>
             </div>
           ) : (
-            <form className="contact-form" onSubmit={(e) => { e.preventDefault(); setIsSubmitted(true); }}>
+            <form className="contact-form" onSubmit={handleSubmit}>
               <div className="form-group">
                 <label className="form-label">
                   YOUR NAME
                   <span className="required-badge">Required</span>
                 </label>
-                <input type="text" className="form-input" placeholder="Write your name" required />
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  placeholder="Write your name" 
+                  required 
+                  value={form.name}
+                  onChange={(e) => setForm({...form, name: e.target.value})}
+                />
               </div>
 
               <div className="form-group">
@@ -86,17 +111,32 @@ const Contact = () => {
                   YOUR E-MAIL (required)
                   <span className="required-badge">Required</span>
                 </label>
-                <input type="email" className="form-input" placeholder="Write your email" required />
+                <input 
+                  type="email" 
+                  className="form-input" 
+                  placeholder="Write your email" 
+                  required 
+                  value={form.email}
+                  onChange={(e) => setForm({...form, email: e.target.value})}
+                />
               </div>
 
               <div className="form-group">
                 <label className="form-label">
                   YOUR MESSAGE
                 </label>
-                <textarea className="form-textarea" placeholder="Write your message"></textarea>
+                <textarea 
+                  className="form-textarea" 
+                  placeholder="Write your message" 
+                  required
+                  value={form.message}
+                  onChange={(e) => setForm({...form, message: e.target.value})}
+                ></textarea>
               </div>
 
-              <button type="submit" className="submit-btn" data-magnetic>Send Message</button>
+              <button type="submit" className="submit-btn" disabled={loading} data-magnetic>
+                {loading ? 'Sending...' : 'Send Message'}
+              </button>
             </form>
           )}
         </div>

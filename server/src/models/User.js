@@ -5,9 +5,9 @@ const bcrypt   = require('bcryptjs');
 const userSchema = new mongoose.Schema(
   {
     name: {
-      type:     String,
-      required: [true, 'Name is required'],
-      trim:     true,
+      type:      String,
+      required:  [true, 'Name is required'],
+      trim:      true,
       maxlength: [100, 'Name cannot exceed 100 characters'],
     },
     email: {
@@ -19,8 +19,8 @@ const userSchema = new mongoose.Schema(
       match:     [/^\S+@\S+\.\S+$/, 'Please provide a valid email'],
     },
     password: {
-      type:     String,
-      select:   false,
+      type:      String,
+      select:    false,
       minlength: [8, 'Password must be at least 8 characters'],
     },
     googleId: {
@@ -36,21 +36,54 @@ const userSchema = new mongoose.Schema(
       type:    Boolean,
       default: false,
     },
-    emailVerificationToken: { type: String, select: false },
-    emailVerificationExpiry: { type: Date, select: false },
 
+    /* OTP-based email verification */
+    otpHash:             { type: String, select: false },
+    otpExpiry:           { type: Date,   select: false },
+    otpAttempts:         { type: Number, default: 0, select: false },
+    otpResendCount:      { type: Number, default: 0, select: false },
+    otpResendWindowStart:{ type: Date,   select: false },
+
+    /* Password reset */
     passwordResetToken:  { type: String, select: false },
-    passwordResetExpiry: { type: Date, select: false },
+    passwordResetExpiry: { type: Date,   select: false },
 
-    /* Profile fields */
-    college:    { type: String, trim: true, maxlength: 150 },
+    /* Profile fields — basic */
+    college:    { type: String, trim: true, maxlength: 150 }, // institute name
     department: { type: String, trim: true, maxlength: 100 },
-    phone:      {
+    phone: {
       type:  String,
       trim:  true,
-      match: [/^\+?[0-9\s\-]{7,15}$/, 'Please provide a valid phone number'],
+      match: [/^[0-9]{10}$/, 'Phone must be exactly 10 digits'],
     },
     profilePicture: { type: String, default: '' },
+
+    /* Extended profile — collected during conference registration */
+    dateOfBirth: { type: Date },
+    gender: {
+      type: String,
+      enum: ['Male', 'Female', 'Other', 'Prefer not to say'],
+    },
+    course:      { type: String, trim: true, maxlength: 150 }, // programme name
+    yearOfStudy: {
+      type: String,
+      enum: ['First Year', 'Second Year', 'Third Year', 'Fourth Year'],
+    },
+
+    /* Identity — never returned by default */
+    aadhaarNumber: { type: String, select: false },
+
+    /* Required membership (for conference) */
+    aicheId: { type: String, trim: true, maxlength: 50, default: '' },
+
+    /* Address */
+    city:    { type: String, trim: true, maxlength: 100, default: '' },
+    state:   { type: String, trim: true, maxlength: 100, default: '' },
+    country: { type: String, trim: true, maxlength: 100, default: 'India' },
+
+    /* University ID card stored in storage */
+    universityIdCardUrl: { type: String, default: '' },
+    universityIdCardKey: { type: String, default: '' },
 
     /* Refresh token hash stored to allow server-side revocation */
     refreshTokenHash: { type: String, select: false },
@@ -78,8 +111,11 @@ userSchema.methods.comparePassword = async function (candidate) {
 userSchema.methods.toSafeObject = function () {
   const obj = this.toObject();
   delete obj.password;
-  delete obj.emailVerificationToken;
-  delete obj.emailVerificationExpiry;
+  delete obj.otpHash;
+  delete obj.otpExpiry;
+  delete obj.otpAttempts;
+  delete obj.otpResendCount;
+  delete obj.otpResendWindowStart;
   delete obj.passwordResetToken;
   delete obj.passwordResetExpiry;
   delete obj.refreshTokenHash;

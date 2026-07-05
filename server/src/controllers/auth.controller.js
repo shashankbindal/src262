@@ -3,7 +3,6 @@ const asyncHandler = require('../utils/asyncHandler');
 const ApiResponse  = require('../utils/ApiResponse');
 const ApiError     = require('../utils/ApiError');
 const authService  = require('../services/auth.service');
-const crypto       = require('crypto');
 const {
   setCookies,
   clearCookies,
@@ -17,24 +16,24 @@ const logger       = require('../utils/logger');
 const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
   const user = await authService.register({ name, email, password });
-  ApiResponse.created(res, 'Account created. Please check your email to verify your account.', {
+  ApiResponse.created(res, 'Account created. Please request an OTP to verify your email.', {
     id: user._id, name: user.name, email: user.email,
   });
 });
 
-const verifyEmail = asyncHandler(async (req, res) => {
-  const { token } = req.query;
-  if (!token) throw ApiError.badRequest('Verification token is required');
-  await authService.verifyEmail(token);
-  ApiResponse.ok(res, 'Email verified successfully. You can now log in.');
-});
-
-const resendVerification = asyncHandler(async (req, res) => {
+const sendOTP = asyncHandler(async (req, res) => {
   const { email } = req.body;
   if (!email) throw ApiError.badRequest('Email is required');
-  await authService.resendVerification(email);
-  /* Always 200 — don't reveal whether email exists */
-  ApiResponse.ok(res, 'If an unverified account exists for that email, a new verification link has been sent.');
+  await authService.sendOTP(email);
+  ApiResponse.ok(res, 'If an unverified account exists for that email, a verification code has been sent.');
+});
+
+const verifyOTP = asyncHandler(async (req, res) => {
+  const { email, otp } = req.body;
+  if (!email) throw ApiError.badRequest('Email is required');
+  if (!otp)   throw ApiError.badRequest('OTP is required');
+  await authService.verifyOTP(email, otp);
+  ApiResponse.ok(res, 'Email verified successfully. You can now log in.');
 });
 
 const login = asyncHandler(async (req, res) => {
@@ -73,9 +72,6 @@ const resetPassword = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, 'Password reset successfully. You can now log in with your new password.');
 });
 
-/**
- * Google OAuth callback — issues tokens and redirects to frontend dashboard.
- */
 const googleCallback = asyncHandler(async (req, res) => {
   const user = req.user;
   if (!user) throw ApiError.unauthorized('Google authentication failed');
@@ -96,8 +92,8 @@ const getMe = asyncHandler(async (req, res) => {
 
 module.exports = {
   register,
-  verifyEmail,
-  resendVerification,
+  sendOTP,
+  verifyOTP,
   login,
   refresh,
   logout,

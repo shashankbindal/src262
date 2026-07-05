@@ -299,3 +299,31 @@
     font-size: 1.7rem;
   }
 }
+/* ---- OTP input ---- */
+.otp-input {
+  text-align: center;
+  letter-spacing: 0.4em;
+  font-size: 1.5rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+/* ---- Inline link button (resend, etc.) ---- */
+.auth-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--primary);
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.auth-link-btn:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+  text-decoration: none;
+}

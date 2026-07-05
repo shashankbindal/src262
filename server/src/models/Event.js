@@ -10,11 +10,11 @@ const eventSchema = new mongoose.Schema(
       unique:   true,
     },
     slug: {
-      type:     String,
-      required: true,
-      unique:   true,
+      type:      String,
+      required:  true,
+      unique:    true,
       lowercase: true,
-      trim:     true,
+      trim:      true,
     },
     description: { type: String, trim: true, default: '' },
     type: {
@@ -22,19 +22,11 @@ const eventSchema = new mongoose.Schema(
       enum:     ['solo', 'team'],
       required: true,
     },
-    fee: {
-      type:    Number,
-      default: 0,
-      min:     0,
-    },
     registrationDeadline: {
       type:     Date,
       required: true,
     },
     submissionDeadline: {
-      type: Date,
-    },
-    paymentDeadline: {
       type: Date,
     },
     fileUploadRequired: {
@@ -61,10 +53,6 @@ const eventSchema = new mongoose.Schema(
       type:    Boolean,
       default: true,
     },
-    /* QR code URL for payment */
-    paymentQrUrl: { type: String, default: '' },
-    /* UPI ID / bank details shown at checkout */
-    paymentDetails: { type: String, default: '' },
   },
   { timestamps: true }
 );

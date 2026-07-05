@@ -28,6 +28,7 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(async () => {
     await api.post('/auth/logout').catch(() => {});
+    sessionStorage.clear();
     setUser(null);
   }, []);
 

@@ -1,14 +1,9 @@
 'use strict';
-const { Resend }       = require('resend');
-const { env }          = require('../config/env');
-const logger           = require('../utils/logger');
-
-const welcomeTemplate              = require('../emails/templates/welcome');
-const resetPasswordTemplate        = require('../emails/templates/resetPassword');
-const paymentApprovedTemplate      = require('../emails/templates/paymentApproved');
-const paymentRejectedTemplate      = require('../emails/templates/paymentRejected');
-const submissionReceivedTemplate   = require('../emails/templates/submissionReceived');
-const participationConfirmTemplate = require('../emails/templates/participationConfirmation');
+const { Resend }            = require('resend');
+const { env }               = require('../config/env');
+const logger                = require('../utils/logger');
+const otpTemplate           = require('../emails/templates/otp');
+const resetPasswordTemplate = require('../emails/templates/resetPassword');
 
 const resend = new Resend(env.RESEND_API_KEY);
 const FROM   = `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`;
@@ -23,11 +18,11 @@ async function send({ to, subject, html }) {
   }
 }
 
-async function sendWelcome({ name, email, verifyUrl }) {
+async function sendOTP({ name, email, otp }) {
   await send({
     to:      email,
-    subject: 'Welcome to Viplav 2026 — Verify Your Email',
-    html:    welcomeTemplate({ name, verifyUrl }),
+    subject: 'Your Viplav 2026 Verification Code',
+    html:    otpTemplate({ name, otp }),
   });
 }
 
@@ -39,43 +34,7 @@ async function sendPasswordReset({ name, email, resetUrl }) {
   });
 }
 
-async function sendPaymentApproved({ name, email, eventName, dashboardUrl }) {
-  await send({
-    to:      email,
-    subject: `Payment Approved — ${eventName} | Viplav 2026`,
-    html:    paymentApprovedTemplate({ name, eventName, dashboardUrl }),
-  });
-}
-
-async function sendPaymentRejected({ name, email, eventName, reason, dashboardUrl }) {
-  await send({
-    to:      email,
-    subject: `Payment Rejected — ${eventName} | Viplav 2026`,
-    html:    paymentRejectedTemplate({ name, eventName, reason, dashboardUrl }),
-  });
-}
-
-async function sendSubmissionReceived({ name, email, eventName, fileName, dashboardUrl }) {
-  await send({
-    to:      email,
-    subject: `Submission Received — ${eventName} | Viplav 2026`,
-    html:    submissionReceivedTemplate({ name, eventName, fileName, dashboardUrl }),
-  });
-}
-
-async function sendParticipationConfirmation({ name, email, eventName }) {
-  await send({
-    to:      email,
-    subject: `Registration Confirmed — ${eventName} | Viplav 2026`,
-    html:    participationConfirmTemplate({ name, eventName }),
-  });
-}
-
 module.exports = {
-  sendWelcome,
+  sendOTP,
   sendPasswordReset,
-  sendPaymentApproved,
-  sendPaymentRejected,
-  sendSubmissionReceived,
-  sendParticipationConfirmation,
 };

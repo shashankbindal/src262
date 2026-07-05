@@ -19,6 +19,26 @@ const registerValidator = [
     .matches(/[0-9]/).withMessage('Password must contain at least one number'),
 ];
 
+const sendOTPValidator = [
+  body('email')
+    .trim()
+    .isEmail().withMessage('Please provide a valid email')
+    .normalizeEmail(),
+];
+
+const verifyOTPValidator = [
+  body('email')
+    .trim()
+    .isEmail().withMessage('Please provide a valid email')
+    .normalizeEmail(),
+
+  body('otp')
+    .trim()
+    .notEmpty().withMessage('OTP is required')
+    .isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits')
+    .isNumeric().withMessage('OTP must contain only digits'),
+];
+
 const loginValidator = [
   body('email')
     .trim()
@@ -45,6 +65,8 @@ const resetPasswordValidator = [
 
 module.exports = {
   registerValidator,
+  sendOTPValidator,
+  verifyOTPValidator,
   loginValidator,
   forgotPasswordValidator,
   resetPasswordValidator,

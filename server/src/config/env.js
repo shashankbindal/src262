@@ -13,12 +13,9 @@ const required = [
   'GOOGLE_CALLBACK_URL',
   'RESEND_API_KEY',
   'EMAIL_FROM',
-  'DO_SPACES_ENDPOINT',
-  'DO_SPACES_REGION',
-  'DO_SPACES_BUCKET',
-  'DO_SPACES_KEY',
-  'DO_SPACES_SECRET',
-  'DO_SPACES_CDN_URL',
+  'CLOUDINARY_CLOUD_NAME',
+  'CLOUDINARY_API_KEY',
+  'CLOUDINARY_API_SECRET',
   'CLIENT_URL',
 ];
 
@@ -48,12 +45,9 @@ const env = {
   EMAIL_FROM:             process.env.EMAIL_FROM,
   EMAIL_FROM_NAME:        process.env.EMAIL_FROM_NAME || 'Viplav 2026',
 
-  DO_SPACES_ENDPOINT:     process.env.DO_SPACES_ENDPOINT,
-  DO_SPACES_REGION:       process.env.DO_SPACES_REGION,
-  DO_SPACES_BUCKET:       process.env.DO_SPACES_BUCKET,
-  DO_SPACES_KEY:          process.env.DO_SPACES_KEY,
-  DO_SPACES_SECRET:       process.env.DO_SPACES_SECRET,
-  DO_SPACES_CDN_URL:      process.env.DO_SPACES_CDN_URL,
+  CLOUDINARY_CLOUD_NAME:  process.env.CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_API_KEY:     process.env.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET:  process.env.CLOUDINARY_API_SECRET,
 
   isProd: () => process.env.NODE_ENV === 'production',
   isDev:  () => process.env.NODE_ENV !== 'production',

@@ -1,7 +1,6 @@
 'use strict';
-const asyncHandler = require('../utils/asyncHandler');
-const ApiResponse = require('../utils/ApiResponse');
-const ApiError = require('../utils/ApiError');
+const asyncHandler        = require('../utils/asyncHandler');
+const ApiResponse         = require('../utils/ApiResponse');
 const registrationService = require('../services/registration.service');
 
 const createRegistration = asyncHandler(async (req, res) => {
@@ -30,22 +29,6 @@ const updateRegistration = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, 'Registration updated successfully', registration);
 });
 
-const submitPayment = asyncHandler(async (req, res) => {
-  if (!req.file) throw ApiError.badRequest('Payment screenshot is required');
-
-  const { transactionId } = req.body;
-  const fileUrl = req.file.location;
-  const fileKey = req.file.key;
-
-  const reg = await registrationService.submitPayment(
-    req.user._id,
-    req.params.registrationId,
-    { transactionId, fileUrl, fileKey }
-  );
-
-  ApiResponse.ok(res, 'Payment submitted. Awaiting verification.', reg);
-});
-
 const getMyRegistrations = asyncHandler(async (req, res) => {
   const registrations = await registrationService.getUserRegistrations(req.user._id);
   ApiResponse.ok(res, 'Registrations fetched', registrations);
@@ -59,4 +42,4 @@ const getRegistrationById = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, 'Registration fetched', reg);
 });
 
-module.exports = { createRegistration, updateRegistration, submitPayment, getMyRegistrations, getRegistrationById };
+module.exports = { createRegistration, updateRegistration, getMyRegistrations, getRegistrationById };

@@ -303,3 +303,25 @@
   .admin-body { padding: 28px 4%; }
   .overview-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Approve modal SRC ID input ── */
+.admin-modal-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--text-primary);
+  outline: none;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.admin-modal-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(11,93,70,.1);
+}
