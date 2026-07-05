@@ -55,7 +55,7 @@ export const bentoCards = [
     color: "#489467",
     description: "The Chem-E-Car Team oversees one of AIChE’s flagship competitions, promoting innovation at the intersection of chemical engineering and design. They coordinate technical evaluations, competition logistics, and participant engagement.",
     chairs: [{ role: "Chair(Internal)", name: "Tapesh Kumar", image: "/team/Tapesh_jpeg.jpg" }],
-    coordinators: [{ role: "Coordinator", name: "Ananya Priyam Mishra", image: "" }],
+    coordinators: [{ role: "Coordinator", name: "Ananya Priyam Mishra", image: "/team/Ananya Priyam Mishra_Coordinator_ChemEcar.HEIC" }],
     span: "col-span-1"
   },
   {
@@ -90,7 +90,7 @@ export const bentoCards = [
     ],
     coordinators: [
       { role: "Coordinator", name: "Arvind Gupta", image: "/team/Arvind Gupta_Coordinator_Sponsorship Team .jpg" },
-      { role: "Coordinator", name: "Charu Singh", image: "" }
+      { role: "Coordinator", name: "Charu Singh", image: "/team/Charu Singh.jpeg" }
     ],
     span: "col-span-1"
   },
@@ -149,7 +149,7 @@ export const bentoCards = [
     description: "The Logistics Team ensures that all resources, materials, and operational requirements are available at the right place and time. They manage venue setups, equipment handling, and event execution support. Their efficiency plays a crucial role in maintaining smooth conference operations.",
     chairs: [{ role: "Chair", name: "Dev Jangid", image: "/team/Dev Jangid_chair_logistics_.jpg" }],
     coordinators: [
-      { role: "Coordinator", name: "Mann Pratap", image: "" },
+      { role: "Coordinator", name: "Mann Pratap", image: "/team/Mann_coordinator_Logistics.jpg" },
       { role: "Coordinator", name: "Alok Patel", image: "/team/Alok Patel _coordinator_Logistics.jpg" }
     ],
     span: "col-span-2"
@@ -161,7 +161,7 @@ export const bentoCards = [
     description: "The Social Media Team amplifies the conference’s presence through engaging digital campaigns and strategic communication. They create impactful content, manage online interactions, and build excitement around SRC. Their efforts help strengthen visibility and connect with a wider audience.",
     chairs: [{ role: "Chair", name: "Nikhil Pilania", image: "/team/Nikhil Pilania_.jpg" }],
     coordinators: [
-      { role: "Coordinator", name: "Bhumi Keshari", image: "" },
+      { role: "Coordinator", name: "Bhumi Keshari", image: "/team/Bhumi Keshari_social media_coordinator.jpg" },
       { role: "Coordinator", name: "Gourav", image: "/team/Gourav_Coordinator_Social media.jpg" }
     ],
     span: "col-span-1"
