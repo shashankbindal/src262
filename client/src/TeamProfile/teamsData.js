@@ -55,7 +55,7 @@ export const bentoCards = [
     color: "#489467",
     description: "The Chem-E-Car Team oversees one of AIChE’s flagship competitions, promoting innovation at the intersection of chemical engineering and design. They coordinate technical evaluations, competition logistics, and participant engagement.",
     chairs: [{ role: "Chair(Internal)", name: "Tapesh Kumar", image: "/team/Tapesh_jpeg.jpg" }],
-    coordinators: [{ role: "Coordinator", name: "Ananya Priyam Mishra", image: "/team/Ananya Priyam Mishra_Coordinator_ChemEcar.HEIC" }],
+    coordinators: [{ role: "Coordinator", name: "Ananya Priyam Mishra", image: "/team/Ananya Priyam Mishra_Coordinator_ChemEcar.png" }],
     span: "col-span-1"
   },
   {
