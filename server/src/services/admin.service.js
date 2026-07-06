@@ -4,6 +4,7 @@ const ConferenceRegistration = require('../models/ConferenceRegistration');
 const Submission             = require('../models/Submission');
 const Event                  = require('../models/Event');
 const User                   = require('../models/User');
+const Team                   = require('../models/Team');
 const ApiError               = require('../utils/ApiError');
 const cloudinaryService      = require('./cloudinary.service');
 const confRegService         = require('./conferenceRegistration.service');
@@ -201,6 +202,150 @@ async function getFullOverview() {
   return { conferenceRegistrations: confRegOverview, events: eventOverview };
 }
 
+/* ─── Event Management (create / update / delete) ─────────────────────────── */
+
+function slugify(name) {
+  return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+const EVENT_UPDATABLE_FIELDS = [
+  'name', 'slug', 'description', 'type', 'registrationDeadline', 'submissionDeadline',
+  'fileUploadRequired', 'allowedFileTypes', 'maxFileSizeMB', 'minTeamSize', 'maxTeamSize',
+  'registrationEnabled',
+];
+
+async function createEvent(data) {
+  const slug = data.slug || slugify(data.name);
+
+  const existing = await Event.findOne({ slug });
+  if (existing) throw ApiError.conflict(`An event with slug "${slug}" already exists`);
+
+  const event = await Event.create({
+    name:                 data.name,
+    slug,
+    description:          data.description || '',
+    type:                 data.type,
+    registrationDeadline: data.registrationDeadline,
+    submissionDeadline:   data.submissionDeadline || undefined,
+    fileUploadRequired:   Boolean(data.fileUploadRequired),
+    allowedFileTypes:     data.allowedFileTypes || ['application/pdf'],
+    maxFileSizeMB:        data.maxFileSizeMB || 10,
+    minTeamSize:          data.minTeamSize,
+    maxTeamSize:          data.maxTeamSize,
+    registrationEnabled:  data.registrationEnabled !== undefined ? data.registrationEnabled : true,
+  });
+
+  logger.info(`Event created: ${event.name} (${event._id})`);
+  return event;
+}
+
+async function updateEvent(eventId, data) {
+  const update = {};
+  for (const field of EVENT_UPDATABLE_FIELDS) {
+    if (data[field] !== undefined) update[field] = data[field];
+  }
+
+  if (update.slug) {
+    const existing = await Event.findOne({ slug: update.slug, _id: { $ne: eventId } });
+    if (existing) throw ApiError.conflict(`An event with slug "${update.slug}" already exists`);
+  }
+
+  const event = await Event.findByIdAndUpdate(eventId, { $set: update }, { new: true, runValidators: true });
+  if (!event) throw ApiError.notFound('Event not found');
+
+  logger.info(`Event updated: ${event.name} (${event._id})`);
+  return event;
+}
+
+/**
+ * Deletes an event along with every registration, team, and submission
+ * tied to it — an event with live registrations is not left half-orphaned.
+ */
+async function deleteEvent(eventId) {
+  const event = await Event.findById(eventId);
+  if (!event) throw ApiError.notFound('Event not found');
+
+  const regs = await Registration.find({ eventId }).lean();
+  const teamIds = regs.map((r) => r.teamId).filter(Boolean);
+
+  await Submission.deleteMany({ eventId });
+  if (teamIds.length) await Team.deleteMany({ _id: { $in: teamIds } });
+  await Registration.deleteMany({ eventId });
+  await event.deleteOne();
+
+  logger.info(`Event deleted: ${event.name} (${eventId})`);
+}
+
+/* ─── User Management (list / create / delete) ────────────────────────────── */
+
+async function getUsers({ search, page = 1, limit = 50 } = {}) {
+  const filter = {};
+  if (search) {
+    const re = new RegExp(search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    filter.$or = [{ name: re }, { email: re }];
+  }
+
+  return User.paginate(filter, {
+    page,
+    limit,
+    select: 'name email role isEmailVerified college createdAt',
+    sort: { createdAt: -1 },
+    lean: true,
+  });
+}
+
+async function createUser({ name, email, password, role }) {
+  const existing = await User.findOne({ email: email.toLowerCase() });
+  if (existing) throw ApiError.conflict('Email is already taken');
+
+  const user = await User.create({
+    name,
+    email: email.toLowerCase(),
+    password,
+    role: role || 'user',
+    isEmailVerified: true, // admin-created accounts are considered pre-verified
+  });
+
+  logger.info(`Admin created user: ${user.email} (${user._id})`);
+  return user.toSafeObject();
+}
+
+/**
+ * Deletes a user along with every record that references them: their
+ * conference registration, uploaded files, event registrations (and any
+ * team + submissions tied to those), and membership in other teams.
+ */
+async function deleteUser(adminId, userId) {
+  if (String(adminId) === String(userId)) {
+    throw ApiError.badRequest('You cannot delete your own account');
+  }
+
+  const user = await User.findById(userId);
+  if (!user) throw ApiError.notFound('User not found');
+
+  const confReg = await ConferenceRegistration.findOne({ userId });
+  if (confReg) {
+    if (confReg.paymentScreenshotKey) {
+      await cloudinaryService.deleteFile(confReg.paymentScreenshotKey).catch(() => {});
+    }
+    await confReg.deleteOne();
+  }
+  if (user.universityIdCardKey) {
+    await cloudinaryService.deleteFile(user.universityIdCardKey).catch(() => {});
+  }
+
+  const ledRegs = await Registration.find({ userId }).lean();
+  const teamIds = ledRegs.map((r) => r.teamId).filter(Boolean);
+
+  await Submission.deleteMany({ userId });
+  if (teamIds.length) await Team.deleteMany({ _id: { $in: teamIds } });
+  await Registration.deleteMany({ userId });
+  await Team.updateMany({ 'members.userId': userId }, { $pull: { members: { userId } } });
+
+  await user.deleteOne();
+  logger.info(`Admin ${adminId} deleted user ${userId}`);
+}
+
 module.exports = {
   /* Conference Registration */
   getConferenceRegistrations,
@@ -219,4 +364,12 @@ module.exports = {
   /* Overview */
   getEventOverview,
   getFullOverview,
+  /* Event Management */
+  createEvent,
+  updateEvent,
+  deleteEvent,
+  /* User Management */
+  getUsers,
+  createUser,
+  deleteUser,
 };

@@ -106,6 +106,45 @@ const exportExcel = asyncHandler(async (req, res) => {
   res.end();
 });
 
+/* ─── Event Management ────────────────────────────────────────────────────── */
+
+const createEvent = asyncHandler(async (req, res) => {
+  const event = await adminService.createEvent(req.body);
+  ApiResponse.created(res, 'Event created', event);
+});
+
+const updateEvent = asyncHandler(async (req, res) => {
+  const event = await adminService.updateEvent(req.params.eventId, req.body);
+  ApiResponse.ok(res, 'Event updated', event);
+});
+
+const deleteEvent = asyncHandler(async (req, res) => {
+  await adminService.deleteEvent(req.params.eventId);
+  ApiResponse.ok(res, 'Event deleted');
+});
+
+/* ─── User Management ────────────────────────────────────────────────────── */
+
+const getUsers = asyncHandler(async (req, res) => {
+  const { search, page, limit } = req.query;
+  const data = await adminService.getUsers({
+    search,
+    page:  parseInt(page)  || 1,
+    limit: parseInt(limit) || 50,
+  });
+  ApiResponse.ok(res, 'Users fetched', data);
+});
+
+const createUser = asyncHandler(async (req, res) => {
+  const user = await adminService.createUser(req.body);
+  ApiResponse.created(res, 'User created', user);
+});
+
+const deleteUser = asyncHandler(async (req, res) => {
+  await adminService.deleteUser(req.user._id, req.params.userId);
+  ApiResponse.ok(res, 'User deleted');
+});
+
 module.exports = {
   getOverview,
   getConferenceRegistrations,
@@ -118,4 +157,10 @@ module.exports = {
   markSubmissionComplete,
   exportCSV,
   exportExcel,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+  getUsers,
+  createUser,
+  deleteUser,
 };

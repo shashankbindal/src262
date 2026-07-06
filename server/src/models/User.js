@@ -1,6 +1,7 @@
 'use strict';
-const mongoose = require('mongoose');
-const bcrypt   = require('bcryptjs');
+const mongoose         = require('mongoose');
+const bcrypt           = require('bcryptjs');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const userSchema = new mongoose.Schema(
   {
@@ -118,5 +119,7 @@ userSchema.methods.toSafeObject = function () {
   delete obj.__v;
   return obj;
 };
+
+userSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model('User', userSchema);
