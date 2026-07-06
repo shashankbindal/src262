@@ -26,6 +26,15 @@ const contactRoutes                = require('./routes/contact.routes');
 
 const app = express();
 
+/* ─── Trust proxy ────────────────────────────────────────────────────────── */
+/* Render (and most PaaS hosts) sit behind a reverse proxy. Without this,
+ * express-rate-limit sees every request as coming from the proxy's IP
+ * (collapsing all users into one bucket) and throws on the X-Forwarded-For
+ * header it can't validate. */
+if (env.isProd()) {
+  app.set('trust proxy', 1);
+}
+
 /* ─── Security headers ───────────────────────────────────────────────────── */
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
