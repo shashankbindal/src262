@@ -24,6 +24,9 @@ const conferenceRegistrationSchema = new mongoose.Schema(
     transactionId:        { type: String, trim: true, default: '' },
     paymentTimestamp:     { type: Date },
 
+    /* Whether the registrant opted into the accommodation add-on (affects fee) */
+    needsAccommodation: { type: Boolean, default: false },
+
     /* Admin approval */
     approvalTimestamp: { type: Date },
     approvedBy:        { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

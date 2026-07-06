@@ -614,6 +614,44 @@
   font-family: var(--font-mono, monospace);
 }
 
+.cr-fee-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px 0 14px;
+}
+
+.cr-fee-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border, #d0d7de);
+  border-radius: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.cr-fee-option.selected {
+  border-color: #1b7c2a;
+  background: rgba(27, 124, 42, 0.06);
+}
+
+.cr-fee-option-title {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary, #0d1117);
+}
+
+.cr-fee-option-amount {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1b7c2a;
+  font-family: var(--font-mono, monospace);
+  flex-shrink: 0;
+}
+
 .cr-fee-note {
   font-size: 0.75rem;
   color: var(--text-secondary, #57606a);
@@ -1081,6 +1119,7 @@
   .cr-preview-section-head { background: var(--bg-secondary, #161b22); border-color: var(--border, #30363d); }
   .cr-preview-table tr + tr { border-top-color: var(--border, #30363d); }
   .cr-fee-card        { background: var(--bg-primary, #0d1117); border-color: var(--border, #30363d); }
+  .cr-fee-option      { border-color: var(--border, #30363d); }
   .cr-payment-box     { background: var(--bg-primary, #0d1117); border-color: var(--border, #30363d); }
   .cr-upi-box         { background: var(--bg-secondary, #161b22); border-color: var(--border, #30363d); }
   .cr-bank-box        { background: var(--bg-primary, #0d1117); border-color: var(--border, #30363d); }
@@ -1108,6 +1147,7 @@
 :root[data-theme="dark"] .cr-preview-section-head { background: var(--bg-secondary, #161b22); border-color: var(--border, #30363d); }
 :root[data-theme="dark"] .cr-preview-table tr + tr { border-top-color: var(--border, #30363d); }
 :root[data-theme="dark"] .cr-fee-card        { background: var(--bg-primary, #0d1117); border-color: var(--border, #30363d); }
+:root[data-theme="dark"] .cr-fee-option      { border-color: var(--border, #30363d); }
 :root[data-theme="dark"] .cr-payment-box     { background: var(--bg-primary, #0d1117); border-color: var(--border, #30363d); }
 :root[data-theme="dark"] .cr-upi-box         { background: var(--bg-secondary, #161b22); border-color: var(--border, #30363d); }
 :root[data-theme="dark"] .cr-bank-box        { background: var(--bg-primary, #0d1117); border-color: var(--border, #30363d); }
