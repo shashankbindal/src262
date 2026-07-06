@@ -2,6 +2,7 @@
 require('dotenv').config();
 
 const express       = require('express');
+const compression   = require('compression');
 const helmet        = require('helmet');
 const cors          = require('cors');
 const cookieParser  = require('cookie-parser');
@@ -39,6 +40,9 @@ if (env.isProd()) {
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
+
+/* ─── Response compression ───────────────────────────────────────────────── */
+app.use(compression());
 
 /* ─── CORS ───────────────────────────────────────────────────────────────── */
 app.use(cors({
