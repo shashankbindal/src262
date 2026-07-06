@@ -80,9 +80,18 @@ export default function Registration() {
     return [''];
   });
 
-  /* Persist state */
+  /* Persist state.
+   * Step 3 (success) is intentionally never persisted: successReg only lives
+   * in React state, so a refresh on the success screen can't reconstruct it.
+   * Actively clearing er_step here (rather than just skipping the write)
+   * ensures a refresh always falls back to a clean step 1 instead of getting
+   * stuck on a stale step 2/3 with no selectedEvent to render. */
   useEffect(() => {
-    sessionStorage.setItem('er_step', step);
+    if (step === 1 || step === 2) {
+      sessionStorage.setItem('er_step', step);
+    } else {
+      sessionStorage.removeItem('er_step');
+    }
   }, [step]);
   useEffect(() => {
     if (selectedEvent) sessionStorage.setItem('er_event', JSON.stringify(selectedEvent));
@@ -273,6 +282,12 @@ export default function Registration() {
   const submit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!selectedEvent) {
+      setError('No event selected. Please pick an event first.');
+      setStep(1);
+      return;
+    }
 
     if (isTeam) {
       const filled = memberEmails.filter((m) => m.trim());
