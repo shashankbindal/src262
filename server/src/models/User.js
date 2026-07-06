@@ -91,10 +91,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-/* ─── Indexes ─────────────────────────────────────────────────────────────── */
-userSchema.index({ email: 1 });
-userSchema.index({ googleId: 1 }, { sparse: true });
-
 /* ─── Hooks ───────────────────────────────────────────────────────────────── */
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password') || !this.password) return next();
