@@ -1,5 +1,6 @@
 'use strict';
 const { Resend }            = require('resend');
+const filterXSS             = require('xss');
 const { env }               = require('../config/env');
 const logger                = require('../utils/logger');
 const otpTemplate           = require('../emails/templates/otp');
@@ -22,7 +23,7 @@ async function sendOTP({ name, email, otp }) {
   await send({
     to:      email,
     subject: 'Your Viplav 2026 Verification Code',
-    html:    otpTemplate({ name, otp }),
+    html:    otpTemplate({ name: filterXSS(name), otp }),
   });
 }
 
@@ -30,7 +31,7 @@ async function sendPasswordReset({ name, email, resetUrl }) {
   await send({
     to:      email,
     subject: 'Reset Your Viplav 2026 Password',
-    html:    resetPasswordTemplate({ name, resetUrl }),
+    html:    resetPasswordTemplate({ name: filterXSS(name), resetUrl }),
   });
 }
 
