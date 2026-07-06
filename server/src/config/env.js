@@ -8,9 +8,6 @@ const required = [
   'MONGODB_URI',
   'JWT_SECRET',
   'JWT_REFRESH_SECRET',
-  'GOOGLE_CLIENT_ID',
-  'GOOGLE_CLIENT_SECRET',
-  'GOOGLE_CALLBACK_URL',
   'RESEND_API_KEY',
   'EMAIL_FROM',
   'CLOUDINARY_CLOUD_NAME',
@@ -18,6 +15,12 @@ const required = [
   'CLOUDINARY_API_SECRET',
   'CLIENT_URL',
 ];
+
+/* Google OAuth is optional — sign-in with Google is disabled unless all
+ * three of these are provided. */
+const GOOGLE_OAUTH_ENABLED = Boolean(
+  process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_CALLBACK_URL
+);
 
 function validateEnv() {
   const missing = required.filter((key) => !process.env[key]);
@@ -40,6 +43,7 @@ const env = {
   GOOGLE_CLIENT_ID:       process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET:   process.env.GOOGLE_CLIENT_SECRET,
   GOOGLE_CALLBACK_URL:    process.env.GOOGLE_CALLBACK_URL,
+  GOOGLE_OAUTH_ENABLED,
 
   RESEND_API_KEY:         process.env.RESEND_API_KEY,
   EMAIL_FROM:             process.env.EMAIL_FROM,
