@@ -1,5 +1,6 @@
 import React from 'react';
 import { useReveal } from '../Home/useReveal.js';
+import { useDocumentTitle } from '../shared/useDocumentTitle.js';
 import '../Home/animations.css';
 import './Sponsor.css';
 
@@ -21,6 +22,7 @@ const sponsorsData = [
 import SponsorsHero from './SponsorsHero';
 
 const Sponsor = () => {
+  useDocumentTitle('Sponsors | VIPLAV 2026 — AIChE India SRC');
   const [containerRef, containerVisible] = useReveal(0.1);
 
   return (

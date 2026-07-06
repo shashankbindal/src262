@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api, ApiError } from '../lib/api.js';
+import { useDocumentTitle } from '../shared/useDocumentTitle.js';
 import '../Home/animations.css';
 import './Registration.css';
 
@@ -47,6 +48,7 @@ function EventCard({ event, selected, onClick }) {
 
 /* ═══════════════════════════════════════════════════════════ MAIN COMPONENT */
 export default function Registration() {
+  useDocumentTitle('Event Registration | VIPLAV 2026 — AIChE India SRC');
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const navigate       = useNavigate();
   const [params]       = useSearchParams();

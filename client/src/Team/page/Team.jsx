@@ -2,11 +2,13 @@ import React from 'react';
 import { bentoCards } from '../../TeamProfile/teamsData';
 import { useReveal } from '../../Home/useReveal.js';
 import { useTilt } from '../../shared/useTilt.js';
+import { useDocumentTitle } from '../../shared/useDocumentTitle.js';
 import '../../Home/animations.css';
 import './Team.css';
 import TeamHero from './TeamHero';
 
 const Team = () => {
+  useDocumentTitle('Organizing Team | VIPLAV 2026 — AIChE India SRC');
   const { onTiltMove, onTiltLeave } = useTilt(7);
 
   return (

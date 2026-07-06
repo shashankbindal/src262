@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api, ApiError } from '../lib/api.js';
+import { useDocumentTitle } from '../shared/useDocumentTitle.js';
 import './auth.css';
 
 export default function Register() {
+  useDocumentTitle('Create Account | VIPLAV 2026 — AIChE India SRC');
   const navigate = useNavigate();
   const { register: registerUser, isAuthenticated, loading } = useAuth();
 

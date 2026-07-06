@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { ApiError } from '../lib/api.js';
+import { useDocumentTitle } from '../shared/useDocumentTitle.js';
 import './auth.css';
 
 export default function Login() {
+  useDocumentTitle('Sign In | VIPLAV 2026 — AIChE India SRC');
   const navigate = useNavigate();
   const location = useLocation();
   const { login, isAuthenticated, loading } = useAuth();
