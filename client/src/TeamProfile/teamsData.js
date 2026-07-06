@@ -44,7 +44,7 @@ export const bentoCards = [
     description: "The Technical Team provides the digital backbone of the conference by managing websites, registration systems, and technical infrastructure. They ensure smooth online operations and troubleshoot challenges efficiently. Their expertise guarantees a seamless experience for participants, speakers, and organizers alike.",
     chairs: [{ role: "Chair", name: "Rudraksh Chamoli", image: "/team/rudrakshchamoli.jpg" }],
     coordinators: [
-      { role: "Coordinator", name: "Shashank", image: "" },
+      { role: "Coordinator", name: "Shashank", image: "/team/SHASHANK.jpeg" },
       { role: "Coordinator", name: "AVNS Rehan Sanddep", image: "/team/A V N S REHAN SANDEEP- Coordinater - Technical team.png" }
     ],
     span: "col-span-1"

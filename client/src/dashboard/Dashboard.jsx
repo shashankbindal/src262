@@ -101,15 +101,27 @@ function ProfileTab({ user, refreshUser }) {
 function ConferenceRegBanner() {
   const [confReg, setConfReg] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     api.get('/conference-registration')
       .then((res) => setConfReg(res.data || null))
-      .catch(() => setConfReg(null))
+      .catch(() => setLoadError(true))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return null;
+
+  if (loadError) {
+    return (
+      <div className="confbanner confbanner-none">
+        <div className="confbanner-body">
+          <span className="confbanner-label">Conference Registration</span>
+          <p className="confbanner-msg">Couldn't load your conference registration status. Please refresh the page.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!confReg) {
     return (

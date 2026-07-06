@@ -1,11 +1,16 @@
 /**
  * Thin fetch wrapper.
- * All requests go to /api/v1/* (proxied to the backend by Vite in dev,
- * and served from the same origin in production behind a reverse proxy).
+ * Always uses a relative path: in dev, Vite's proxy (vite.config.js) forwards
+ * /api to localhost:5000; in production, Vercel's rewrite (vercel.json)
+ * proxies /api to the Render backend. This keeps every request same-origin
+ * from the browser's perspective — no CORS, no cross-site cookie issues.
  * Cookies are sent automatically (credentials: 'include').
  */
 
 const BASE = '/api/v1';
+
+/* For plain <a href> links (e.g. file downloads) that can't go through fetch(). */
+export const API_BASE = BASE;
 
 class ApiError extends Error {
   constructor(message, status, errors = []) {

@@ -693,6 +693,7 @@ export default function ConferenceRegistration() {
 
   /* Load config + existing reg */
   useEffect(() => {
+    setLoading(true);
     const fetchConfig = api.get('/conference-registration/config').catch(() => ({ data: {} }));
     const fetchReg = isAuthenticated
       ? api.get('/conference-registration').catch(() => ({ data: null }))

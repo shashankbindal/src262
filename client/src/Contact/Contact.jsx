@@ -2,10 +2,12 @@ import React, { useState } from 'react'
 import { api } from '../lib/api.js'
 import { useReveal } from '../Home/useReveal.js'
 import { useStaggerLines } from '../Home/useStaggerLines.js'
+import { useDocumentTitle } from '../shared/useDocumentTitle.js'
 import '../Home/animations.css'
 import './Contact.css'
 
 const Contact = () => {
+  useDocumentTitle('Contact | VIPLAV 2026 — AIChE India SRC');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', message: '' });

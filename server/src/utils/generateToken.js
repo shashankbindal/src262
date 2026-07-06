@@ -61,17 +61,24 @@ function hashToken(raw) {
 function setCookies(res, accessToken, refreshToken) {
   const isProd = env.isProd();
 
+  /*
+   * Frontend (Vercel) and backend (Render) live on different domains in
+   * production, so the auth cookies are cross-site. Cross-site cookies
+   * require SameSite=None, which in turn requires Secure. In development
+   * both run on localhost (same-site), so Lax keeps things working over
+   * plain HTTP without the Secure requirement.
+   */
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
     secure:   isProd,
-    sameSite: isProd ? 'Strict' : 'Lax',
+    sameSite: isProd ? 'None' : 'Lax',
     maxAge:   15 * 60 * 1000, // 15 minutes
   });
 
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
     secure:   isProd,
-    sameSite: isProd ? 'Strict' : 'Lax',
+    sameSite: isProd ? 'None' : 'Lax',
     maxAge:   7 * 24 * 60 * 60 * 1000, // 7 days
     path:     '/api/v1/auth/refresh',
   });

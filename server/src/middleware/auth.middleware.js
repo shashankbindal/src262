@@ -3,6 +3,7 @@ const { verifyAccessToken } = require('../utils/generateToken');
 const ApiError              = require('../utils/ApiError');
 const asyncHandler          = require('../utils/asyncHandler');
 const User                  = require('../models/User');
+const { isAdminEmail }      = require('../utils/adminAccess');
 
 /**
  * Authenticates the request by reading the access token from the HTTP-only
@@ -30,6 +31,7 @@ const authenticate = asyncHandler(async (req, _res, next) => {
   const user = await User.findById(payload.sub).lean();
   if (!user) throw ApiError.unauthorized('Account no longer exists');
 
+  user.isAdmin = isAdminEmail(user.email);
   req.user = user;
   next();
 });

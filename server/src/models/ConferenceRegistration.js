@@ -28,11 +28,10 @@ const conferenceRegistrationSchema = new mongoose.Schema(
     approvalTimestamp: { type: Date },
     approvedBy:        { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 
-    /* SRC ID assigned by admin on approval */
+    /* SRC ID assigned by admin on approval — unique index defined below */
     srcId: {
-      type:   String,
-      trim:   true,
-      sparse: true, // unique but nullable until assigned
+      type: String,
+      trim: true,
     },
 
     /* Rejection */
@@ -44,8 +43,8 @@ const conferenceRegistrationSchema = new mongoose.Schema(
     /* QR version used at submission (for future QR rotation support) */
     qrVersion: { type: String, default: 'v1' },
 
-    /* Reference number shown to user after submission */
-    referenceNumber: { type: String, sparse: true },
+    /* Reference number shown to user after submission — unique index defined below */
+    referenceNumber: { type: String },
 
     /* Lock: once approved, payment details cannot be changed */
     isLocked: { type: Boolean, default: false },

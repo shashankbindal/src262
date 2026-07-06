@@ -1,6 +1,7 @@
 'use strict';
 import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
+import { useDocumentTitle } from '../../shared/useDocumentTitle.js';
 import '../../Home/animations.css';
 import './Event.css';
 
@@ -109,6 +110,8 @@ const EVENTS = [
 ];
 
 export default function Event() {
+  useDocumentTitle('Events | VIPLAV 2026 — AIChE India SRC');
+
   const [active, setActive]       = useState(0);
   const [animating, setAnimating] = useState(false);
 

@@ -1,0 +1,42 @@
+# VIPLAV 2026 — AIChE India Student Regional Conference
+
+> VIPLAV 2026 is AIChE India's Student Regional Conference (SRC 2026), hosted by the AIChE RGIPT Student Chapter at the Rajiv Gandhi Institute of Petroleum Technology (RGIPT), Jais, Uttar Pradesh, India, from 21–23 August 2026.
+
+VIPLAV — meaning "revolution" — reflects the conference's aim to inspire the next generation of chemical engineers while addressing progressive change in the field. It brings together undergraduate and postgraduate students from chemical engineering and allied disciplines across India for technical competitions, paper/poster presentations, and outreach activities.
+
+## Key facts
+
+- Event name: AIChE India Student Regional Conference 2026 (branded VIPLAV 2026)
+- Dates: 21–23 August 2026
+- Venue: Rajiv Gandhi Institute of Petroleum Technology (RGIPT), Jais, Uttar Pradesh, India
+- Host: AIChE RGIPT Student Chapter
+- Eligibility: undergraduate and postgraduate students in chemical engineering and allied fields across India
+- Registration model: a single conference registration fee (with an SRC ID issued on approval) unlocks registration for individual events — there are no separate per-event fees
+
+## Pages
+
+- [Home](https://www.viplavsrc.com/): overview of VIPLAV 2026, the AIChE RGIPT Student Chapter, and the conference schedule
+- [Events](https://www.viplavsrc.com/events): the five competitive and outreach events, with rules and deadlines
+- [Register](https://www.viplavsrc.com/register): conference registration and per-event registration flow
+- [Team](https://www.viplavsrc.com/team): the organizing committee across all conference verticals
+- [Sponsors](https://www.viplavsrc.com/sponsors): conference sponsors and partners
+- [Contact](https://www.viplavsrc.com/contact): general, travel/coordination, and accommodation queries
+
+## Events
+
+- Chem-E-Jeopardy: a chemical engineering trivia competition testing theoretical knowledge (team event)
+- Chem-E-Car: design and build a car powered by a chemical energy source, one of AIChE's flagship competitions (team event, requires a technical paper submission)
+- Poster Presentation: present original research through a visual poster (solo event, requires a submission)
+- Paper Presentation: present a technical paper on emerging trends in chemical engineering (solo event, requires a submission)
+- K-12 STEM: an outreach event introducing school students to science and engineering (team event)
+
+## Contact
+
+- General queries — Shubhendra Singh: 24re3011@rgipt.ac.in
+- Travel & coordination queries — Abhimanyu Singh: 24ce3002@rgipt.ac.in
+- Accommodation queries — Sharad Shukla: 24ce3067@rgipt.ac.in
+
+## Optional
+
+- [Sitemap](https://www.viplavsrc.com/sitemap.xml)
+- [AIChE RGIPT Student Chapter website](https://www.aichergipt.com/)

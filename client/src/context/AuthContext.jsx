@@ -38,7 +38,7 @@ export function AuthProvider({ children }) {
     return res.data;
   }, []);
 
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = Boolean(user?.isAdmin);
   const isAuthenticated = Boolean(user);
 
   return (

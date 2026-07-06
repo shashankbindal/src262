@@ -1,6 +1,7 @@
 'use strict';
-const mongoose = require('mongoose');
-const bcrypt   = require('bcryptjs');
+const mongoose         = require('mongoose');
+const bcrypt           = require('bcryptjs');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const userSchema = new mongoose.Schema(
   {
@@ -91,10 +92,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-/* ─── Indexes ─────────────────────────────────────────────────────────────── */
-userSchema.index({ email: 1 });
-userSchema.index({ googleId: 1 }, { sparse: true });
-
 /* ─── Hooks ───────────────────────────────────────────────────────────────── */
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password') || !this.password) return next();
@@ -122,5 +119,7 @@ userSchema.methods.toSafeObject = function () {
   delete obj.__v;
   return obj;
 };
+
+userSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model('User', userSchema);

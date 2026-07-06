@@ -5,6 +5,8 @@ const ctrl     = require('../controllers/auth.controller');
 const { authenticate }           = require('../middleware/auth.middleware');
 const { authLimiter, authSlowDown } = require('../middleware/rateLimiter');
 const validate = require('../middleware/validate');
+const ApiError = require('../utils/ApiError');
+const { env }  = require('../config/env');
 const {
   registerValidator,
   loginValidator,
@@ -57,12 +59,21 @@ router.post('/reset-password',
   ctrl.resetPassword
 );
 
-/* ─── Google OAuth ───────────────────────────────────────────────────────── */
+/* ─── Google OAuth (disabled unless GOOGLE_* env vars are configured) ───── */
+const requireGoogleOAuth = (_req, _res, next) => {
+  if (!env.GOOGLE_OAUTH_ENABLED) {
+    return next(ApiError.notFound('Google sign-in is not configured on this server'));
+  }
+  next();
+};
+
 router.get('/google',
+  requireGoogleOAuth,
   passport.authenticate('google', { session: false })
 );
 
 router.get('/google/callback',
+  requireGoogleOAuth,
   passport.authenticate('google', { session: false, failureRedirect: '/login' }),
   ctrl.googleCallback
 );

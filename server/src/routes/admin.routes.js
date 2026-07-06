@@ -7,6 +7,13 @@ const validate = require('../middleware/validate');
 const {
   adminConfRegDecisionValidator,
 } = require('../validators/registration.validators');
+const {
+  createUserValidator,
+  deleteUserValidator,
+  createEventValidator,
+  updateEventValidator,
+  deleteEventValidator,
+} = require('../validators/admin.validators');
 
 const router = express.Router();
 
@@ -36,5 +43,15 @@ router.patch('/submissions/:submissionId/complete',    ctrl.markSubmissionComple
 /* ─── Exports ────────────────────────────────────────────────────────────── */
 router.get('/events/:eventId/export/csv',   ctrl.exportCSV);
 router.get('/events/:eventId/export/excel', ctrl.exportExcel);
+
+/* ─── Event Management ───────────────────────────────────────────────────── */
+router.post('/events',   createEventValidator, validate, ctrl.createEvent);
+router.patch('/events/:eventId', updateEventValidator, validate, ctrl.updateEvent);
+router.delete('/events/:eventId', deleteEventValidator, validate, ctrl.deleteEvent);
+
+/* ─── User Management ────────────────────────────────────────────────────── */
+router.get('/users',    ctrl.getUsers);
+router.post('/users',   createUserValidator, validate, ctrl.createUser);
+router.delete('/users/:userId', deleteUserValidator, validate, ctrl.deleteUser);
 
 module.exports = router;
