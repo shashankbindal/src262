@@ -12,6 +12,7 @@ const {
 }                  = require('../utils/generateToken');
 const { env }      = require('../config/env');
 const logger       = require('../utils/logger');
+const { isAdminEmail } = require('../utils/adminAccess');
 
 const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
@@ -42,7 +43,9 @@ const login = asyncHandler(async (req, res) => {
 
   setCookies(res, accessToken, refreshToken);
   logger.info(`User logged in: ${user._id}`);
-  ApiResponse.ok(res, 'Login successful', user.toSafeObject ? user.toSafeObject() : user);
+  const safeUser = user.toSafeObject ? user.toSafeObject() : user;
+  safeUser.isAdmin = isAdminEmail(user.email);
+  ApiResponse.ok(res, 'Login successful', safeUser);
 });
 
 const refresh = asyncHandler(async (req, res) => {

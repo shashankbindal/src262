@@ -22,6 +22,13 @@ const GOOGLE_OAUTH_ENABLED = Boolean(
   process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_CALLBACK_URL
 );
 
+/* Admin access is restricted to this fixed email whitelist, regardless of
+ * a user's `role` field — override via the ADMIN_EMAILS env var (comma-separated). */
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '24it3056@rgipt.ac.in,24re@rgipt.ac.in')
+  .split(',')
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
+
 function validateEnv() {
   const missing = required.filter((key) => !process.env[key]);
   if (missing.length > 0) {
@@ -44,6 +51,8 @@ const env = {
   GOOGLE_CLIENT_SECRET:   process.env.GOOGLE_CLIENT_SECRET,
   GOOGLE_CALLBACK_URL:    process.env.GOOGLE_CALLBACK_URL,
   GOOGLE_OAUTH_ENABLED,
+
+  ADMIN_EMAILS,
 
   RESEND_API_KEY:         process.env.RESEND_API_KEY,
   EMAIL_FROM:             process.env.EMAIL_FROM,

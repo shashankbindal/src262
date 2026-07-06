@@ -6,7 +6,7 @@ const ApiError = require('../utils/ApiError');
  * Rejects anyone who isn't an admin.
  */
 const requireAdmin = (req, _res, next) => {
-  if (req.user?.role !== 'admin') {
+  if (!req.user?.isAdmin) {
     return next(ApiError.forbidden('Admin access required'));
   }
   next();
