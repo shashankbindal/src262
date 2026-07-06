@@ -12,6 +12,20 @@ const STAGES = [
   { key: 'declaration', label: 'Declaration', step: 4 },
 ];
 
+/* India first (most attendees), then the rest alphabetically. */
+const COUNTRIES = [
+  'India',
+  'Afghanistan', 'Australia', 'Bahrain', 'Bangladesh', 'Bhutan', 'Brazil',
+  'Canada', 'China', 'Egypt', 'France', 'Germany', 'Indonesia', 'Iran',
+  'Iraq', 'Ireland', 'Italy', 'Japan', 'Kenya', 'Kuwait', 'Malaysia',
+  'Maldives', 'Mauritius', 'Mexico', 'Myanmar', 'Nepal', 'Netherlands',
+  'New Zealand', 'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Philippines',
+  'Qatar', 'Russia', 'Saudi Arabia', 'Singapore', 'South Africa',
+  'South Korea', 'Spain', 'Sri Lanka', 'Sweden', 'Switzerland', 'Thailand',
+  'Turkey', 'Ukraine', 'United Arab Emirates', 'United Kingdom',
+  'United States', 'Vietnam', 'Other',
+];
+
 /* ── Helpers ── */
 function formatDate(iso) {
   if (!iso) return '—';
@@ -259,8 +273,12 @@ function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile
               onChange={set('state')} placeholder="e.g. Maharashtra" />
           </Field>
           <Field label="Country" required error={errors.country}>
-            <input className="cr-input" type="text" value={form.country}
-              onChange={set('country')} placeholder="Country" />
+            <select className="cr-select" value={form.country} onChange={set('country')}>
+              <option value="">— Select —</option>
+              {COUNTRIES.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
           </Field>
         </div>
       </Section>
@@ -379,6 +397,30 @@ function PreviewStage({ form, idCardFile, existingIdCard, onBack, onNext }) {
   );
 }
 
+/* ── Bank transfer detail row (with optional copy-to-clipboard) ── */
+function BankRow({ label, value, copyable }) {
+  const [copied, setCopied] = useState(false);
+
+  const copy = () => {
+    navigator.clipboard.writeText(value).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <div className="cr-bank-row">
+      <span className="cr-bank-label">{label}</span>
+      <span className="cr-bank-value">{value}</span>
+      {copyable && (
+        <button className="cr-copy-btn" onClick={copy} type="button">
+          {copied ? '✓' : 'Copy'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 /* ══════════════════════════════════ PAYMENT STAGE */
 function PaymentStage({ config, transactionId, setTransactionId, screenshotFile, setScreenshotFile, errors, setErrors, onBack, onNext }) {
   const shotRef = useRef(null);
@@ -449,6 +491,24 @@ function PaymentStage({ config, transactionId, setTransactionId, screenshotFile,
             After payment, note the <strong>Transaction / UTR reference number</strong> from your UPI app.
           </p>
         </div>
+      </div>
+
+      {/* Bank transfer (NEFT/RTGS/IMPS) */}
+      <div className="cr-bank-box">
+        <p className="cr-upi-head">Or pay via bank transfer (NEFT / RTGS / IMPS)</p>
+        <div className="cr-bank-grid">
+          <BankRow label="Account Name" value="IIChE Amethi Regional Centre" />
+          <BankRow label="Account Number" value="41034315495" copyable />
+          <BankRow label="IFSC Code" value="SBIN0004042" copyable />
+          <BankRow label="MICR Code" value="227002251" />
+          <BankRow label="Bank Name" value="State Bank of India" />
+          <BankRow label="Branch" value="Jais" />
+          <BankRow label="District" value="Rae Bareli" />
+          <BankRow label="Address" value="RGIPT, Jais, Amethi" />
+        </div>
+        <p className="cr-upi-note">
+          After transfer, note the <strong>Transaction / UTR reference number</strong> from your bank.
+        </p>
       </div>
 
       {/* Upload form */}
