@@ -192,7 +192,6 @@ export default function Registration() {
               <h1 className="reg-simple-title">Register for the Conference First</h1>
               <p className="reg-simple-desc">
                 You need an approved conference registration to sign up for events.
-                Pay the conference fee to get started.
               </p>
             </>
           )}

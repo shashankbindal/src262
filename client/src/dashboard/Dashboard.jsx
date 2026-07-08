@@ -16,6 +16,52 @@ function StatusBadge({ status }) {
   return <span className={`status-badge ${status}`}>{STATUS_LABELS[status] || status}</span>;
 }
 
+/* ═══════════════════════════════════════════════════════ REGISTRATION FEE CARD */
+function RegistrationFeeCard() {
+  const [config, setConfig]   = useState(null);
+  const [confReg, setConfReg] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      api.get('/conference-registration/config').catch(() => ({ data: {} })),
+      api.get('/conference-registration').catch(() => ({ data: null })),
+    ])
+      .then(([cfgRes, regRes]) => {
+        setConfig(cfgRes.data || {});
+        setConfReg(regRes.data || null);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return null;
+
+  const hasSelection = confReg && ['pending', 'approved'].includes(confReg.status);
+  const selectedAccommodation = hasSelection && confReg.needsAccommodation;
+  const selectedNoAccommodation = hasSelection && !confReg.needsAccommodation;
+
+  return (
+    <div className="fee-card">
+      <span className="fee-card-title">Conference Registration Fee</span>
+      <div className="fee-card-options">
+        <div className={`fee-tile${selectedNoAccommodation ? ' selected' : ''}`}>
+          <span className="fee-tile-label">Without Accommodation</span>
+          <span className="fee-tile-amount">₹{config?.feeBase ?? '—'}</span>
+          {selectedNoAccommodation && <span className="fee-tile-tag">Your Plan</span>}
+        </div>
+        <div className={`fee-tile${selectedAccommodation ? ' selected' : ''}`}>
+          <span className="fee-tile-label">With Accommodation</span>
+          <span className="fee-tile-amount">₹{config?.feeWithAccommodation ?? '—'}</span>
+          {selectedAccommodation && <span className="fee-tile-tag">Your Plan</span>}
+        </div>
+      </div>
+      <p className="fee-card-note">
+        This fee covers participation in all conference events. No additional event-level fees apply.
+      </p>
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════════ PROFILE TAB */
 function ProfileTab({ user, refreshUser }) {
   const [form, setForm]     = useState({
@@ -50,6 +96,7 @@ function ProfileTab({ user, refreshUser }) {
         <h2 className="dash-section-title">My Profile</h2>
       </div>
 
+      <div className="profile-row">
       <div className="profile-card">
         {/* Email row */}
         <div className="profile-field">
@@ -92,6 +139,9 @@ function ProfileTab({ user, refreshUser }) {
             {busy ? <><span className="btn-spinner" /> Saving…</> : 'Save Changes'}
           </button>
         </form>
+      </div>
+
+      <RegistrationFeeCard />
       </div>
     </div>
   );
