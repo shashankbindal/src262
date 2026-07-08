@@ -193,6 +193,11 @@ export default function Register() {
               value={form.password}
               onChange={handle}
             />
+            <ul className="auth-hint-list">
+              <li>At least 8 characters long</li>
+              <li>At least one uppercase letter (A–Z)</li>
+              <li>At least one number (0–9)</li>
+            </ul>
           </div>
 
           <div className="auth-field">

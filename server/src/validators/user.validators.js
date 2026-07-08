@@ -17,10 +17,30 @@ const updateProfileValidator = [
     .trim()
     .isLength({ max: 100 }).withMessage('Department name too long'),
 
+  body('phoneCountryCode')
+    .optional()
+    .trim()
+    .matches(/^\+[0-9]{1,4}$/).withMessage('Please provide a valid country code'),
+
   body('phone')
     .optional()
     .trim()
     .matches(/^\+?[0-9\s\-]{7,15}$/).withMessage('Please provide a valid phone number'),
+
+  body('studentChapterName')
+    .optional()
+    .trim()
+    .isLength({ max: 150 }).withMessage('Student chapter name too long'),
+
+  body('facultyAdvisorName')
+    .optional()
+    .trim()
+    .isLength({ max: 100 }).withMessage('Faculty advisor name too long'),
+
+  body('facultyAdvisorEmail')
+    .optional()
+    .trim()
+    .isEmail().withMessage('Please provide a valid faculty advisor email'),
 ];
 
 module.exports = { updateProfileValidator };

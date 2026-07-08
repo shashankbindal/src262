@@ -126,6 +126,15 @@
   box-shadow: 0 0 0 3px rgba(47, 143, 98, 0.18);
 }
 
+.auth-hint-list {
+  margin: 8px 0 0;
+  padding: 0 0 0 18px;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
 /* ---- Submit button ---- */
 .auth-btn {
   width: 100%;
