@@ -51,7 +51,7 @@ const EVENTS = [
       </>
     ),
     image:
-      'https://learningliftoff.com/wp-content/uploads/2023/01/pexels-artem-podrez-6941450-1536x864.jpg.webp',
+      'https://www.emjreviews.com/wp-content/uploads/2023/01/Whats-New-Pic-1-1.jpg',
     rulebookLink: '#',
     chairs: [{ role: 'Chair', name: 'Kartik Gogia' }],
     coordinators: [
