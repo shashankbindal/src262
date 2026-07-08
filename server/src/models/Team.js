@@ -35,5 +35,8 @@ const teamSchema = new mongoose.Schema(
 
 /* Compound index: a user can only lead one team per event */
 teamSchema.index({ eventId: 1, leaderId: 1 }, { unique: true });
+/* Membership lookups (Registration/Submission flows check "is this user on
+ * any team?" constantly) — without this, every such query is a full scan. */
+teamSchema.index({ 'members.userId': 1 });
 
 module.exports = mongoose.model('Team', teamSchema);

@@ -27,8 +27,11 @@ async function submitConferenceRegistration(userId, {
   /* University ID card */
   idCardFileUrl, idCardFileKey,
   /* Payment */
-  transactionId, screenshotUrl, screenshotKey,
+  transactionId, screenshotUrl, screenshotKey, needsAccommodation,
 }) {
+  const accommodation = needsAccommodation === true || needsAccommodation === 'true';
+  const registrationFee = accommodation ? conferenceConfig.feeWithAccommodation : conferenceConfig.feeBase;
+
   const user = await User.findById(userId);
   if (!user) throw ApiError.notFound('User not found');
 
@@ -78,7 +81,8 @@ async function submitConferenceRegistration(userId, {
     existing.paymentScreenshotKey  = screenshotKey;
     existing.transactionId         = transactionId;
     existing.paymentTimestamp      = new Date();
-    existing.registrationFee       = conferenceConfig.fee;
+    existing.needsAccommodation    = accommodation;
+    existing.registrationFee       = registrationFee;
     existing.qrVersion             = conferenceConfig.qrVersion;
     existing.status                = 'pending';
     existing.rejectionReason       = '';
@@ -95,7 +99,8 @@ async function submitConferenceRegistration(userId, {
     paymentScreenshotUrl: screenshotUrl,
     paymentScreenshotKey: screenshotKey,
     paymentTimestamp:     new Date(),
-    registrationFee:      conferenceConfig.fee,
+    needsAccommodation:   accommodation,
+    registrationFee,
     qrVersion:            conferenceConfig.qrVersion,
     referenceNumber:      generateReferenceNumber(),
   });
@@ -124,7 +129,8 @@ async function getMyConferenceRegistration(userId) {
  */
 function getRegistrationConfig() {
   return {
-    fee:                    conferenceConfig.fee,
+    feeBase:                conferenceConfig.feeBase,
+    feeWithAccommodation:   conferenceConfig.feeWithAccommodation,
     upiId:                  conferenceConfig.upiId,
     qrVersion:              conferenceConfig.qrVersion,
     yearOfStudyOptions:     conferenceConfig.yearOfStudyOptions,

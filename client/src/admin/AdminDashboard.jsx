@@ -145,6 +145,8 @@ function ConfRegRow({ confReg, onRefresh }) {
           {confReg.transactionId || '—'}
         </td>
         <td>{confReg.srcId ? <strong style={{ color: 'var(--primary)' }}>{confReg.srcId}</strong> : '—'}</td>
+        <td>{confReg.needsAccommodation ? 'Yes' : 'No'}</td>
+        <td>₹{confReg.registrationFee ?? '—'}</td>
         <td>{new Date(confReg.createdAt).toLocaleDateString('en-IN')}</td>
         <td>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -240,6 +242,8 @@ function ConfRegSection({ counts }) {
                 <th>College</th>
                 <th>Transaction ID</th>
                 <th>SRC ID</th>
+                <th>Accommodation</th>
+                <th>Fee Paid</th>
                 <th>Submitted</th>
                 <th>Actions</th>
               </tr>

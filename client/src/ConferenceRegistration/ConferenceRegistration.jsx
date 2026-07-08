@@ -12,6 +12,20 @@ const STAGES = [
   { key: 'declaration', label: 'Declaration', step: 4 },
 ];
 
+/* India first (most attendees), then the rest alphabetically. */
+const COUNTRIES = [
+  'India',
+  'Afghanistan', 'Australia', 'Bahrain', 'Bangladesh', 'Bhutan', 'Brazil',
+  'Canada', 'China', 'Egypt', 'France', 'Germany', 'Indonesia', 'Iran',
+  'Iraq', 'Ireland', 'Italy', 'Japan', 'Kenya', 'Kuwait', 'Malaysia',
+  'Maldives', 'Mauritius', 'Mexico', 'Myanmar', 'Nepal', 'Netherlands',
+  'New Zealand', 'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Philippines',
+  'Qatar', 'Russia', 'Saudi Arabia', 'Singapore', 'South Africa',
+  'South Korea', 'Spain', 'Sri Lanka', 'Sweden', 'Switzerland', 'Thailand',
+  'Turkey', 'Ukraine', 'United Arab Emirates', 'United Kingdom',
+  'United States', 'Vietnam', 'Other',
+];
+
 /* ── Helpers ── */
 function formatDate(iso) {
   if (!iso) return '—';
@@ -259,8 +273,12 @@ function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile
               onChange={set('state')} placeholder="e.g. Maharashtra" />
           </Field>
           <Field label="Country" required error={errors.country}>
-            <input className="cr-input" type="text" value={form.country}
-              onChange={set('country')} placeholder="Country" />
+            <select className="cr-select" value={form.country} onChange={set('country')}>
+              <option value="">— Select —</option>
+              {COUNTRIES.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
           </Field>
         </div>
       </Section>
@@ -379,8 +397,32 @@ function PreviewStage({ form, idCardFile, existingIdCard, onBack, onNext }) {
   );
 }
 
+/* ── Bank transfer detail row (with optional copy-to-clipboard) ── */
+function BankRow({ label, value, copyable }) {
+  const [copied, setCopied] = useState(false);
+
+  const copy = () => {
+    navigator.clipboard.writeText(value).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <div className="cr-bank-row">
+      <span className="cr-bank-label">{label}</span>
+      <span className="cr-bank-value">{value}</span>
+      {copyable && (
+        <button className="cr-copy-btn" onClick={copy} type="button">
+          {copied ? '✓' : 'Copy'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 /* ══════════════════════════════════ PAYMENT STAGE */
-function PaymentStage({ config, transactionId, setTransactionId, screenshotFile, setScreenshotFile, errors, setErrors, onBack, onNext }) {
+function PaymentStage({ config, needsAccommodation, setNeedsAccommodation, transactionId, setTransactionId, screenshotFile, setScreenshotFile, errors, setErrors, onBack, onNext }) {
   const shotRef = useRef(null);
   const [copied, setCopied] = useState(false);
 
@@ -418,11 +460,22 @@ function PaymentStage({ config, transactionId, setTransactionId, screenshotFile,
         </p>
       </div>
 
-      {/* Fee summary */}
+      {/* Fee summary + registration type */}
       <div className="cr-fee-card">
-        <div className="cr-fee-row">
-          <span className="cr-fee-label">Conference Registration Fee</span>
-          <span className="cr-fee-amount">₹{config?.fee ?? '—'}</span>
+        <span className="cr-fee-label">Choose your registration type</span>
+        <div className="cr-fee-options">
+          <label className={`cr-fee-option${!needsAccommodation ? ' selected' : ''}`}>
+            <input type="radio" name="accommodation" checked={!needsAccommodation}
+              onChange={() => setNeedsAccommodation(false)} />
+            <span className="cr-fee-option-title">Conference Registration Only</span>
+            <span className="cr-fee-option-amount">₹{config?.feeBase ?? '—'}</span>
+          </label>
+          <label className={`cr-fee-option${needsAccommodation ? ' selected' : ''}`}>
+            <input type="radio" name="accommodation" checked={needsAccommodation}
+              onChange={() => setNeedsAccommodation(true)} />
+            <span className="cr-fee-option-title">Conference Registration + Accommodation</span>
+            <span className="cr-fee-option-amount">₹{config?.feeWithAccommodation ?? '—'}</span>
+          </label>
         </div>
         <div className="cr-fee-note">
           This fee covers your participation in all conference events. No additional event-level fees apply.
@@ -449,6 +502,24 @@ function PaymentStage({ config, transactionId, setTransactionId, screenshotFile,
             After payment, note the <strong>Transaction / UTR reference number</strong> from your UPI app.
           </p>
         </div>
+      </div>
+
+      {/* Bank transfer (NEFT/RTGS/IMPS) */}
+      <div className="cr-bank-box">
+        <p className="cr-upi-head">Or pay via bank transfer (NEFT / RTGS / IMPS)</p>
+        <div className="cr-bank-grid">
+          <BankRow label="Account Name" value="IIChE Amethi Regional Centre" />
+          <BankRow label="Account Number" value="41034315495" copyable />
+          <BankRow label="IFSC Code" value="SBIN0004042" copyable />
+          <BankRow label="MICR Code" value="227002251" />
+          <BankRow label="Bank Name" value="State Bank of India" />
+          <BankRow label="Branch" value="Jais" />
+          <BankRow label="District" value="Rae Bareli" />
+          <BankRow label="Address" value="RGIPT, Jais, Amethi" />
+        </div>
+        <p className="cr-upi-note">
+          After transfer, note the <strong>Transaction / UTR reference number</strong> from your bank.
+        </p>
       </div>
 
       {/* Upload form */}
@@ -618,7 +689,10 @@ function PendingScreen({ confReg }) {
           <span>Transaction ID</span>
           <strong className="cr-mono">{confReg.transactionId || '—'}</strong>
         </div>
-
+        <div className="cr-status-row">
+          <span>Accommodation</span>
+          <strong>{confReg.needsAccommodation ? 'Yes' : 'No'}</strong>
+        </div>
         <div className="cr-status-row">
           <span>Registration Fee</span>
           <strong>₹{confReg.registrationFee ?? '—'}</strong>
@@ -650,7 +724,10 @@ function ApprovedScreen({ confReg }) {
           <span>Reference Number</span>
           <strong className="cr-mono">{confReg.referenceNumber || '—'}</strong>
         </div>
-
+        <div className="cr-status-row">
+          <span>Accommodation</span>
+          <strong>{confReg.needsAccommodation ? 'Yes' : 'No'}</strong>
+        </div>
         <div className="cr-status-row">
           <span>Approved On</span>
           <strong>{confReg.approvalTimestamp ? formatDate(confReg.approvalTimestamp) : '—'}</strong>
@@ -687,6 +764,7 @@ export default function ConferenceRegistration() {
   const [errors, setErrors] = useState({});
   const [idCardFile, setIdCardFile] = useState(null);
   const [transactionId, setTxId] = useState(() => sessionStorage.getItem('cr_txId') || '');
+  const [needsAccommodation, setNeedsAccommodation] = useState(() => sessionStorage.getItem('cr_accommodation') === 'true');
   const [screenshotFile, setShot] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitErr] = useState('');
@@ -740,6 +818,10 @@ export default function ConferenceRegistration() {
   useEffect(() => {
     sessionStorage.setItem('cr_txId', transactionId);
   }, [transactionId]);
+
+  useEffect(() => {
+    sessionStorage.setItem('cr_accommodation', String(needsAccommodation));
+  }, [needsAccommodation]);
 
   /* Scroll to top on stage change */
   useEffect(() => {
@@ -810,6 +892,7 @@ export default function ConferenceRegistration() {
       fd.append('country', form.country);
       /* Payment */
       fd.append('transactionId', transactionId.trim());
+      fd.append('needsAccommodation', String(needsAccommodation));
       fd.append('screenshot', screenshotFile);
       /* ID card (optional on re-submission) */
       if (idCardFile) fd.append('universityIdCard', idCardFile);
@@ -818,6 +901,7 @@ export default function ConferenceRegistration() {
       sessionStorage.removeItem('cr_stage');
       sessionStorage.removeItem('cr_form');
       sessionStorage.removeItem('cr_txId');
+      sessionStorage.removeItem('cr_accommodation');
       setConfReg(res.data);
       setStage('success');
     } catch (err) {
@@ -869,6 +953,7 @@ export default function ConferenceRegistration() {
         {stage === 'payment' && (
           <PaymentStage
             config={config}
+            needsAccommodation={needsAccommodation} setNeedsAccommodation={setNeedsAccommodation}
             transactionId={transactionId} setTransactionId={setTxId}
             screenshotFile={screenshotFile} setScreenshotFile={setShot}
             errors={errors} setErrors={setErrors}

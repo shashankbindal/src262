@@ -101,6 +101,11 @@ const submitConferenceRegistrationValidator = [
     .trim().notEmpty().withMessage('Transaction ID (UTR) is required')
     .isLength({ min: 6, max: 100 }).withMessage('Transaction ID must be 6–100 characters')
     .matches(/^[A-Za-z0-9\-_\/]+$/).withMessage('Transaction ID must be alphanumeric'),
+
+  /* Sent as a string ("true"/"false") since this arrives via multipart/form-data */
+  body('needsAccommodation')
+    .optional()
+    .isIn(['true', 'false']).withMessage('needsAccommodation must be true or false'),
 ];
 
 const adminConfRegDecisionValidator = [

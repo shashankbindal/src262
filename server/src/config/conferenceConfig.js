@@ -6,7 +6,10 @@
  * fee / UPI details without redeploying frontend code.
  */
 module.exports = {
-  fee: parseInt(process.env.CONF_FEE || '5500', 10),
+  /* Conference registration only */
+  feeBase: parseInt(process.env.CONF_FEE_BASE || '3000', 10),
+  /* Conference registration + accommodation */
+  feeWithAccommodation: parseInt(process.env.CONF_FEE_WITH_ACCOMMODATION || '5500', 10),
   upiId: process.env.CONF_UPI_ID || 'rgiptjais@sbi',
   qrVersion: process.env.CONF_QR_VERSION || 'v1',
 
