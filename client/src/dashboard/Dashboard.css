@@ -225,6 +225,45 @@
   background: var(--bg-secondary);
 }
 
+/* ── Phone row (country code + number) ── */
+.profile-phone-row {
+  display: flex;
+  gap: 10px;
+}
+
+.profile-select {
+  flex: 0 0 150px;
+  width: 150px;
+  height: 52px;
+  padding: 12px 32px 12px 16px;
+  background: #FFFFFF;
+  border: 1px solid #DCE3D9;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  outline: none;
+  box-sizing: border-box;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2357606a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: all var(--transition-fast);
+}
+.profile-select:focus {
+  border-color: #2F8F62;
+  box-shadow: 0 0 0 3px rgba(47, 143, 98, 0.18);
+}
+
+.profile-phone-row .profile-input { flex: 1; }
+
+@media (max-width: 480px) {
+  .profile-select { flex: 0 0 120px; width: 120px; padding-right: 26px; }
+}
+
 .profile-save-btn {
   padding: 12px 32px;
   height: 52px;

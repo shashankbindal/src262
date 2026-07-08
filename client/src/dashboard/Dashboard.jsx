@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api, ApiError } from '../lib/api.js';
+import { COUNTRY_CODES } from '../shared/countryCodes.js';
 import './Dashboard.css';
 
 /* ── helpers ── */
@@ -65,10 +66,11 @@ function RegistrationFeeCard() {
 /* ═══════════════════════════════════════════════════════════════ PROFILE TAB */
 function ProfileTab({ user, refreshUser }) {
   const [form, setForm]     = useState({
-    name:       user.name       || '',
-    college:    user.college    || '',
-    department: user.department || '',
-    phone:      user.phone      || '',
+    name:             user.name             || '',
+    college:          user.college          || '',
+    department:       user.department       || '',
+    phoneCountryCode: user.phoneCountryCode || '+91',
+    phone:            user.phone            || '',
   });
   const [busy, setBusy]     = useState(false);
   const [msg, setMsg]       = useState({ type: '', text: '' });
@@ -120,7 +122,6 @@ function ProfileTab({ user, refreshUser }) {
             { name: 'name',       label: 'Full Name',   placeholder: 'Your full name' },
             { name: 'college',    label: 'College',     placeholder: 'Institution name' },
             { name: 'department', label: 'Department',  placeholder: 'e.g. Chemical Engineering' },
-            { name: 'phone',      label: 'Phone',       placeholder: '+91 XXXXX XXXXX' },
           ].map((f) => (
             <div className="profile-field" key={f.name}>
               <label className="profile-label" htmlFor={`prof-${f.name}`}>{f.label}</label>
@@ -134,6 +135,32 @@ function ProfileTab({ user, refreshUser }) {
               />
             </div>
           ))}
+
+          <div className="profile-field">
+            <label className="profile-label" htmlFor="prof-phone">Phone</label>
+            <div className="profile-phone-row">
+              <select
+                id="prof-phoneCountryCode"
+                name="phoneCountryCode"
+                className="profile-select"
+                value={form.phoneCountryCode}
+                onChange={handle}
+              >
+                {COUNTRY_CODES.map((c) => (
+                  <option key={c.country} value={c.code}>{c.code} ({c.country})</option>
+                ))}
+              </select>
+              <input
+                id="prof-phone"
+                name="phone"
+                className="profile-input"
+                placeholder="9876543210"
+                maxLength={15}
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '').slice(0, 15) })}
+              />
+            </div>
+          </div>
 
           <button className="profile-save-btn" type="submit" disabled={busy}>
             {busy ? <><span className="btn-spinner" /> Saving…</> : 'Save Changes'}
