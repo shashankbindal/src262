@@ -4,6 +4,8 @@ const ConferenceRegistration = require('../models/ConferenceRegistration');
 const User                   = require('../models/User');
 const ApiError               = require('../utils/ApiError');
 const cloudinaryService      = require('./cloudinary.service');
+const emailService           = require('./email.service');
+const idCardService          = require('./idCard.service');
 const conferenceConfig       = require('../config/conferenceConfig');
 const logger                 = require('../utils/logger');
 
@@ -196,7 +198,7 @@ async function approveConferenceRegistration(adminId, confRegId, { srcId }) {
   }
 
   const reg = await ConferenceRegistration.findById(confRegId)
-    .populate('userId', 'name email');
+    .populate('userId', 'name email college');
   if (!reg) throw ApiError.notFound('Conference registration not found');
   if (reg.status === 'approved') throw ApiError.badRequest('Already approved');
 
@@ -209,6 +211,29 @@ async function approveConferenceRegistration(adminId, confRegId, { srcId }) {
   await reg.save();
 
   logger.info(`Admin ${adminId} approved conf reg ${confRegId} → SRC ID ${trimmedSrcId}`);
+
+  /* Non-blocking: generate the ID card and email it. A failure here must
+   * never undo or block the approval itself. */
+  (async () => {
+    let idCardPdf = null;
+    try {
+      idCardPdf = await idCardService.generateIdCardPdf({
+        name:     reg.userId.name,
+        srcId:    trimmedSrcId,
+        college:  reg.userId.college,
+        photoUrl: reg.photoUrl,
+      });
+    } catch (err) {
+      logger.error(`ID card generation failed for conf reg ${confRegId}: ${err.message}`);
+    }
+    await emailService.sendConfRegApproved({
+      name:   reg.userId.name,
+      email:  reg.userId.email,
+      srcId:  trimmedSrcId,
+      idCardPdf,
+    });
+  })().catch((err) => logger.error(`Approval email flow failed for conf reg ${confRegId}: ${err.message}`));
+
   return reg;
 }
 
@@ -227,6 +252,13 @@ async function rejectConferenceRegistration(adminId, confRegId, { reason }) {
   await reg.save();
 
   logger.info(`Admin ${adminId} rejected conf reg ${confRegId}`);
+
+  emailService.sendConfRegRejected({
+    name:   reg.userId.name,
+    email:  reg.userId.email,
+    reason: reason.trim(),
+  }).catch((err) => logger.error(`Rejection email failed for conf reg ${confRegId}: ${err.message}`));
+
   return reg;
 }
 
