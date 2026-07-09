@@ -75,107 +75,15 @@
   letter-spacing: -0.02em;
 }
 
-/* ── Profile + fee card side-by-side row ── */
+/* ── Profile row ── */
 .profile-row {
   display: flex;
   align-items: flex-start;
-  gap: 24px;
-  max-width: 1040px;
+  max-width: 680px;
 }
-
-.profile-row .profile-card { flex: 1 1 0; max-width: none; }
-.profile-row .fee-card     { flex: 1 1 0; max-width: none; margin-bottom: 0; }
 
 @media (max-width: 860px) {
   .profile-row { flex-direction: column; }
-}
-
-/* ── Registration fee card ── */
-.fee-card {
-  background: #FFFFFF;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: var(--radius-lg);
-  padding: 28px 32px;
-  max-width: 680px;
-  margin-bottom: 24px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.04);
-}
-
-.fee-card-title {
-  display: block;
-  font-family: var(--font-body);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
-}
-
-.fee-card-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.fee-tile {
-  position: relative;
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-md);
-  padding: 18px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  transition: all var(--transition-fast);
-}
-
-.fee-tile.selected {
-  border-color: var(--primary);
-  background: rgba(11, 93, 70, 0.05);
-}
-
-.fee-tile-label {
-  font-family: var(--font-body);
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.fee-tile-amount {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.fee-tile.selected .fee-tile-amount {
-  color: var(--primary);
-}
-
-.fee-tile-tag {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--primary);
-  background: rgba(11, 93, 70, 0.1);
-  padding: 3px 8px;
-  border-radius: 20px;
-}
-
-.fee-card-note {
-  margin: 16px 0 0;
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  line-height: 1.5;
-}
-
-@media (max-width: 480px) {
-  .fee-card-options { grid-template-columns: 1fr; }
-  .fee-card { padding: 22px 20px; }
 }
 
 /* ── Profile card ── */
