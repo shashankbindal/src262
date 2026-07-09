@@ -181,6 +181,7 @@ const Banner = () => {
       </div>
       <ParticleCanvas />
       <div className="banner-content">
+        <p className="banner-eyebrow">AIChE India · Student Regional Conference · SRC 2026</p>
         <h1 className="banner-title">
           {title.split('').map((char, i) => (
             <span key={i} className="char-wrapper">
