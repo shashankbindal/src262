@@ -52,7 +52,7 @@ const EVENTS = [
     ),
     image:
       'https://learningliftoff.com/wp-content/uploads/2023/01/pexels-artem-podrez-6941450-1536x864.jpg.webp',
-    rulebookLink: '#',
+    rulebookLink: 'https://drive.google.com/file/d/1M5tOJKLHw1TuG76NsdhOhR9eHlwLBsXj/view?usp=sharing',
     chairs: [{ role: 'Chair', name: 'Kartik Gogia' }],
     coordinators: [
       { role: 'Coordinator', name: 'Prashant Vishwakarma' },
@@ -70,7 +70,7 @@ const EVENTS = [
       'The Poster Presentation Competition transforms complex ideas into compelling visual narratives. Participants communicate their research, projects, and innovative concepts through concise and impactful poster designs, engaging both judges and peers. The event promotes effective scientific communication, creativity, and interdisciplinary collaboration while highlighting emerging trends and innovations in engineering and technology.',
     image:
       'https://images.unsplash.com/photo-1771344488060-f6b32a503b34?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0',
-    rulebookLink: '#',
+    rulebookLink: 'https://drive.google.com/file/d/1Metxm61J01BOYX3mRSv1FiYRrgKvoTIM/view?usp=sharing',
     chairs: [],
     coordinators: [],
   },
@@ -85,7 +85,7 @@ const EVENTS = [
       'The Technical Paper Presentation provides a platform for students to showcase original research, innovative methodologies, and cutting-edge developments in chemical engineering and allied disciplines. Participants present their work before a panel of experts, fostering scientific dialogue, critical thinking, and knowledge exchange. The competition celebrates research excellence while encouraging students to address real-world challenges through engineering solutions.',
     image:
       'https://images.unsplash.com/photo-1515603403036-f3d35f75ca52?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0',
-    rulebookLink: '#',
+    rulebookLink: 'https://drive.google.com/file/d/1nulCgD_wAEUW641fAE-fJRyyXUEyOovR/view?usp=sharing',
     chairs: [{ role: 'Chair', name: 'Omika Singh' }],
     coordinators: [
       { role: 'Coordinator', name: 'Aditya Raj' },
