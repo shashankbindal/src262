@@ -3,8 +3,9 @@ const User     = require('../models/User');
 const ApiError = require('../utils/ApiError');
 
 const ALLOWED_UPDATE_FIELDS = [
-  'name', 'college', 'department', 'phone',
+  'name', 'college', 'department', 'phoneCountryCode', 'phone',
   'dateOfBirth', 'gender', 'course', 'yearOfStudy',
+  'studentChapterName', 'facultyAdvisorName', 'facultyAdvisorEmail',
   'aicheId', 'city', 'state', 'country',
 ];
 

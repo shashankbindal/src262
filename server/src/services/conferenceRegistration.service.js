@@ -20,9 +20,10 @@ function generateReferenceNumber() {
  */
 async function submitConferenceRegistration(userId, {
   /* Profile fields */
-  name, phone, dateOfBirth, gender,
+  name, phoneCountryCode, phone, dateOfBirth, gender,
   institute, course, yearOfStudy,
-  aadhaarNumber, aicheId,
+  studentChapterName, facultyAdvisorName, facultyAdvisorEmail,
+  idType, idNumber, aicheId,
   city, state, country,
   /* University ID card */
   idCardFileUrl, idCardFileKey,
@@ -37,14 +38,19 @@ async function submitConferenceRegistration(userId, {
 
   /* ── Update user profile ── */
   const profileUpdate = {};
-  if (name)           profileUpdate.name = name;
-  if (phone)          profileUpdate.phone = phone;
-  if (dateOfBirth)    profileUpdate.dateOfBirth = new Date(dateOfBirth);
-  if (gender)         profileUpdate.gender = gender;
-  if (institute)      profileUpdate.college = institute;
-  if (course)         profileUpdate.course = course;
-  if (yearOfStudy)    profileUpdate.yearOfStudy = yearOfStudy;
-  if (aadhaarNumber)  profileUpdate.aadhaarNumber = aadhaarNumber;
+  if (name)             profileUpdate.name = name;
+  if (phoneCountryCode) profileUpdate.phoneCountryCode = phoneCountryCode;
+  if (phone)            profileUpdate.phone = phone;
+  if (dateOfBirth)      profileUpdate.dateOfBirth = new Date(dateOfBirth);
+  if (gender)           profileUpdate.gender = gender;
+  if (institute)        profileUpdate.college = institute;
+  if (course)           profileUpdate.course = course;
+  if (yearOfStudy)      profileUpdate.yearOfStudy = yearOfStudy;
+  if (studentChapterName)  profileUpdate.studentChapterName = studentChapterName;
+  if (facultyAdvisorName)  profileUpdate.facultyAdvisorName = facultyAdvisorName;
+  if (facultyAdvisorEmail) profileUpdate.facultyAdvisorEmail = facultyAdvisorEmail;
+  if (idType)         profileUpdate.idType = idType;
+  if (idNumber)       profileUpdate.idNumber = idNumber;
   if (aicheId !== undefined && aicheId !== null) profileUpdate.aicheId = aicheId;
   if (city)           profileUpdate.city = city;
   if (state)          profileUpdate.state = state;
@@ -149,7 +155,7 @@ async function getConferenceRegistrations({ status, page = 1, limit = 50 } = {})
     limit,
     populate: [{
       path: 'userId',
-      select: 'name email college phone dateOfBirth gender course yearOfStudy city state country universityIdCardKey',
+      select: 'name email college phoneCountryCode phone dateOfBirth gender course yearOfStudy studentChapterName facultyAdvisorName facultyAdvisorEmail city state country universityIdCardKey',
     }],
     sort: { createdAt: -1 },
     lean: true,

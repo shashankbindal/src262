@@ -21,9 +21,10 @@ const submitConferenceRegistration = asyncHandler(async (req, res) => {
   if (!screenshotFile) throw ApiError.badRequest('Payment screenshot is required');
 
   const {
-    name, phone, dateOfBirth, gender,
+    name, phoneCountryCode, phone, dateOfBirth, gender,
     institute, course, yearOfStudy,
-    aadhaarNumber, aicheId,
+    studentChapterName, facultyAdvisorName, facultyAdvisorEmail,
+    idType, idNumber, aicheId,
     city, state, country,
     transactionId, needsAccommodation,
   } = req.body;
@@ -44,9 +45,10 @@ const submitConferenceRegistration = asyncHandler(async (req, res) => {
   }
 
   const reg = await confRegService.submitConferenceRegistration(req.user._id, {
-    name, phone, dateOfBirth, gender,
+    name, phoneCountryCode, phone, dateOfBirth, gender,
     institute, course, yearOfStudy,
-    aadhaarNumber, aicheId,
+    studentChapterName, facultyAdvisorName, facultyAdvisorEmail,
+    idType, idNumber, aicheId,
     city, state, country,
     idCardFileUrl: idCardUpload?.secure_url  || null,
     idCardFileKey: idCardUpload?.public_id   || null,

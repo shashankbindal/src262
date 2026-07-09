@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api, ApiError } from '../lib/api.js';
+import { COUNTRY_CODES } from '../shared/countryCodes.js';
 import './ConferenceRegistration.css';
 
 /* ── Constants ── */
@@ -33,9 +34,9 @@ function formatDate(iso) {
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
 }
 
-function maskAadhaar(num) {
+function maskId(num) {
   if (!num || num.length < 4) return num;
-  return `XXXX XXXX ${num.slice(-4)}`;
+  return `${'X'.repeat(Math.max(num.length - 4, 4))} ${num.slice(-4)}`;
 }
 
 function FileThumbnail({ file, url }) {
@@ -123,16 +124,26 @@ function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile
     if (!form.name.trim()) e.name = 'Full name is required';
     else if (!/^[A-Za-z\s]+$/.test(form.name.trim())) e.name = 'Name must contain only letters and spaces';
     if (!form.phone.trim()) e.phone = 'Contact number is required';
-    else if (!/^[0-9]{10}$/.test(form.phone.trim())) e.phone = 'Must be exactly 10 digits';
+    else if (form.phoneCode === '+91') {
+      if (!/^[0-9]{10}$/.test(form.phone.trim())) e.phone = 'Must be exactly 10 digits';
+    } else if (!/^[0-9]{6,15}$/.test(form.phone.trim())) e.phone = 'Must be 6–15 digits';
     if (!form.dateOfBirth) e.dateOfBirth = 'Date of birth is required';
     else if (new Date(form.dateOfBirth) > new Date()) e.dateOfBirth = 'Cannot be in the future';
     if (!form.gender) e.gender = 'Please select a gender';
     if (!form.institute.trim()) e.institute = 'Institute name is required';
     if (!form.course.trim()) e.course = 'Course / programme name is required';
     if (!form.yearOfStudy) e.yearOfStudy = 'Please select year of study';
-    if (!form.aadhaarNumber.trim()) e.aadhaarNumber = 'Aadhaar number is required';
-    else if (!/^[0-9]{12}$/.test(form.aadhaarNumber.replace(/\s/g, '')))
-      e.aadhaarNumber = 'Must be exactly 12 digits';
+    if (!form.studentChapterName.trim()) e.studentChapterName = 'Student chapter name is required';
+    if (!form.facultyAdvisorName.trim()) e.facultyAdvisorName = 'Faculty advisor name is required';
+    if (!form.facultyAdvisorEmail.trim()) e.facultyAdvisorEmail = 'Faculty advisor email is required';
+    else if (!/\S+@\S+\.\S+/.test(form.facultyAdvisorEmail.trim())) e.facultyAdvisorEmail = 'Please enter a valid email';
+    if (!form.idNumber.trim()) {
+      e.idNumber = form.idType === 'passport' ? 'Passport number is required' : 'Aadhaar number is required';
+    } else if (form.idType === 'passport') {
+      if (!/^[A-Za-z0-9]{6,15}$/.test(form.idNumber.trim())) e.idNumber = 'Must be 6–15 letters/digits';
+    } else if (!/^[0-9]{12}$/.test(form.idNumber.replace(/\s/g, ''))) {
+      e.idNumber = 'Must be exactly 12 digits';
+    }
     if (!form.aicheId.trim()) e.aicheId = 'AIChE membership ID is required';
     if (!form.city.trim()) e.city = 'City is required';
     if (!form.state.trim()) e.state = 'State is required';
@@ -175,9 +186,22 @@ function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile
             <span className="cr-hint">Email is linked to your account and cannot be changed here.</span>
           </Field>
           <Field label="Contact Number" required error={errors.phone}
-            hint="10-digit mobile number without country code">
-            <input className="cr-input" type="tel" value={form.phone}
-              onChange={set('phone')} placeholder="9876543210" maxLength={10} />
+            hint="Select your country code and enter your mobile number">
+            <div className="cr-phone-row">
+              <select className="cr-select cr-phone-code" value={form.phoneCode}
+                onChange={(e) => setForm((f) => ({ ...f, phoneCode: e.target.value }))}>
+                {COUNTRY_CODES.map((c) => (
+                  <option key={c.country} value={c.code}>{c.code} ({c.country})</option>
+                ))}
+              </select>
+              <input className="cr-input" type="tel" value={form.phone}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '').slice(0, 15);
+                  setForm((f) => ({ ...f, phone: val }));
+                  if (errors.phone) setErrors((er) => ({ ...er, phone: '' }));
+                }}
+                placeholder="9876543210" maxLength={15} />
+            </div>
           </Field>
           <Field label="Date of Birth" required error={errors.dateOfBirth}>
             <input className="cr-input" type="date" value={form.dateOfBirth}
@@ -213,6 +237,18 @@ function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile
                 ))}
             </select>
           </Field>
+          <Field label="Student Chapter Name" required error={errors.studentChapterName}>
+            <input className="cr-input" type="text" value={form.studentChapterName}
+              onChange={set('studentChapterName')} placeholder="e.g. AIChE RGIPT Student Chapter" />
+          </Field>
+          <Field label="Faculty Advisor Name" required error={errors.facultyAdvisorName}>
+            <input className="cr-input" type="text" value={form.facultyAdvisorName}
+              onChange={set('facultyAdvisorName')} placeholder="Full name of faculty advisor" />
+          </Field>
+          <Field label="Faculty Advisor Email" required error={errors.facultyAdvisorEmail}>
+            <input className="cr-input" type="email" value={form.facultyAdvisorEmail}
+              onChange={set('facultyAdvisorEmail')} placeholder="advisor@institute.edu" />
+          </Field>
         </div>
       </Section>
 
@@ -241,16 +277,34 @@ function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile
           </Field>
 
           <div>
-            <Field label="Aadhaar Number" required error={errors.aadhaarNumber}
-              hint="12-digit number. Stored securely and never displayed publicly.">
-              <input className="cr-input" type="text" value={form.aadhaarNumber}
+            <Field label="Identity Document Type" required>
+              <select className="cr-select" value={form.idType}
                 onChange={(e) => {
-                  const val = e.target.value.replace(/\D/g, '').slice(0, 12);
-                  setForm((f) => ({ ...f, aadhaarNumber: val }));
-                  if (errors.aadhaarNumber) setErrors((er) => ({ ...er, aadhaarNumber: '' }));
+                  setForm((f) => ({ ...f, idType: e.target.value, idNumber: '' }));
+                  if (errors.idNumber) setErrors((er) => ({ ...er, idNumber: '' }));
+                }}>
+                <option value="aadhaar">Aadhaar Number (For Indian Nationals)</option>
+                <option value="passport">Passport Number (For Foreign Nationals)</option>
+              </select>
+            </Field>
+
+            <Field label={form.idType === 'passport' ? 'Passport Number' : 'Aadhaar Number'}
+              required error={errors.idNumber}
+              hint={form.idType === 'passport'
+                ? 'As printed on your passport. Stored securely and never displayed publicly.'
+                : '12-digit number. Stored securely and never displayed publicly.'}>
+              <input className="cr-input" type="text" value={form.idNumber}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  const val = form.idType === 'passport'
+                    ? raw.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 15)
+                    : raw.replace(/\D/g, '').slice(0, 12);
+                  setForm((f) => ({ ...f, idNumber: val }));
+                  if (errors.idNumber) setErrors((er) => ({ ...er, idNumber: '' }));
                 }}
-                placeholder="Enter 12-digit Aadhaar number"
-                maxLength={12} inputMode="numeric" />
+                placeholder={form.idType === 'passport' ? 'Enter passport number' : 'Enter 12-digit Aadhaar number'}
+                maxLength={form.idType === 'passport' ? 15 : 12}
+                inputMode={form.idType === 'passport' ? 'text' : 'numeric'} />
             </Field>
 
             <Field label="AIChE Student Membership ID" required error={errors.aicheId}>
@@ -325,7 +379,7 @@ function PreviewStage({ form, idCardFile, existingIdCard, onBack, onNext }) {
           <tbody>
             <PreviewRow label="Full Name" value={form.name} />
             <PreviewRow label="Email Address" value={form.email} />
-            <PreviewRow label="Contact Number" value={form.phone} />
+            <PreviewRow label="Contact Number" value={form.phone ? `${form.phoneCode} ${form.phone}` : ''} />
             <PreviewRow label="Date of Birth" value={formatDate(form.dateOfBirth)} />
             <PreviewRow label="Gender" value={form.gender} />
           </tbody>
@@ -342,6 +396,9 @@ function PreviewStage({ form, idCardFile, existingIdCard, onBack, onNext }) {
             <PreviewRow label="Institute Name" value={form.institute} />
             <PreviewRow label="Course / Programme" value={form.course} />
             <PreviewRow label="Year of Study" value={form.yearOfStudy} />
+            <PreviewRow label="Student Chapter Name" value={form.studentChapterName} />
+            <PreviewRow label="Faculty Advisor Name" value={form.facultyAdvisorName} />
+            <PreviewRow label="Faculty Advisor Email" value={form.facultyAdvisorEmail} />
           </tbody>
         </table>
       </div>
@@ -363,7 +420,8 @@ function PreviewStage({ form, idCardFile, existingIdCard, onBack, onNext }) {
                     : '—'}
               </td>
             </tr>
-            <PreviewRow label="Aadhaar Number" value={maskAadhaar(form.aadhaarNumber)} />
+            <PreviewRow label={form.idType === 'passport' ? 'Passport Number' : 'Aadhaar Number'}
+              value={maskId(form.idNumber)} />
             <PreviewRow label="AIChE Membership ID" value={form.aicheId || 'Not provided'} />
           </tbody>
         </table>
@@ -659,7 +717,7 @@ function SuccessScreen({ confReg }) {
       </div>
 
       <div className="cr-success-note">
-        Do <strong>not</strong> share your reference number or Aadhaar details with anyone.
+        Do <strong>not</strong> share your reference number or identity document details with anyone.
         The organizing team will never ask for your password.
       </div>
 
@@ -755,9 +813,10 @@ export default function ConferenceRegistration() {
       if (saved) return JSON.parse(saved);
     } catch (e) {}
     return {
-      name: '', email: '', phone: '', dateOfBirth: '', gender: '',
+      name: '', email: '', phoneCode: '+91', phone: '', dateOfBirth: '', gender: '',
       institute: '', course: '', yearOfStudy: '',
-      aadhaarNumber: '', aicheId: '',
+      studentChapterName: '', facultyAdvisorName: '', facultyAdvisorEmail: '',
+      idType: 'aadhaar', idNumber: '', aicheId: '',
       city: '', state: '', country: 'India',
     };
   });
@@ -793,12 +852,16 @@ export default function ConferenceRegistration() {
       ...f,
       name: f.name || user.name || '',
       email: f.email || user.email || '',
+      phoneCode: f.phoneCode || user.phoneCountryCode || '+91',
       phone: f.phone || user.phone || '',
       dateOfBirth: f.dateOfBirth || (user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : ''),
       gender: f.gender || user.gender || '',
       institute: f.institute || user.college || '',
       course: f.course || user.course || '',
       yearOfStudy: f.yearOfStudy || user.yearOfStudy || '',
+      studentChapterName: f.studentChapterName || user.studentChapterName || '',
+      facultyAdvisorName: f.facultyAdvisorName || user.facultyAdvisorName || '',
+      facultyAdvisorEmail: f.facultyAdvisorEmail || user.facultyAdvisorEmail || '',
       aicheId: f.aicheId || user.aicheId || '',
       city: f.city || user.city || '',
       state: f.state || user.state || '',
@@ -879,13 +942,18 @@ export default function ConferenceRegistration() {
       const fd = new FormData();
       /* Profile fields */
       fd.append('name', form.name);
+      fd.append('phoneCountryCode', form.phoneCode);
       fd.append('phone', form.phone);
       fd.append('dateOfBirth', form.dateOfBirth);
       fd.append('gender', form.gender);
       fd.append('institute', form.institute);
       fd.append('course', form.course);
       fd.append('yearOfStudy', form.yearOfStudy);
-      fd.append('aadhaarNumber', form.aadhaarNumber.replace(/\s/g, ''));
+      fd.append('studentChapterName', form.studentChapterName);
+      fd.append('facultyAdvisorName', form.facultyAdvisorName);
+      fd.append('facultyAdvisorEmail', form.facultyAdvisorEmail);
+      fd.append('idType', form.idType);
+      fd.append('idNumber', form.idNumber.replace(/\s/g, ''));
       fd.append('aicheId', form.aicheId || '');
       fd.append('city', form.city);
       fd.append('state', form.state);

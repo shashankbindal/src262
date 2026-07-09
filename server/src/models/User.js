@@ -52,10 +52,16 @@ const userSchema = new mongoose.Schema(
     /* Profile fields — basic */
     college:    { type: String, trim: true, maxlength: 150 }, // institute name
     department: { type: String, trim: true, maxlength: 100 },
+    phoneCountryCode: {
+      type:    String,
+      trim:    true,
+      default: '+91',
+      match:   [/^\+[0-9]{1,4}$/, 'Invalid country code'],
+    },
     phone: {
       type:  String,
       trim:  true,
-      match: [/^[0-9]{10}$/, 'Phone must be exactly 10 digits'],
+      match: [/^[0-9]{6,15}$/, 'Phone must be 6–15 digits'],
     },
     profilePicture: { type: String, default: '' },
 
@@ -70,9 +76,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ['First Year', 'Second Year', 'Third Year', 'Fourth Year'],
     },
+    studentChapterName:  { type: String, trim: true, maxlength: 150, default: '' },
+    facultyAdvisorName:  { type: String, trim: true, maxlength: 100, default: '' },
+    facultyAdvisorEmail: { type: String, trim: true, lowercase: true, maxlength: 150, default: '' },
 
     /* Identity — never returned by default */
-    aadhaarNumber: { type: String, select: false },
+    idType:   { type: String, enum: ['aadhaar', 'passport'], select: false },
+    idNumber: { type: String, select: false },
 
     /* Required membership (for conference) */
     aicheId: { type: String, trim: true, maxlength: 50, default: '' },

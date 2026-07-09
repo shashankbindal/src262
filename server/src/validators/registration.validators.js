@@ -45,9 +45,20 @@ const submitConferenceRegistrationValidator = [
     .matches(/^[A-Za-z\s]+$/).withMessage('Name must contain only letters and spaces')
     .isLength({ max: 100 }).withMessage('Name too long'),
 
+  body('phoneCountryCode')
+    .trim().notEmpty().withMessage('Country code is required')
+    .matches(/^\+[0-9]{1,4}$/).withMessage('Invalid country code'),
+
   body('phone')
     .trim().notEmpty().withMessage('Contact number is required')
-    .matches(/^[0-9]{10}$/).withMessage('Contact number must be exactly 10 digits'),
+    .custom((val, { req }) => {
+      const isIndia = req.body.phoneCountryCode === '+91';
+      const re = isIndia ? /^[0-9]{10}$/ : /^[0-9]{6,15}$/;
+      if (!re.test(val.trim())) {
+        throw new Error(isIndia ? 'Contact number must be exactly 10 digits' : 'Contact number must be 6–15 digits');
+      }
+      return true;
+    }),
 
   body('dateOfBirth')
     .notEmpty().withMessage('Date of birth is required')
@@ -74,10 +85,35 @@ const submitConferenceRegistrationValidator = [
     .notEmpty().withMessage('Year of study is required')
     .isIn(YEAR_OPTIONS).withMessage('Invalid year of study'),
 
+  body('studentChapterName')
+    .trim().notEmpty().withMessage('Student chapter name is required')
+    .isLength({ max: 150 }).withMessage('Student chapter name too long'),
+
+  body('facultyAdvisorName')
+    .trim().notEmpty().withMessage('Faculty advisor name is required')
+    .isLength({ max: 100 }).withMessage('Faculty advisor name too long'),
+
+  body('facultyAdvisorEmail')
+    .trim().notEmpty().withMessage('Faculty advisor email is required')
+    .isEmail().withMessage('Please provide a valid faculty advisor email'),
+
   /* ── Identity ── */
-  body('aadhaarNumber')
-    .trim().notEmpty().withMessage('Aadhaar number is required')
-    .matches(/^[0-9]{12}$/).withMessage('Aadhaar must be exactly 12 digits'),
+  body('idType')
+    .trim().notEmpty().withMessage('Identity document type is required')
+    .isIn(['aadhaar', 'passport']).withMessage('Invalid identity document type'),
+
+  body('idNumber')
+    .trim().notEmpty().withMessage('Identity document number is required')
+    .custom((val, { req }) => {
+      if (req.body.idType === 'passport') {
+        if (!/^[A-Za-z0-9]{6,15}$/.test(val.trim())) {
+          throw new Error('Passport number must be 6–15 letters/digits');
+        }
+      } else if (!/^[0-9]{12}$/.test(val.replace(/\s/g, ''))) {
+        throw new Error('Aadhaar must be exactly 12 digits');
+      }
+      return true;
+    }),
 
   body('aicheId')
     .trim().notEmpty().withMessage('AIChE membership ID is required')
