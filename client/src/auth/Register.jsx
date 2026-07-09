@@ -219,6 +219,12 @@ export default function Register() {
           </button>
         </form>
 
+        <p className="auth-legal-note">
+          By creating an account, you agree to our{' '}
+          <Link to="/terms-and-conditions">Terms &amp; Conditions</Link> and{' '}
+          <Link to="/privacy-policy">Privacy Policy</Link>.
+        </p>
+
         <p className="auth-footer">
           Already have an account? <Link to="/login">Sign in</Link>
         </p>

@@ -167,6 +167,11 @@
   border-bottom-color: rgba(218, 222, 216, 0.6);
 }
 
+.footer-link-row-legal a {
+  font-size: 0.82rem;
+  color: rgba(218, 222, 216, 0.4);
+}
+
 /* ===== GIANT INTERACTIVE TEXT ===== */
 .footer-giant-text {
   font-family: var(--font-display);

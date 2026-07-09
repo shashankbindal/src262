@@ -216,6 +216,26 @@
   color: var(--primary-light);
 }
 
+.auth-legal-note {
+  text-align: center;
+  margin-top: 18px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--text-metadata);
+}
+
+.auth-legal-note a {
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 500;
+}
+
+.auth-legal-note a:hover {
+  color: var(--primary);
+}
+
 /* ---- Divider ---- */
 .auth-divider {
   display: flex;

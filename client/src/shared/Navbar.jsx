@@ -21,7 +21,7 @@ const NavItem = ({ item, onClose }) => (
       className="nav-link block-link"
       onClick={onClose}
     >
-      <StaggerText text={item.label} hoverColor="#ffffff" />
+      <StaggerText text={item.label} hoverColor="var(--primary)" />
     </Link>
   </li>
 );
