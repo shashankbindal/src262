@@ -6,7 +6,7 @@ const ALLOWED_UPDATE_FIELDS = [
   'name', 'college', 'department', 'phoneCountryCode', 'phone',
   'dateOfBirth', 'gender', 'course', 'yearOfStudy',
   'studentChapterName', 'facultyAdvisorName', 'facultyAdvisorEmail',
-  'aicheId', 'city', 'state', 'country',
+  'aicheId', 'city', 'state', 'country', 'merchSize',
 ];
 
 async function getProfile(userId) {

@@ -41,6 +41,10 @@ const updateProfileValidator = [
     .optional()
     .trim()
     .isEmail().withMessage('Please provide a valid faculty advisor email'),
+
+  body('merchSize')
+    .optional({ values: 'falsy' })
+    .isIn(['S', 'M', 'L', 'XL', 'XXL']).withMessage('Please select a valid merch size'),
 ];
 
 module.exports = { updateProfileValidator };

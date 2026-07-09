@@ -64,6 +64,10 @@ const userSchema = new mongoose.Schema(
       match: [/^[0-9]{6,15}$/, 'Phone must be 6–15 digits'],
     },
     profilePicture: { type: String, default: '' },
+    merchSize: {
+      type: String,
+      enum: ['S', 'M', 'L', 'XL', 'XXL'],
+    },
 
     /* Extended profile — collected during conference registration */
     dateOfBirth: { type: Date },
