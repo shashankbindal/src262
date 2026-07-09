@@ -66,7 +66,7 @@ const userSchema = new mongoose.Schema(
     profilePicture: { type: String, default: '' },
     merchSize: {
       type: String,
-      enum: ['S', 'M', 'L', 'XL', 'XXL'],
+      enum: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL'],
     },
 
     /* Extended profile — collected during conference registration */

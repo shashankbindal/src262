@@ -25,7 +25,6 @@ function ProfileTab({ user, refreshUser }) {
     department:       user.department       || '',
     phoneCountryCode: user.phoneCountryCode || '+91',
     phone:            user.phone            || '',
-    merchSize:        user.merchSize        || '',
   });
   const [busy, setBusy]     = useState(false);
   const [msg, setMsg]       = useState({ type: '', text: '' });
@@ -37,9 +36,7 @@ function ProfileTab({ user, refreshUser }) {
     setBusy(true);
     setMsg({ type: '', text: '' });
     try {
-      const payload = { ...form };
-      if (!payload.merchSize) delete payload.merchSize; // enum field — omit rather than send ''
-      await api.patch('/users/profile', payload);
+      await api.patch('/users/profile', form);
       await refreshUser();
       setMsg({ type: 'success', text: 'Profile updated successfully.' });
     } catch (err) {
@@ -117,27 +114,6 @@ function ProfileTab({ user, refreshUser }) {
                 onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '').slice(0, 15) })}
               />
             </div>
-          </div>
-
-          <div className="profile-field">
-            <label className="profile-label" htmlFor="prof-merchSize">
-              Merch Size{' '}
-              <a href="https://res.cloudinary.com/cnocxcvz/image/upload/v1783560065/site/hrpw23vpjlz63h4x390o.png" target="_blank" rel="noreferrer" className="profile-size-chart-link">
-                (View Size Chart ↗)
-              </a>
-            </label>
-            <select
-              id="prof-merchSize"
-              name="merchSize"
-              className="profile-select"
-              value={form.merchSize}
-              onChange={handle}
-            >
-              <option value="">— Select —</option>
-              {['S', 'M', 'L', 'XL', 'XXL'].map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
           </div>
 
           <button className="profile-save-btn" type="submit" disabled={busy}>

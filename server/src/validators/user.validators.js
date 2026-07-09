@@ -44,7 +44,7 @@ const updateProfileValidator = [
 
   body('merchSize')
     .optional({ values: 'falsy' })
-    .isIn(['S', 'M', 'L', 'XL', 'XXL']).withMessage('Please select a valid merch size'),
+    .isIn(['S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL']).withMessage('Please select a valid merch size'),
 ];
 
 module.exports = { updateProfileValidator };

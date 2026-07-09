@@ -34,6 +34,8 @@ async function submitConferenceRegistration(userId, {
   photoFileUrl, photoFileKey,
   /* Payment */
   transactionId, screenshotUrl, screenshotKey, needsAccommodation,
+  /* Merch */
+  merchSize,
 }) {
   const accommodation = needsAccommodation === true || needsAccommodation === 'true';
   const registrationFee = accommodation ? conferenceConfig.feeWithAccommodation : conferenceConfig.feeBase;
@@ -60,6 +62,7 @@ async function submitConferenceRegistration(userId, {
   if (city)           profileUpdate.city = city;
   if (state)          profileUpdate.state = state;
   if (country)        profileUpdate.country = country;
+  if (merchSize)      profileUpdate.merchSize = merchSize;
 
   if (idCardFileUrl) {
     /* Delete old ID card if replacing */

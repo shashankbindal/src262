@@ -250,6 +250,15 @@ function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile
               )}
             </div>
           </Field>
+          <Field label="Merch Size"
+            hint={<>Optional. <a href="https://res.cloudinary.com/cnocxcvz/image/upload/v1783560065/site/hrpw23vpjlz63h4x390o.png" target="_blank" rel="noreferrer">View size chart ↗</a></>}>
+            <select className="cr-select" value={form.merchSize} onChange={set('merchSize')}>
+              <option value="">— Select —</option>
+              {['S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL'].map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </Field>
         </div>
       </Section>
 
@@ -853,6 +862,7 @@ export default function ConferenceRegistration() {
       studentChapterName: '', facultyAdvisorName: '', facultyAdvisorEmail: '',
       idType: 'aadhaar', idNumber: '', aicheId: '',
       city: '', state: '', country: 'India',
+      merchSize: '',
     };
   });
   const [errors, setErrors] = useState({});
@@ -995,6 +1005,7 @@ export default function ConferenceRegistration() {
       fd.append('city', form.city);
       fd.append('state', form.state);
       fd.append('country', form.country);
+      if (form.merchSize) fd.append('merchSize', form.merchSize);
       /* Payment */
       fd.append('transactionId', transactionId.trim());
       fd.append('needsAccommodation', String(needsAccommodation));

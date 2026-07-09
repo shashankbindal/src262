@@ -142,6 +142,10 @@ const submitConferenceRegistrationValidator = [
   body('needsAccommodation')
     .optional()
     .isIn(['true', 'false']).withMessage('needsAccommodation must be true or false'),
+
+  body('merchSize')
+    .optional({ values: 'falsy' })
+    .isIn(['S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL']).withMessage('Please select a valid merch size'),
 ];
 
 const adminConfRegDecisionValidator = [
