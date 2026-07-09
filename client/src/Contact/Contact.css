@@ -231,6 +231,21 @@
 
 .map-container iframe { display: block; }
 
+.how-to-reach-download {
+  align-self: center;
+  padding: 12px 28px;
+  border-radius: var(--radius-md, 8px);
+  background: var(--primary);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity var(--transition-fast, 0.15s);
+}
+
+.how-to-reach-download:hover { opacity: 0.85; }
+
 @media (max-width: 968px) { .how-to-reach-title { font-size: 1.8rem; } }
 
 /* ===== PLACES TO VISIT TIMELINE ===== */

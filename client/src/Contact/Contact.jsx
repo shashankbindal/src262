@@ -193,7 +193,7 @@ const Contact = () => {
           <iframe
             src="https://maps.google.com/maps?q=Rajiv%20Gandhi%20Institute%20of%20Petroleum%20Technology,%20Jais&t=&z=15&ie=UTF8&iwloc=&output=embed"
             width="100%"
-            height="500"
+            height="320"
             style={{ border: 0 }}
             allowFullScreen=""
             loading="lazy"
@@ -201,6 +201,14 @@ const Contact = () => {
             title="RGIPT Map Location"
           ></iframe>
         </div>
+        <a
+          href="https://res.cloudinary.com/cnocxcvz/raw/upload/v1783564361/site/pisimederbvwn6bwjfqb.pdf"
+          target="_blank"
+          rel="noreferrer"
+          className="how-to-reach-download"
+        >
+          Download How to Reach Guide (PDF) ↓
+        </a>
       </div>
       
       <div ref={placesRef} className={`places-to-visit-section reveal-scale ${placesVisible ? 'visible' : ''}`}>
