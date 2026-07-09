@@ -33,6 +33,7 @@ router.patch('/conference-registrations/:confRegId/decision',
 router.get('/conference-registrations/:confRegId/screenshot', ctrl.getConfPaymentScreenshot);
 router.get('/conference-registrations/:confRegId/id-card',    ctrl.getConfIdCard);
 router.get('/conference-registrations/:confRegId/detail',     ctrl.getConferenceRegistrationDetail);
+router.get('/conference-registrations/:confRegId/id-card-preview', ctrl.getIdCardPreview);
 
 /* ─── Event Registrations ────────────────────────────────────────────────── */
 router.get('/events/:eventId/registrations',     ctrl.getRegistrations);

@@ -54,6 +54,13 @@ const getConferenceRegistrationDetail = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, 'Conference registration detail fetched', data);
 });
 
+const getIdCardPreview = asyncHandler(async (req, res) => {
+  const pdf = await adminService.getIdCardPreview(req.params.confRegId);
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', 'inline; filename="conference-id-card.pdf"');
+  res.send(pdf);
+});
+
 const exportConferenceRegistrationsCSV = asyncHandler(async (req, res) => {
   const { status } = req.query;
   const csv = await adminService.exportConferenceRegistrationsCSV(status);
@@ -162,6 +169,7 @@ module.exports = {
   getOverview,
   getConferenceRegistrations,
   getConferenceRegistrationDetail,
+  getIdCardPreview,
   exportConferenceRegistrationsCSV,
   decideConferenceRegistration,
   getConfPaymentScreenshot,

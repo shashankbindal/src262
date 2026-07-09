@@ -292,6 +292,26 @@ const DETAIL_FIELDS = '+idType +idNumber name email college phoneCountryCode pho
   + 'aicheId city state country universityIdCardKey universityIdCardUrl merchSize';
 
 /**
+ * Renders the conference ID card PDF on demand so an admin can preview it
+ * any time (not just at the moment of approval). Uses "PENDING" in place
+ * of the SRC ID for registrations not yet approved.
+ */
+async function getIdCardPreview(confRegId) {
+  const reg = await ConferenceRegistration.findById(confRegId)
+    .populate('userId', 'name college')
+    .lean();
+  if (!reg) throw ApiError.notFound('Conference registration not found');
+  if (!reg.photoUrl) throw ApiError.notFound('No profile photo uploaded for this registration');
+
+  return idCardService.generateIdCardPdf({
+    name:     reg.userId?.name || '',
+    srcId:    reg.srcId || 'PENDING',
+    college:  reg.userId?.college || '',
+    photoUrl: reg.photoUrl,
+  });
+}
+
+/**
  * Full detail for a single conference registration — includes the
  * identity document number (Aadhaar/passport), which is select:false
  * everywhere else. Admin-only.
@@ -386,6 +406,7 @@ module.exports = {
   getRegistrationConfig,
   getConferenceRegistrations,
   getConferenceRegistrationDetail,
+  getIdCardPreview,
   exportConferenceRegistrationsCSV,
   approveConferenceRegistration,
   rejectConferenceRegistration,

@@ -16,6 +16,7 @@ const ExcelJS                = require('exceljs');
 
 const getConferenceRegistrations    = confRegService.getConferenceRegistrations;
 const getConferenceRegistrationDetail = confRegService.getConferenceRegistrationDetail;
+const getIdCardPreview              = confRegService.getIdCardPreview;
 const exportConferenceRegistrationsCSV = confRegService.exportConferenceRegistrationsCSV;
 const approveConferenceRegistration = confRegService.approveConferenceRegistration;
 const rejectConferenceRegistration  = confRegService.rejectConferenceRegistration;
@@ -352,6 +353,7 @@ module.exports = {
   /* Conference Registration */
   getConferenceRegistrations,
   getConferenceRegistrationDetail,
+  getIdCardPreview,
   exportConferenceRegistrationsCSV,
   approveConferenceRegistration,
   rejectConferenceRegistration,

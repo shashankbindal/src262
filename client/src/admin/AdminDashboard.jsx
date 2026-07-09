@@ -43,7 +43,7 @@ function ConfRejectModal({ confRegId, onClose, onDone }) {
   };
 
   return (
-    <div className="admin-modal-bg" onClick={onClose}>
+    <div className="admin-modal-bg" onClick={onClose} data-lenis-prevent>
       <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
         <h3>Reject Conference Registration</h3>
         <p>Provide a clear reason so the participant knows what to fix when re-submitting.</p>
@@ -88,7 +88,7 @@ function ConfApproveModal({ confRegId, onClose, onDone }) {
   };
 
   return (
-    <div className="admin-modal-bg" onClick={onClose}>
+    <div className="admin-modal-bg" onClick={onClose} data-lenis-prevent>
       <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
         <h3>Approve Conference Registration</h3>
         <p>Assign a unique SRC ID. This cannot be changed after approval.</p>
@@ -135,7 +135,7 @@ function ConfDetailModal({ confRegId, onClose }) {
   );
 
   return (
-    <div className="admin-modal-bg" onClick={onClose}>
+    <div className="admin-modal-bg" onClick={onClose} data-lenis-prevent>
       <div className="admin-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '660px', maxHeight: '85vh', overflowY: 'auto' }}>
         <h3>Participant Details</h3>
         {loading ? (
@@ -144,6 +144,13 @@ function ConfDetailModal({ confRegId, onClose }) {
           <div className="auth-error">{error}</div>
         ) : (
           <>
+            {detail.photoUrl && (
+              <img
+                src={detail.photoUrl}
+                alt={u.name || 'Participant photo'}
+                style={{ width: '110px', height: '110px', objectFit: 'cover', borderRadius: '10px', border: '1px solid var(--border-medium)', marginBottom: '16px' }}
+              />
+            )}
             <div className="detail-grid">
               <Row label="Full Name" value={u.name} />
               <Row label="Email" value={u.email} />
@@ -170,6 +177,11 @@ function ConfDetailModal({ confRegId, onClose }) {
               <Row label="Reference Number" value={detail.referenceNumber} />
             </div>
             <div style={{ display: 'flex', gap: '10px', marginTop: '16px', flexWrap: 'wrap' }}>
+              {detail.photoUrl && (
+                <a className="tbl-btn approve" href={`${API_BASE}/admin/conference-registrations/${confRegId}/id-card-preview`} target="_blank" rel="noreferrer">
+                  View Conference ID Card ↗
+                </a>
+              )}
               {detail.paymentScreenshotSignedUrl && (
                 <a className="tbl-btn" href={detail.paymentScreenshotSignedUrl} target="_blank" rel="noreferrer">
                   Payment Screenshot ↗
@@ -642,7 +654,7 @@ function EventFormModal({ event, onClose, onDone }) {
   };
 
   return (
-    <div className="admin-modal-bg" onClick={onClose}>
+    <div className="admin-modal-bg" onClick={onClose} data-lenis-prevent>
       <div className="admin-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '520px' }}>
         <h3>{isEdit ? 'Edit Event' : 'Create Event'}</h3>
         {error && <div className="auth-error" style={{ marginBottom: '12px' }}>{error}</div>}
@@ -825,7 +837,7 @@ function UserFormModal({ onClose, onDone }) {
   };
 
   return (
-    <div className="admin-modal-bg" onClick={onClose}>
+    <div className="admin-modal-bg" onClick={onClose} data-lenis-prevent>
       <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
         <h3>Add User</h3>
         {error && <div className="auth-error" style={{ marginBottom: '12px' }}>{error}</div>}
