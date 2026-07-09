@@ -4,10 +4,13 @@ const slowDown   = require('express-slow-down');
 
 const windowMs = 15 * 60 * 1000; // 15-minute window
 
-/* Generic API rate limiter — applied globally */
+/* Generic API rate limiter — applied globally.
+ * 600/15min per IP: high enough that a hostel/campus network full of
+ * students sharing one NAT'd IP during a registration rush doesn't get
+ * collectively throttled, while still bounding abuse from a single source. */
 const globalLimiter = rateLimit({
   windowMs,
-  max:             300,
+  max:             600,
   standardHeaders: true,
   legacyHeaders:   false,
   message:         { success: false, message: 'Too many requests. Please try again later.' },
@@ -33,10 +36,14 @@ const authSlowDown = slowDown({
   },
 });
 
-/* Moderate limiter for file uploads */
+/* Moderate limiter for file uploads.
+ * 150/hour per IP: conference registration uploads a screenshot + photo
+ * (+ optionally an ID card) per submission, and many students on the same
+ * campus IP may submit within the same hour — the old ceiling of 30 was
+ * easily hit by legitimate shared-IP traffic during a registration rush. */
 const uploadLimiter = rateLimit({
   windowMs:        60 * 60 * 1000, // 1 hour
-  max:             30,
+  max:             150,
   standardHeaders: true,
   legacyHeaders:   false,
   message:         { success: false, message: 'Upload limit exceeded. Try again later.' },

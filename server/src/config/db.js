@@ -6,7 +6,10 @@ const logger   = require('../utils/logger');
 async function connectDB() {
   try {
     const conn = await mongoose.connect(env.MONGODB_URI, {
-      maxPoolSize:         10,
+      /* 10 was tight for concurrent registration bursts (each request holds
+       * a connection across several sequential queries) — 25 gives more
+       * headroom without overwhelming a free-tier Atlas cluster. */
+      maxPoolSize:         25,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS:     45000,
     });

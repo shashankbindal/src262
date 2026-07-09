@@ -35,9 +35,13 @@ async function boot() {
   process.on('SIGTERM', () => shutdown('SIGTERM'));
   process.on('SIGINT',  () => shutdown('SIGINT'));
 
+  /* Log and continue rather than crash the whole server. Every route handler
+   * is wrapped by asyncHandler, so a genuine unhandled rejection here almost
+   * always comes from a fire-and-forget helper (e.g. a background email
+   * send) — one bad request shouldn't take down every other concurrent
+   * user's connection. */
   process.on('unhandledRejection', (reason) => {
-    logger.error(`Unhandled Rejection: ${reason}`);
-    server.close(() => process.exit(1));
+    logger.error(`Unhandled Rejection: ${reason instanceof Error ? reason.stack : reason}`);
   });
 
   process.on('uncaughtException', (err) => {

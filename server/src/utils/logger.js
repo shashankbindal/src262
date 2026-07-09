@@ -6,6 +6,9 @@ const logFormat = printf(({ level, message, timestamp, stack }) => {
   return `${timestamp} [${level}]: ${stack || message}`;
 });
 
+/* Console only — Render (and most PaaS hosts) capture stdout/stderr directly
+ * and show it in their own log viewer, so writing to local files too just
+ * adds disk I/O on an ephemeral filesystem that's wiped on every deploy. */
 const logger = createLogger({
   level: process.env.NODE_ENV === 'production' ? 'warn' : 'debug',
   format: combine(
@@ -16,8 +19,6 @@ const logger = createLogger({
   ),
   transports: [
     new transports.Console(),
-    new transports.File({ filename: 'logs/error.log',  level: 'error' }),
-    new transports.File({ filename: 'logs/combined.log' }),
   ],
 });
 
