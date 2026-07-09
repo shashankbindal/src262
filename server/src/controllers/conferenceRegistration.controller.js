@@ -14,11 +14,24 @@ const getConfig = asyncHandler(async (_req, res) => {
 
 /* ─── User endpoints ─────────────────────────────────────────────────────── */
 
+const MAX_PHOTO_BYTES = 200 * 1024; // 200KB
+const ALLOWED_PHOTO_MIMES = ['image/jpeg', 'image/png', 'image/webp'];
+
 const submitConferenceRegistration = asyncHandler(async (req, res) => {
   const screenshotFile = req.files?.screenshot?.[0];
   const idCardFile     = req.files?.universityIdCard?.[0];
+  const photoFile      = req.files?.photo?.[0];
 
   if (!screenshotFile) throw ApiError.badRequest('Payment screenshot is required');
+
+  if (photoFile) {
+    if (!ALLOWED_PHOTO_MIMES.includes(photoFile.mimetype)) {
+      throw ApiError.badRequest('Profile photo must be a JPEG, PNG, or WebP image');
+    }
+    if (photoFile.size > MAX_PHOTO_BYTES) {
+      throw ApiError.badRequest('Profile photo must be under 200KB');
+    }
+  }
 
   const {
     name, phoneCountryCode, phone, dateOfBirth, gender,
@@ -44,6 +57,15 @@ const submitConferenceRegistration = asyncHandler(async (req, res) => {
     );
   }
 
+  let photoUpload = null;
+  if (photoFile) {
+    photoUpload = await cloudinaryService.uploadFile(
+      photoFile.buffer,
+      'profile_photos',
+      photoFile.originalname
+    );
+  }
+
   const reg = await confRegService.submitConferenceRegistration(req.user._id, {
     name, phoneCountryCode, phone, dateOfBirth, gender,
     institute, course, yearOfStudy,
@@ -52,6 +74,8 @@ const submitConferenceRegistration = asyncHandler(async (req, res) => {
     city, state, country,
     idCardFileUrl: idCardUpload?.secure_url  || null,
     idCardFileKey: idCardUpload?.public_id   || null,
+    photoFileUrl: photoUpload?.secure_url || null,
+    photoFileKey: photoUpload?.public_id   || null,
     transactionId,
     needsAccommodation,
     screenshotUrl: screenshotUpload.secure_url,

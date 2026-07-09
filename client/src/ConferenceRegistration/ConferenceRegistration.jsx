@@ -104,8 +104,9 @@ function Field({ label, required, error, children, hint }) {
 }
 
 /* ══════════════════════════════════ FORM STAGE */
-function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile, onNext, confReg, existingIdCard }) {
+function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile, photoFile, setPhotoFile, onNext, confReg, existingIdCard, existingPhoto }) {
   const fileRef = useRef(null);
+  const photoRef = useRef(null);
 
   const set = (field) => (e) => {
     setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -117,6 +118,21 @@ function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile
     if (!file) return;
     setIdCardFile(file);
     if (errors.universityIdCard) setErrors((er) => ({ ...er, universityIdCard: '' }));
+  };
+
+  const handlePhoto = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setErrors((er) => ({ ...er, photo: 'Photo must be a JPEG, PNG, or WebP image' }));
+      return;
+    }
+    if (file.size > 200 * 1024) {
+      setErrors((er) => ({ ...er, photo: 'Photo must be under 200KB' }));
+      return;
+    }
+    setPhotoFile(file);
+    if (errors.photo) setErrors((er) => ({ ...er, photo: '' }));
   };
 
   const validate = () => {
@@ -149,6 +165,7 @@ function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile
     if (!form.state.trim()) e.state = 'State is required';
     if (!form.country.trim()) e.country = 'Country is required';
     if (!idCardFile && !existingIdCard) e.universityIdCard = 'University ID card is required';
+    if (!photoFile && !existingPhoto) e.photo = 'Profile photo is required';
     return e;
   };
 
@@ -214,6 +231,24 @@ function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile
                 <option key={g} value={g}>{g}</option>
               ))}
             </select>
+          </Field>
+          <Field label="Profile Photo" required error={errors.photo}
+            hint="Passport-style photo, used on your conference ID card. JPG/PNG/WebP, max 200KB.">
+            <div className="cr-upload-box" onClick={() => photoRef.current?.click()}
+              role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && photoRef.current?.click()}>
+              <input ref={photoRef} type="file" accept="image/jpeg,image/png,image/webp"
+                onChange={handlePhoto} style={{ display: 'none' }} />
+              {photoFile ? (
+                <FileThumbnail file={photoFile} />
+              ) : existingPhoto ? (
+                <FileThumbnail url={existingPhoto} />
+              ) : (
+                <div className="cr-upload-placeholder">
+                  <span className="cr-upload-icon">⬆</span>
+                  <span>Click to upload (JPG, PNG, WebP — max 200KB)</span>
+                </div>
+              )}
+            </div>
           </Field>
         </div>
       </Section>
@@ -822,6 +857,7 @@ export default function ConferenceRegistration() {
   });
   const [errors, setErrors] = useState({});
   const [idCardFile, setIdCardFile] = useState(null);
+  const [photoFile, setPhotoFile] = useState(null);
   const [transactionId, setTxId] = useState(() => sessionStorage.getItem('cr_txId') || '');
   const [needsAccommodation, setNeedsAccommodation] = useState(() => sessionStorage.getItem('cr_accommodation') === 'true');
   const [screenshotFile, setShot] = useState(null);
@@ -934,6 +970,7 @@ export default function ConferenceRegistration() {
   if (stage === 'success') return <div className="cr-page"><SuccessScreen confReg={confReg} /></div>;
 
   const existingIdCard = user?.universityIdCardKey || '';
+  const existingPhoto  = confReg?.photoUrl || '';
 
   const handleSubmit = async () => {
     setSubmitting(true);
@@ -964,6 +1001,8 @@ export default function ConferenceRegistration() {
       fd.append('screenshot', screenshotFile);
       /* ID card (optional on re-submission) */
       if (idCardFile) fd.append('universityIdCard', idCardFile);
+      /* Profile photo (optional on re-submission if one already exists) */
+      if (photoFile) fd.append('photo', photoFile);
 
       const res = await api.upload('/conference-registration', fd);
       sessionStorage.removeItem('cr_stage');
@@ -1005,6 +1044,8 @@ export default function ConferenceRegistration() {
             errors={errors} setErrors={setErrors}
             idCardFile={idCardFile} setIdCardFile={setIdCardFile}
             existingIdCard={existingIdCard}
+            photoFile={photoFile} setPhotoFile={setPhotoFile}
+            existingPhoto={existingPhoto}
             confReg={confReg}
             onNext={() => setStage('preview')}
           />

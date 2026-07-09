@@ -27,6 +27,8 @@ async function submitConferenceRegistration(userId, {
   city, state, country,
   /* University ID card */
   idCardFileUrl, idCardFileKey,
+  /* Conference pass photo */
+  photoFileUrl, photoFileKey,
   /* Payment */
   transactionId, screenshotUrl, screenshotKey, needsAccommodation,
 }) {
@@ -77,10 +79,21 @@ async function submitConferenceRegistration(userId, {
     if (existing.status === 'pending') {
       throw ApiError.badRequest('Your registration is already under review');
     }
+  }
 
+  /* Photo is mandatory — a fresh submission must include one; a
+   * re-submission may keep the previously uploaded photo. */
+  if (!photoFileUrl && !existing?.photoKey) {
+    throw ApiError.badRequest('Profile photo is required');
+  }
+
+  if (existing) {
     /* status === 'rejected' — allow re-submission */
     if (existing.paymentScreenshotKey) {
       await cloudinaryService.deleteFile(existing.paymentScreenshotKey).catch(() => {});
+    }
+    if (photoFileUrl && existing.photoKey) {
+      await cloudinaryService.deleteFile(existing.photoKey).catch(() => {});
     }
 
     existing.paymentScreenshotUrl  = screenshotUrl;
@@ -92,6 +105,10 @@ async function submitConferenceRegistration(userId, {
     existing.qrVersion             = conferenceConfig.qrVersion;
     existing.status                = 'pending';
     existing.rejectionReason       = '';
+    if (photoFileUrl) {
+      existing.photoUrl = photoFileUrl;
+      existing.photoKey = photoFileKey;
+    }
     await existing.save();
 
     logger.info(`Conference registration re-submitted: user=${userId}`);
@@ -109,6 +126,8 @@ async function submitConferenceRegistration(userId, {
     registrationFee,
     qrVersion:            conferenceConfig.qrVersion,
     referenceNumber:      generateReferenceNumber(),
+    photoUrl:             photoFileUrl,
+    photoKey:             photoFileKey,
   });
 
   logger.info(`Conference registration submitted: user=${userId}, ref=${reg.referenceNumber}`);

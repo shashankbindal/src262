@@ -20,7 +20,26 @@ class ApiError extends Error {
   }
 }
 
-async function request(method, path, body = null, isFormData = false) {
+/* Routes that must never trigger a refresh-and-retry (avoids infinite loops
+ * and pointless refresh attempts on login/refresh failures themselves). */
+const NO_REFRESH_PATHS = ['/auth/refresh', '/auth/login', '/auth/logout'];
+
+/* Access tokens expire after 15 minutes (JWT_EXPIRES_IN). Without this, a
+ * user active past that window gets silently logged out on their next
+ * request even though their refresh token (7d) is still valid. De-duped so
+ * concurrent 401s only trigger one refresh call. */
+let refreshInFlight = null;
+function refreshAccessToken() {
+  if (!refreshInFlight) {
+    refreshInFlight = fetch(`${BASE}/auth/refresh`, { method: 'POST', credentials: 'include' })
+      .then((res) => res.ok)
+      .catch(() => false)
+      .finally(() => { refreshInFlight = null; });
+  }
+  return refreshInFlight;
+}
+
+async function request(method, path, body = null, isFormData = false, _isRetry = false) {
   const headers = {};
   if (body && !isFormData) headers['Content-Type'] = 'application/json';
 
@@ -34,6 +53,13 @@ async function request(method, path, body = null, isFormData = false) {
         : JSON.stringify(body)
       : undefined,
   });
+
+  if (res.status === 401 && !_isRetry && !NO_REFRESH_PATHS.includes(path)) {
+    const refreshed = await refreshAccessToken();
+    if (refreshed) {
+      return request(method, path, body, isFormData, true);
+    }
+  }
 
   const data = res.headers.get('content-type')?.includes('application/json')
     ? await res.json()

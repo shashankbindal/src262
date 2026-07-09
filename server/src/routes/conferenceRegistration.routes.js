@@ -26,6 +26,7 @@ router.post('/',
   confRegUpload.fields([
     { name: 'screenshot',      maxCount: 1 },
     { name: 'universityIdCard', maxCount: 1 },
+    { name: 'photo',           maxCount: 1 },
   ]),
   submitConferenceRegistrationValidator, validate,
   ctrl.submitConferenceRegistration

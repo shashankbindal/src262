@@ -24,6 +24,10 @@ const conferenceRegistrationSchema = new mongoose.Schema(
     transactionId:        { type: String, trim: true, default: '' },
     paymentTimestamp:     { type: Date },
 
+    /* Passport-style photo used on the generated conference ID card */
+    photoUrl: { type: String, default: '' },
+    photoKey: { type: String, default: '' },
+
     /* Whether the registrant opted into the accommodation add-on (affects fee) */
     needsAccommodation: { type: Boolean, default: false },
 
