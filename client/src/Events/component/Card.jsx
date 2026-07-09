@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { useReveal } from '../../Home/useReveal.js';
 import { useStaggerLines } from '../../Home/useStaggerLines.js';
 import { useTilt } from '../../shared/useTilt.js';
+import { getDirectDownloadLink } from '../../shared/utils.js';
 import './Card.css';
 
 const Card = ({ event, index }) => {
@@ -50,7 +51,7 @@ const Card = ({ event, index }) => {
           </div>
         )}
 
-        <a href={event.rulebookLink || "#"} className="competition-rulebook-btn" target="_blank" rel="noreferrer" data-magnetic>
+        <a href={getDirectDownloadLink(event.rulebookLink)} className="competition-rulebook-btn" target="_blank" rel="noreferrer" data-magnetic>
           Download Rulebook
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>

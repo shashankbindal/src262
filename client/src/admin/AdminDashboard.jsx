@@ -655,56 +655,79 @@ function EventFormModal({ event, onClose, onDone }) {
 
   return (
     <div className="admin-modal-bg" onClick={onClose} data-lenis-prevent>
-      <div className="admin-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '520px' }}>
+      <div className="admin-modal admin-modal--wide" onClick={(e) => e.stopPropagation()}>
         <h3>{isEdit ? 'Edit Event' : 'Create Event'}</h3>
         {error && <div className="auth-error" style={{ marginBottom: '12px' }}>{error}</div>}
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <input className="admin-modal-input" name="name" placeholder="Event name" value={form.name} onChange={handle} autoFocus />
-          <input className="admin-modal-input" name="slug" placeholder="Slug (auto-generated if blank)" value={form.slug} onChange={handle} />
-          <textarea className="admin-modal-input" name="description" placeholder="Description" value={form.description} onChange={handle} rows={2} />
-
-          <label className="auth-label">Type</label>
-          <select className="admin-modal-input" name="type" value={form.type} onChange={handle}>
-            <option value="solo">Solo</option>
-            <option value="team">Team</option>
-          </select>
-
-          <label className="auth-label">Registration Deadline</label>
-          <input className="admin-modal-input" type="datetime-local" name="registrationDeadline" value={form.registrationDeadline} onChange={handle} />
-
-          <label className="auth-label">Submission Deadline (optional)</label>
-          <input className="admin-modal-input" type="datetime-local" name="submissionDeadline" value={form.submissionDeadline} onChange={handle} />
-
-          {form.type === 'team' && (
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <div style={{ flex: 1 }}>
-                <label className="auth-label">Min team size</label>
-                <input className="admin-modal-input" type="number" min="1" name="minTeamSize" value={form.minTeamSize} onChange={handle} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label className="auth-label">Max team size</label>
-                <input className="admin-modal-input" type="number" min="1" name="maxTeamSize" value={form.maxTeamSize} onChange={handle} />
-              </div>
+        <div className="ef-grid">
+          <div className="ef-row">
+            <div className="ef-field">
+              <label className="auth-label">Event Name</label>
+              <input className="admin-modal-input" name="name" placeholder="Event name" value={form.name} onChange={handle} autoFocus />
             </div>
-          )}
+            <div className="ef-field">
+              <label className="auth-label">Slug</label>
+              <input className="admin-modal-input" name="slug" placeholder="Auto-generated if blank" value={form.slug} onChange={handle} />
+            </div>
+          </div>
 
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
-            <input type="checkbox" name="fileUploadRequired" checked={form.fileUploadRequired} onChange={handle} />
-            Requires file submission (PDF)
-          </label>
+          <div className="ef-row">
+            <div className="ef-field ef-field-full">
+              <label className="auth-label">Description</label>
+              <textarea className="admin-modal-input" name="description" placeholder="Description" value={form.description} onChange={handle} rows={2} />
+            </div>
+          </div>
 
-          {form.fileUploadRequired && (
-            <>
-              <label className="auth-label">Max file size (MB)</label>
-              <input className="admin-modal-input" type="number" min="1" max="100" name="maxFileSizeMB" value={form.maxFileSizeMB} onChange={handle} />
-            </>
-          )}
+          <div className="ef-row">
+            <div className="ef-field">
+              <label className="auth-label">Type</label>
+              <select className="admin-modal-input" name="type" value={form.type} onChange={handle}>
+                <option value="solo">Solo</option>
+                <option value="team">Team</option>
+              </select>
+            </div>
+            <div className="ef-field">
+              <label className="auth-label">Registration Deadline</label>
+              <input className="admin-modal-input" type="datetime-local" name="registrationDeadline" value={form.registrationDeadline} onChange={handle} />
+            </div>
+            <div className="ef-field">
+              <label className="auth-label">Submission Deadline (optional)</label>
+              <input className="admin-modal-input" type="datetime-local" name="submissionDeadline" value={form.submissionDeadline} onChange={handle} />
+            </div>
+          </div>
 
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
-            <input type="checkbox" name="registrationEnabled" checked={form.registrationEnabled} onChange={handle} />
-            Registrations open
-          </label>
+          <div className="ef-row">
+            {form.type === 'team' && (
+              <>
+                <div className="ef-field">
+                  <label className="auth-label">Min team size</label>
+                  <input className="admin-modal-input" type="number" min="1" name="minTeamSize" value={form.minTeamSize} onChange={handle} />
+                </div>
+                <div className="ef-field">
+                  <label className="auth-label">Max team size</label>
+                  <input className="admin-modal-input" type="number" min="1" name="maxTeamSize" value={form.maxTeamSize} onChange={handle} />
+                </div>
+              </>
+            )}
+
+            {form.fileUploadRequired && (
+              <div className="ef-field">
+                <label className="auth-label">Max file size (MB)</label>
+                <input className="admin-modal-input" type="number" min="1" max="100" name="maxFileSizeMB" value={form.maxFileSizeMB} onChange={handle} />
+              </div>
+            )}
+
+            <div className="ef-field ef-checkboxes">
+              <label>
+                <input type="checkbox" name="fileUploadRequired" checked={form.fileUploadRequired} onChange={handle} />
+                Requires file submission (PDF)
+              </label>
+              <label>
+                <input type="checkbox" name="registrationEnabled" checked={form.registrationEnabled} onChange={handle} />
+                Registrations open
+              </label>
+            </div>
+          </div>
         </div>
 
         <div className="admin-modal-actions">
