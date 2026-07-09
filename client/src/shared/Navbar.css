@@ -20,25 +20,21 @@
   max-width: 1400px;
   margin: 0 auto;
   z-index: 999;
-  background: linear-gradient(180deg,
-      rgba(44, 52, 36, 0.94),
-      rgba(40, 48, 32, 0.92));
+  background: rgba(218, 222, 216, 0.8);
   backdrop-filter: blur(30px) saturate(180%);
   -webkit-backdrop-filter: blur(30px) saturate(180%);
   padding: 14px 48px;
   border-radius: 20px;
-  border: 1px solid rgba(218, 222, 216, 0.08);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(44, 52, 36, 0.1);
+  box-shadow: 0 4px 20px rgba(44, 52, 36, 0.1);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .navbar.scrolled {
   top: 16px;
-  background: linear-gradient(180deg,
-      rgba(38, 46, 30, 0.98),
-      rgba(32, 40, 24, 0.96));
-  border-color: rgba(218, 222, 216, 0.1);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+  background: rgba(218, 222, 216, 0.8);
+  border-color: rgba(44, 52, 36, 0.12);
+  box-shadow: 0 6px 24px rgba(44, 52, 36, 0.14);
   padding: 10px 48px;
 }
 
@@ -135,9 +131,9 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(218, 222, 216, 0.08);
-  color: rgba(218, 222, 216, 0.85);
-  border: 1.5px solid rgba(218, 222, 216, 0.22);
+  background: rgba(44, 52, 36, 0.06);
+  color: var(--text-primary);
+  border: 1.5px solid rgba(44, 52, 36, 0.16);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   margin-left: 8px;
 }
@@ -148,11 +144,11 @@
 }
 
 .navbar-user-btn:hover {
-  background: rgba(218, 222, 216, 0.95);
-  color: var(--primary);
-  border-color: rgba(218, 222, 216, 1);
+  background: var(--primary);
+  color: #F4F5F2;
+  border-color: var(--primary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(218, 222, 216, 0.25);
+  box-shadow: 0 4px 15px rgba(44, 52, 36, 0.25);
 }
 
 .user-dropdown-container {
@@ -165,15 +161,15 @@
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  background: rgba(18, 18, 18, 0.95);
+  background: rgba(250, 250, 248, 0.98);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(218, 222, 216, 0.08);
+  border: 1px solid rgba(44, 52, 36, 0.1);
   border-radius: var(--radius-md);
   padding: 8px 0;
   min-width: 160px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(44, 52, 36, 0.15);
   z-index: 100;
   animation: dropdownFade 0.2s ease forwards;
 }
@@ -195,7 +191,7 @@
   font-family: var(--font-body);
   font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(218, 222, 216, 0.6);
+  color: rgba(44, 52, 36, 0.7);
   text-decoration: none;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -207,15 +203,15 @@
 }
 
 .user-dropdown-item:hover {
-  background: rgba(218, 222, 216, 0.05);
+  background: rgba(44, 52, 36, 0.05);
   color: var(--accent);
 }
 
 .sign-out-btn {
-  border-top: 1px solid rgba(218, 222, 216, 0.06);
+  border-top: 1px solid rgba(44, 52, 36, 0.08);
   margin-top: 4px;
   padding-top: 12px;
-  color: #f87171;
+  color: #dc2626;
 }
 
 .sign-out-btn:hover {
@@ -242,8 +238,8 @@
 
 .nav-link {
   font-family: var(--font-display);
-  color: rgba(218, 222, 216, 0.75);
-  /* Muted off-white for premium look */
+  color: rgba(44, 52, 36, 0.75);
+  /* Muted dark green for readability on the light navbar */
   text-decoration: none;
   font-size: 11.5px;
   /* Slightly reduced */
@@ -271,7 +267,7 @@
 }
 
 .nav-link:hover {
-  color: #DADED8 !important;
+  color: var(--primary) !important;
   background: transparent;
   text-shadow: none;
 }
@@ -281,7 +277,7 @@
 }
 
 .navbar.scrolled .nav-link:hover {
-  color: #DADED8 !important;
+  color: var(--primary) !important;
   background: transparent;
 }
 
@@ -297,8 +293,8 @@
   height: 40px;
   padding: 8px;
   transition: all var(--transition-fast);
-  background: rgba(218, 222, 216, 0.06);
-  border: 1px solid rgba(218, 222, 216, 0.08);
+  background: rgba(44, 52, 36, 0.05);
+  border: 1px solid rgba(44, 52, 36, 0.1);
   border-radius: 50%;
   outline: none;
 }
@@ -306,7 +302,7 @@
 .mobile-menu-icon span {
   width: 22px;
   height: 1.5px;
-  background: #DADED8;
+  background: var(--text-primary);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   border-radius: var(--radius-full);
   display: block;

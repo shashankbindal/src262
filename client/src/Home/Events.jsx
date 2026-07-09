@@ -4,12 +4,12 @@ import { useReveal } from './useReveal.js'
 import './Events.css'
 
 const eventData = [
-  { id: 1, title: "Chem-E-Jeopardy", desc: "Chemical Engineering Trivia", img: ".https://res.cloudinary.com/cnocxcvz/image/upload/v1783560053/site/ieyt2riq3kgjbxqzepqb.jpg" },
-  { id: 2, title: "Chem-E-Car", desc: "Chemical Energy Vehicles", img: ".https://res.cloudinary.com/cnocxcvz/image/upload/v1783560051/site/uexovjfv26uymst2f3yh.jpg" },
-  { id: 3, title: "Poster Presentation", desc: "Research & Technical Projects", img: ".https://res.cloudinary.com/cnocxcvz/image/upload/v1783560064/site/l1inmnozxdndrdfvq5xs.jpg" },
-  { id: 4, title: "Technical Paper Presentation", desc: "Emerging Trends & Analysis", img: ".https://res.cloudinary.com/cnocxcvz/image/upload/v1783560184/site/yakoevbyivdq6fuvxucz.jpg" },
-  { id: 5, title: "K-12 STEM", desc: "Inspiring the Next Generation", img: ".https://res.cloudinary.com/cnocxcvz/image/upload/v1783560059/site/vpfclupldxsj9dpuy8zg.jpg" },
-  { id: 6, title: "Flagship Event", desc: "", img: ".https://res.cloudinary.com/cnocxcvz/image/upload/v1783560057/site/bkmu0ksvaygfsfmxi9ii.jpg" }
+  { id: 1, title: "Chem-E-Jeopardy", desc: "Chemical Engineering Trivia", img: "https://res.cloudinary.com/cnocxcvz/image/upload/v1783560053/site/ieyt2riq3kgjbxqzepqb.jpg" },
+  { id: 2, title: "Chem-E-Car", desc: "Chemical Energy Vehicles", img: "https://res.cloudinary.com/cnocxcvz/image/upload/v1783560051/site/uexovjfv26uymst2f3yh.jpg" },
+  { id: 3, title: "Poster Presentation", desc: "Research & Technical Projects", img: "https://res.cloudinary.com/cnocxcvz/image/upload/v1783560064/site/l1inmnozxdndrdfvq5xs.jpg" },
+  { id: 4, title: "Technical Paper Presentation", desc: "Emerging Trends & Analysis", img: "https://res.cloudinary.com/cnocxcvz/image/upload/v1783560184/site/yakoevbyivdq6fuvxucz.jpg" },
+  { id: 5, title: "K-12 STEM", desc: "Inspiring the Next Generation", img: "https://res.cloudinary.com/cnocxcvz/image/upload/v1783560059/site/vpfclupldxsj9dpuy8zg.jpg" },
+  { id: 6, title: "Flagship Event", desc: "", img: "https://res.cloudinary.com/cnocxcvz/image/upload/v1783560057/site/bkmu0ksvaygfsfmxi9ii.jpg" }
 ]
 
 const TX_MAP = [0, 105, 190] // Percentages of width
@@ -32,19 +32,34 @@ const getCardStyle = (offset) => {
   }
 }
 
+const SWIPE_THRESHOLD = 40 // px
+
 const Events = () => {
   const [ref, isVisible] = useReveal(0.1)
   const [activeIndex, setActiveIndex] = useState(2)
+  const touchStartX = React.useRef(null)
 
+  const goPrev = () => setActiveIndex(prev => (prev - 1 + eventData.length) % eventData.length)
+  const goNext = () => setActiveIndex(prev => (prev + 1) % eventData.length)
 
+  const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX }
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return
+    const delta = e.changedTouches[0].clientX - touchStartX.current
+    if (delta > SWIPE_THRESHOLD) goPrev()
+    else if (delta < -SWIPE_THRESHOLD) goNext()
+    touchStartX.current = null
+  }
 
   useEffect(() => {
     if (!isVisible) return; // Pause auto-play when off-screen to save CPU/GPU overhead
+    // Depends on activeIndex too, so any manual navigation (click/swipe/button)
+    // restarts the 4s countdown instead of fighting with the auto-advance.
     const timer = setInterval(() => {
       setActiveIndex(prev => (prev + 1) % eventData.length)
-    }, 4000) // Change card every 4 seconds
+    }, 4000)
     return () => clearInterval(timer)
-  }, [isVisible])
+  }, [isVisible, activeIndex])
 
   return (
     <div className="fan-section" ref={ref}>
@@ -70,7 +85,11 @@ const Events = () => {
           <p className="fan-label-sub">{eventData[activeIndex].desc}</p>
         </div>
 
-        <div className="fan-track">
+        <div
+          className="fan-track"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           {eventData.map((event, index) => {
             let offset = index - activeIndex
             if (offset < -2) offset += eventData.length
@@ -91,7 +110,10 @@ const Events = () => {
           })}
         </div>
 
-
+        <div className="fan-controls">
+          <button type="button" className="fan-btn fan-btn--prev" onClick={goPrev} aria-label="Previous event">‹</button>
+          <button type="button" className="fan-btn fan-btn--next" onClick={goNext} aria-label="Next event">›</button>
+        </div>
       </div>
     </div>
   )

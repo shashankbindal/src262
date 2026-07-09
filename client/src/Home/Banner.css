@@ -218,7 +218,7 @@
 }
 
 .banner-title {
-  font-size: 13rem;
+  font-size: 10.4rem;
   font-weight: 800;
   color: #DADED8;
   text-transform: uppercase;
@@ -312,7 +312,7 @@
 
 @media (max-width: 1024px) {
   .banner-title {
-    font-size: 9rem;
+    font-size: 7.2rem;
   }
 }
 
@@ -338,7 +338,7 @@
   }
 
   .banner-title {
-    font-size: 6.5rem;
+    font-size: 5.2rem;
     z-index: 3;
     position: relative;
   }
@@ -380,7 +380,7 @@
   }
 
   .banner-title {
-    font-size: 4.5rem;
+    font-size: 3.6rem;
     letter-spacing: 0.1em;
     z-index: 3;
     position: relative;
