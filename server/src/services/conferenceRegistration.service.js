@@ -8,6 +8,7 @@ const emailService           = require('./email.service');
 const idCardService          = require('./idCard.service');
 const conferenceConfig       = require('../config/conferenceConfig');
 const logger                 = require('../utils/logger');
+const { Parser }             = require('json2csv');
 
 /* ── Reference number: VPL2026-XXXXXXXX ── */
 function generateReferenceNumber() {
@@ -286,6 +287,83 @@ async function getIdCardSignedUrl(confRegId) {
   return { signedUrl };
 }
 
+const DETAIL_FIELDS = '+idType +idNumber name email college phoneCountryCode phone dateOfBirth '
+  + 'gender course yearOfStudy studentChapterName facultyAdvisorName facultyAdvisorEmail '
+  + 'aicheId city state country universityIdCardKey universityIdCardUrl merchSize';
+
+/**
+ * Full detail for a single conference registration — includes the
+ * identity document number (Aadhaar/passport), which is select:false
+ * everywhere else. Admin-only.
+ */
+async function getConferenceRegistrationDetail(confRegId) {
+  const reg = await ConferenceRegistration.findById(confRegId)
+    .populate('userId', DETAIL_FIELDS)
+    .lean();
+  if (!reg) throw ApiError.notFound('Conference registration not found');
+
+  if (reg.paymentScreenshotKey) {
+    reg.paymentScreenshotSignedUrl =
+      await cloudinaryService.getSignedDownloadUrl(reg.paymentScreenshotKey, reg.paymentScreenshotUrl);
+  }
+  if (reg.userId?.universityIdCardKey) {
+    reg.userId.universityIdCardSignedUrl =
+      await cloudinaryService.getSignedDownloadUrl(reg.userId.universityIdCardKey, reg.userId.universityIdCardUrl);
+  }
+
+  return reg;
+}
+
+/**
+ * CSV export of every conference registration (optionally filtered by
+ * status) with the full participant detail — for admin record-keeping.
+ */
+async function exportConferenceRegistrationsCSV(status) {
+  const filter = {};
+  if (status) filter.status = status;
+
+  const regs = await ConferenceRegistration.find(filter)
+    .populate('userId', DETAIL_FIELDS)
+    .sort({ createdAt: -1 })
+    .lean();
+
+  const rows = regs.map((r) => {
+    const u = r.userId || {};
+    return {
+      name:                u.name || '',
+      email:               u.email || '',
+      phone:               u.phone ? `${u.phoneCountryCode || ''}${u.phone}` : '',
+      dateOfBirth:         u.dateOfBirth ? new Date(u.dateOfBirth).toISOString().split('T')[0] : '',
+      gender:              u.gender || '',
+      institute:           u.college || '',
+      course:              u.course || '',
+      yearOfStudy:         u.yearOfStudy || '',
+      studentChapterName:  u.studentChapterName || '',
+      facultyAdvisorName:  u.facultyAdvisorName || '',
+      facultyAdvisorEmail: u.facultyAdvisorEmail || '',
+      idType:              u.idType || '',
+      idNumber:            u.idNumber || '',
+      aicheId:             u.aicheId || '',
+      city:                u.city || '',
+      state:               u.state || '',
+      country:             u.country || '',
+      merchSize:           u.merchSize || '',
+      needsAccommodation:  r.needsAccommodation ? 'Yes' : 'No',
+      registrationFee:     r.registrationFee ?? '',
+      transactionId:       r.transactionId || '',
+      status:              r.status,
+      srcId:               r.srcId || '',
+      referenceNumber:     r.referenceNumber || '',
+      rejectionReason:     r.rejectionReason || '',
+      submittedAt:         r.paymentTimestamp ? new Date(r.paymentTimestamp).toISOString() : '',
+      approvedAt:          r.approvalTimestamp ? new Date(r.approvalTimestamp).toISOString() : '',
+    };
+  });
+
+  const parser = new Parser();
+  return parser.parse(rows);
+}
+
 async function getConferenceRegistrationOverview() {
   const counts = await ConferenceRegistration.aggregate([
     { $group: { _id: '$status', count: { $sum: 1 } } },
@@ -307,6 +385,8 @@ module.exports = {
   getMyConferenceRegistration,
   getRegistrationConfig,
   getConferenceRegistrations,
+  getConferenceRegistrationDetail,
+  exportConferenceRegistrationsCSV,
   approveConferenceRegistration,
   rejectConferenceRegistration,
   getPaymentScreenshot,

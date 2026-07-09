@@ -112,10 +112,90 @@ function ConfApproveModal({ confRegId, onClose, onDone }) {
   );
 }
 
+/* ── Conf Reg: Full detail modal (includes Aadhaar/passport number) ── */
+function ConfDetailModal({ confRegId, onClose }) {
+  const [detail, setDetail] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    api.get(`/admin/conference-registrations/${confRegId}/detail`)
+      .then((res) => setDetail(res.data))
+      .catch(() => setError('Failed to load participant details.'))
+      .finally(() => setLoading(false));
+  }, [confRegId]);
+
+  const u = detail?.userId || {};
+
+  const Row = ({ label, value }) => (
+    <div className="detail-row">
+      <span className="detail-label">{label}</span>
+      <span className="detail-value">{value || '—'}</span>
+    </div>
+  );
+
+  return (
+    <div className="admin-modal-bg" onClick={onClose}>
+      <div className="admin-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '660px', maxHeight: '85vh', overflowY: 'auto' }}>
+        <h3>Participant Details</h3>
+        {loading ? (
+          <div style={{ padding: '32px', textAlign: 'center' }}><div className="auth-spinner" style={{ margin: '0 auto' }} /></div>
+        ) : error ? (
+          <div className="auth-error">{error}</div>
+        ) : (
+          <>
+            <div className="detail-grid">
+              <Row label="Full Name" value={u.name} />
+              <Row label="Email" value={u.email} />
+              <Row label="Phone" value={u.phone ? `${u.phoneCountryCode || ''} ${u.phone}` : ''} />
+              <Row label="Date of Birth" value={u.dateOfBirth ? new Date(u.dateOfBirth).toLocaleDateString('en-IN') : ''} />
+              <Row label="Gender" value={u.gender} />
+              <Row label="Institute" value={u.college} />
+              <Row label="Course" value={u.course} />
+              <Row label="Year of Study" value={u.yearOfStudy} />
+              <Row label="Student Chapter" value={u.studentChapterName} />
+              <Row label="Faculty Advisor" value={u.facultyAdvisorName} />
+              <Row label="Faculty Advisor Email" value={u.facultyAdvisorEmail} />
+              <Row label={u.idType === 'passport' ? 'Passport Number' : 'Aadhaar Number'} value={u.idNumber} />
+              <Row label="AIChE ID" value={u.aicheId} />
+              <Row label="City" value={u.city} />
+              <Row label="State" value={u.state} />
+              <Row label="Country" value={u.country} />
+              <Row label="Merch Size" value={u.merchSize} />
+              <Row label="Accommodation" value={detail.needsAccommodation ? 'Yes' : 'No'} />
+              <Row label="Registration Fee" value={`₹${detail.registrationFee ?? '—'}`} />
+              <Row label="Transaction ID" value={detail.transactionId} />
+              <Row label="Status" value={detail.status} />
+              <Row label="SRC ID" value={detail.srcId} />
+              <Row label="Reference Number" value={detail.referenceNumber} />
+            </div>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '16px', flexWrap: 'wrap' }}>
+              {detail.paymentScreenshotSignedUrl && (
+                <a className="tbl-btn" href={detail.paymentScreenshotSignedUrl} target="_blank" rel="noreferrer">
+                  Payment Screenshot ↗
+                </a>
+              )}
+              {u.universityIdCardSignedUrl && (
+                <a className="tbl-btn" href={u.universityIdCardSignedUrl} target="_blank" rel="noreferrer">
+                  University ID Card ↗
+                </a>
+              )}
+            </div>
+          </>
+        )}
+        <div className="admin-modal-actions">
+          <button className="tbl-btn" onClick={onClose}>Close</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── Conf Reg: Row in table ── */
 function ConfRegRow({ confReg, onRefresh }) {
   const [showApprove, setShowApprove] = useState(false);
   const [showReject, setShowReject]   = useState(false);
+  const [showDetail, setShowDetail]   = useState(false);
   const [screenshotUrl, setScreenshotUrl] = useState(null);
 
   const viewScreenshot = async () => {
@@ -150,6 +230,7 @@ function ConfRegRow({ confReg, onRefresh }) {
         <td>{new Date(confReg.createdAt).toLocaleDateString('en-IN')}</td>
         <td>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <button className="tbl-btn" onClick={() => setShowDetail(true)}>View Details</button>
             {confReg.paymentScreenshotUrl && (
               <button className="tbl-btn" onClick={viewScreenshot}>Screenshot</button>
             )}
@@ -163,6 +244,9 @@ function ConfRegRow({ confReg, onRefresh }) {
         </td>
       </tr>
 
+      {showDetail && (
+        <ConfDetailModal confRegId={confReg._id} onClose={() => setShowDetail(false)} />
+      )}
       {showApprove && (
         <ConfApproveModal
           confRegId={confReg._id}
@@ -213,6 +297,17 @@ function ConfRegSection({ counts }) {
           {(counts?.total || 0)} total
         </span>
       </h2>
+
+      <div className="export-bar">
+        <a
+          href={`${API_BASE}/admin/conference-registrations/export/csv?status=${activeTab}`}
+          className="export-btn"
+          target="_blank"
+          rel="noreferrer"
+        >
+          ↓ Export CSV
+        </a>
+      </div>
 
       <div className="admin-status-tabs">
         {CONF_TABS.map((t) => (

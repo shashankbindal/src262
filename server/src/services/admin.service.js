@@ -15,6 +15,8 @@ const ExcelJS                = require('exceljs');
 /* ─── Conference Registration Management ──────────────────────────────────── */
 
 const getConferenceRegistrations    = confRegService.getConferenceRegistrations;
+const getConferenceRegistrationDetail = confRegService.getConferenceRegistrationDetail;
+const exportConferenceRegistrationsCSV = confRegService.exportConferenceRegistrationsCSV;
 const approveConferenceRegistration = confRegService.approveConferenceRegistration;
 const rejectConferenceRegistration  = confRegService.rejectConferenceRegistration;
 const getConfPaymentScreenshot      = confRegService.getPaymentScreenshot;
@@ -349,6 +351,8 @@ async function deleteUser(adminId, userId) {
 module.exports = {
   /* Conference Registration */
   getConferenceRegistrations,
+  getConferenceRegistrationDetail,
+  exportConferenceRegistrationsCSV,
   approveConferenceRegistration,
   rejectConferenceRegistration,
   getConfPaymentScreenshot,

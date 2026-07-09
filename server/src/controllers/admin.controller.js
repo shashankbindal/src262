@@ -49,6 +49,19 @@ const getConfIdCard = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, 'ID card URL generated', data);
 });
 
+const getConferenceRegistrationDetail = asyncHandler(async (req, res) => {
+  const data = await adminService.getConferenceRegistrationDetail(req.params.confRegId);
+  ApiResponse.ok(res, 'Conference registration detail fetched', data);
+});
+
+const exportConferenceRegistrationsCSV = asyncHandler(async (req, res) => {
+  const { status } = req.query;
+  const csv = await adminService.exportConferenceRegistrationsCSV(status);
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename="conference-registrations.csv"');
+  res.send(csv);
+});
+
 /* ─── Event Registrations ────────────────────────────────────────────────── */
 
 const getRegistrations = asyncHandler(async (req, res) => {
@@ -148,6 +161,8 @@ const deleteUser = asyncHandler(async (req, res) => {
 module.exports = {
   getOverview,
   getConferenceRegistrations,
+  getConferenceRegistrationDetail,
+  exportConferenceRegistrationsCSV,
   decideConferenceRegistration,
   getConfPaymentScreenshot,
   getConfIdCard,

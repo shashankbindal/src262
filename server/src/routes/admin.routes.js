@@ -25,12 +25,14 @@ router.get('/overview', ctrl.getOverview);
 
 /* ─── Conference Registration ────────────────────────────────────────────── */
 router.get('/conference-registrations',          ctrl.getConferenceRegistrations);
+router.get('/conference-registrations/export/csv', ctrl.exportConferenceRegistrationsCSV);
 router.patch('/conference-registrations/:confRegId/decision',
   adminConfRegDecisionValidator, validate,
   ctrl.decideConferenceRegistration
 );
 router.get('/conference-registrations/:confRegId/screenshot', ctrl.getConfPaymentScreenshot);
 router.get('/conference-registrations/:confRegId/id-card',    ctrl.getConfIdCard);
+router.get('/conference-registrations/:confRegId/detail',     ctrl.getConferenceRegistrationDetail);
 
 /* ─── Event Registrations ────────────────────────────────────────────────── */
 router.get('/events/:eventId/registrations',     ctrl.getRegistrations);
