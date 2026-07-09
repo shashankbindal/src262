@@ -75,11 +75,15 @@
   letter-spacing: -0.02em;
 }
 
-/* ── Profile row ── */
+/* ── Profile page ── */
+.profile-page-inner {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
 .profile-row {
   display: flex;
   align-items: flex-start;
-  max-width: 680px;
 }
 
 @media (max-width: 860px) {

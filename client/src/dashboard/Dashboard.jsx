@@ -50,7 +50,7 @@ function ProfileTab({ user, refreshUser }) {
   };
 
   return (
-    <div>
+    <div className="profile-page-inner">
       <div className="dash-section-header">
         <h2 className="dash-section-title">My Profile</h2>
       </div>
