@@ -166,6 +166,7 @@ function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile
     if (!form.country.trim()) e.country = 'Country is required';
     if (!idCardFile && !existingIdCard) e.universityIdCard = 'University ID card is required';
     if (!photoFile && !existingPhoto) e.photo = 'Profile photo is required';
+    if (!form.merchSize) e.merchSize = 'Please select your merch size';
     return e;
   };
 
@@ -232,26 +233,8 @@ function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile
               ))}
             </select>
           </Field>
-          <Field label="Profile Photo" required error={errors.photo}
-            hint="Passport-style photo, used on your conference ID card. JPG/PNG/WebP, max 200KB.">
-            <div className="cr-upload-box" onClick={() => photoRef.current?.click()}
-              role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && photoRef.current?.click()}>
-              <input ref={photoRef} type="file" accept="image/jpeg,image/png,image/webp"
-                onChange={handlePhoto} style={{ display: 'none' }} />
-              {photoFile ? (
-                <FileThumbnail file={photoFile} />
-              ) : existingPhoto ? (
-                <FileThumbnail url={existingPhoto} />
-              ) : (
-                <div className="cr-upload-placeholder">
-                  <span className="cr-upload-icon">⬆</span>
-                  <span>Click to upload (JPG, PNG, WebP — max 200KB)</span>
-                </div>
-              )}
-            </div>
-          </Field>
-          <Field label="Merch Size"
-            hint={<>Optional. <a href="https://res.cloudinary.com/cnocxcvz/image/upload/v1783560065/site/hrpw23vpjlz63h4x390o.png" target="_blank" rel="noreferrer">View size chart ↗</a></>}>
+          <Field label="Merch Size" required error={errors.merchSize}
+            hint={<a href="https://res.cloudinary.com/cnocxcvz/image/upload/v1783560065/site/hrpw23vpjlz63h4x390o.png" target="_blank" rel="noreferrer">View size chart ↗</a>}>
             <select className="cr-select" value={form.merchSize} onChange={set('merchSize')}>
               <option value="">— Select —</option>
               {['S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL'].map((s) => (
@@ -259,6 +242,26 @@ function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile
               ))}
             </select>
           </Field>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <Field label="Profile Photo" required error={errors.photo}
+              hint="Passport-style photo, used on your conference ID card. JPG/PNG/WebP, max 200KB.">
+              <div className="cr-upload-box" onClick={() => photoRef.current?.click()}
+                role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && photoRef.current?.click()}>
+                <input ref={photoRef} type="file" accept="image/jpeg,image/png,image/webp"
+                  onChange={handlePhoto} style={{ display: 'none' }} />
+                {photoFile ? (
+                  <FileThumbnail file={photoFile} />
+                ) : existingPhoto ? (
+                  <FileThumbnail url={existingPhoto} />
+                ) : (
+                  <div className="cr-upload-placeholder">
+                    <span className="cr-upload-icon">⬆</span>
+                    <span>Click to upload (JPG, PNG, WebP — max 200KB)</span>
+                  </div>
+                )}
+              </div>
+            </Field>
+          </div>
         </div>
       </Section>
 
@@ -912,6 +915,7 @@ export default function ConferenceRegistration() {
       city: f.city || user.city || '',
       state: f.state || user.state || '',
       country: f.country || user.country || 'India',
+      merchSize: f.merchSize || user.merchSize || '',
     }));
   }, [user]);
 
