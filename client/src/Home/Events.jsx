@@ -4,12 +4,12 @@ import { useReveal } from './useReveal.js'
 import './Events.css'
 
 const eventData = [
-  { id: 1, title: "Chem-E-Jeopardy", desc: "Chemical Engineering Trivia", img: "./ChemEJeo.jpeg" },
-  { id: 2, title: "Chem-E-Car", desc: "Chemical Energy Vehicles", img: "./ChemECar.jpeg" },
-  { id: 3, title: "Poster Presentation", desc: "Research & Technical Projects", img: "./PaperPresentation.jpeg" },
-  { id: 4, title: "Technical Paper Presentation", desc: "Emerging Trends & Analysis", img: "./TechnicalPaperPresentation.jpeg" },
-  { id: 5, title: "K-12 STEM", desc: "Inspiring the Next Generation", img: "./K12.jpeg" },
-  { id: 6, title: "Flagship Event", desc: "", img: "./Flagship.jpeg" }
+  { id: 1, title: "Chem-E-Jeopardy", desc: "Chemical Engineering Trivia", img: ".https://res.cloudinary.com/cnocxcvz/image/upload/v1783560053/site/ieyt2riq3kgjbxqzepqb.jpg" },
+  { id: 2, title: "Chem-E-Car", desc: "Chemical Energy Vehicles", img: ".https://res.cloudinary.com/cnocxcvz/image/upload/v1783560051/site/uexovjfv26uymst2f3yh.jpg" },
+  { id: 3, title: "Poster Presentation", desc: "Research & Technical Projects", img: ".https://res.cloudinary.com/cnocxcvz/image/upload/v1783560064/site/l1inmnozxdndrdfvq5xs.jpg" },
+  { id: 4, title: "Technical Paper Presentation", desc: "Emerging Trends & Analysis", img: ".https://res.cloudinary.com/cnocxcvz/image/upload/v1783560184/site/yakoevbyivdq6fuvxucz.jpg" },
+  { id: 5, title: "K-12 STEM", desc: "Inspiring the Next Generation", img: ".https://res.cloudinary.com/cnocxcvz/image/upload/v1783560059/site/vpfclupldxsj9dpuy8zg.jpg" },
+  { id: 6, title: "Flagship Event", desc: "", img: ".https://res.cloudinary.com/cnocxcvz/image/upload/v1783560057/site/bkmu0ksvaygfsfmxi9ii.jpg" }
 ]
 
 const TX_MAP = [0, 105, 190] // Percentages of width

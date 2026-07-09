@@ -115,7 +115,7 @@ const Navbar = () => {
               className="navbar-logo-anchor"
               title="AIChE RGIPT Chapter"
             >
-              <img src="/aiche-rgipt.jpeg" alt="AIChE RGIPT Logo" className="navbar-logo-img aiche-round-logo" fetchpriority="high" />
+              <img src="https://res.cloudinary.com/cnocxcvz/image/upload/v1783560040/site/aoelmtrp4vz1nxexd9wl.png" alt="AIChE RGIPT Logo" className="navbar-logo-img aiche-round-logo" fetchpriority="high" />
             </a>
             <div className="user-dropdown-container" ref={userMenuRef}>
               <button 

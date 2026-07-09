@@ -24,7 +24,7 @@ const EVENT_IMAGES = {
 function EventCard({ event, selected, onClick }) {
   const isPast = event.registrationDeadline && new Date() > new Date(event.registrationDeadline);
   const disabled = !event.registrationEnabled || isPast;
-  const bgImg = EVENT_IMAGES[event.name] || '/bg.png';
+  const bgImg = EVENT_IMAGES[event.name] || 'https://res.cloudinary.com/cnocxcvz/image/upload/v1783560048/site/nhezjpxd3ca6an2d5ooh.png';
 
   return (
     <div

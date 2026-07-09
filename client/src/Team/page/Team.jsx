@@ -22,7 +22,7 @@ const Team = () => {
           <h2 className="faculty-advisor-heading">Faculty Advisor</h2>
           <div className="faculty-advisor-card">
             <div className="faculty-advisor-img-wrap">
-              <img src="/team/mentor.jpg" alt="Faculty Advisor" className="faculty-advisor-img" loading="lazy" decoding="async" />
+              <img src="https://res.cloudinary.com/cnocxcvz/image/upload/v1783560135/site/team/bwmpm3x5kjlaicwyx77r.jpg" alt="Faculty Advisor" className="faculty-advisor-img" loading="lazy" decoding="async" />
             </div>
             <div className="faculty-advisor-info">
               <h3 className="faculty-advisor-name">Dr. Vivek Kumar</h3>

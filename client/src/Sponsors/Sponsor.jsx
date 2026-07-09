@@ -13,7 +13,7 @@ const sponsorsData = [
   { name: 'ISRO', url: '/isro.png' },
   { name: 'CSIR', url: '/csir.png' },
   { name: 'SBI', url: '/sbi.png' },
-  { name: 'NRL', url: '/nrl.jpg' },
+  { name: 'NRL', url: 'https://res.cloudinary.com/cnocxcvz/image/upload/v1783560062/site/gnic3xatmeoahcxzl9ps.jpg' },
   { name: 'SERB INDIA', url: '/inserb.png' },
   { name: 'PNB', url: '/pnb.png' },
   { name: 'Burger Singh', url: '/burger.png' }

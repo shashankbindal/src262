@@ -176,7 +176,7 @@ const Banner = () => {
     <div className="banner-container" ref={containerRef}>
       <div className="banner-bg-mask">
         <div className={`banner-bg-wrap${parallaxReady ? ' parallax-ready' : ''}`} ref={bgWrapRef}>
-          <img className="banner-bg" src="/bg.png" alt="Background" fetchpriority="high" decoding="async" />
+          <img className="banner-bg" src="https://res.cloudinary.com/cnocxcvz/image/upload/v1783560048/site/nhezjpxd3ca6an2d5ooh.png" alt="Background" fetchpriority="high" decoding="async" />
         </div>
       </div>
       <ParticleCanvas />

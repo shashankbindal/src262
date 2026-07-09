@@ -23,7 +23,7 @@ const Src = () => {
       <div ref={block1Ref} className={`ref-block block-right-image ${block1Visible ? 'visible' : ''}`}>
         <div className="ref-image-wrapper img-right">
           <img
-            src="/about-src.png"
+            src="https://res.cloudinary.com/cnocxcvz/image/upload/v1783560037/site/c43oaivo1abayindmheo.png"
             alt="Student Regional Conference"
             className="ref-img"
             loading="lazy"
@@ -72,7 +72,7 @@ const Src = () => {
       <div ref={block2Ref} className={`ref-block block-left-image ${block2Visible ? 'visible' : ''}`}>
         <div className="ref-image-wrapper img-left">
           <img
-            src="/about-viplav.jpeg"
+            src="https://res.cloudinary.com/cnocxcvz/image/upload/v1783560039/site/nsgfox9rpk0vazexjvws.jpg"
             alt="Sustainable energy landscape"
             className="ref-img"
             loading="lazy"

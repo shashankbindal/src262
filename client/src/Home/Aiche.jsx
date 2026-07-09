@@ -25,7 +25,7 @@ const Aiche = () => {
       <div ref={block3Ref} className={`ref-block block-right-image ${block3Visible ? 'visible' : ''}`}>
         <div className="ref-image-wrapper img-right">
           <img
-            src="/about-aiche.png"
+            src="https://res.cloudinary.com/cnocxcvz/image/upload/v1783560034/site/i6m2cujd4saz6lgylhry.png"
             alt="Global tech network"
             className="ref-img"
             loading="lazy"
@@ -76,7 +76,7 @@ const Aiche = () => {
       <div ref={block4Ref} className={`ref-block block-left-image ${block4Visible ? 'visible' : ''}`}>
         <div className="ref-image-wrapper img-left">
           <img
-            src="/teams.jpg"
+            src="https://res.cloudinary.com/cnocxcvz/image/upload/v1783560181/site/nebcoilgjx1rm3a1qklv.jpg"
             alt="AIChE RGIPT team"
             className="ref-img"
             loading="lazy"

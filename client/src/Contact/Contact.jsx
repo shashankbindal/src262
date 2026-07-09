@@ -222,8 +222,8 @@ const Contact = () => {
                 <p>Experience the spiritual heart of India. Visit the grand Ram Mandir and stroll along the serene Sarayu river ghats.</p>
               </div>
               <div className="timeline-images">
-                <div className="place-img" style={{ backgroundImage: "url('/ayodhya-1.jpg')" }}></div>
-                <div className="place-img offset" style={{ backgroundImage: "url('/ayodhya-2.jpg')" }}></div>
+                <div className="place-img" style={{ backgroundImage: "url('https://res.cloudinary.com/cnocxcvz/image/upload/v1783560045/site/hzplhsinbamgwh91glx4.jpg')" }}></div>
+                <div className="place-img offset" style={{ backgroundImage: "url('https://res.cloudinary.com/cnocxcvz/image/upload/v1783560046/site/gs3xhe2ayfhir3qzfy18.jpg')" }}></div>
               </div>
             </div>
           </div>
@@ -237,8 +237,8 @@ const Contact = () => {
                 <p>Discover the eternal city of lights. Witness the mesmerizing Ganga Aarti and experience profound spirituality.</p>
               </div>
               <div className="timeline-images">
-                <div className="place-img" style={{ backgroundImage: "url('/varanasi-1.jpeg')" }}></div>
-                <div className="place-img offset" style={{ backgroundImage: "url('/varanasi-2.jpg')" }}></div>
+                <div className="place-img" style={{ backgroundImage: "url('https://res.cloudinary.com/cnocxcvz/image/upload/v1783560185/site/x0ywwhxowal2m4ipaumd.jpg')" }}></div>
+                <div className="place-img offset" style={{ backgroundImage: "url('https://res.cloudinary.com/cnocxcvz/image/upload/v1783560186/site/vsiiyk40pe8yvvnchjfx.jpg')" }}></div>
               </div>
             </div>
           </div>

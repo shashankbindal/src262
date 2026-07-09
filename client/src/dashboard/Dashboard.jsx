@@ -122,7 +122,7 @@ function ProfileTab({ user, refreshUser }) {
           <div className="profile-field">
             <label className="profile-label" htmlFor="prof-merchSize">
               Merch Size{' '}
-              <a href="/Size Chart_SRC Merch.png" target="_blank" rel="noreferrer" className="profile-size-chart-link">
+              <a href="https://res.cloudinary.com/cnocxcvz/image/upload/v1783560065/site/hrpw23vpjlz63h4x390o.png" target="_blank" rel="noreferrer" className="profile-size-chart-link">
                 (View Size Chart ↗)
               </a>
             </label>

@@ -7,11 +7,11 @@ const Teams = () => {
   const [ref, isVisible] = useReveal(0.15);
 
   const previewAvatars = [
-    { name: "Shubhendra Singh", image: "/team/Shubhendra Singh_Conference Chair.jpeg" },
-    { name: "Rudrakesh", image: "/team/Rudrakesh_Conference Co-Chair.jpg" },
-    { name: "Chirantan Toley", image: "/team/Chirantan toley_Conference Co-chair.jpeg" },
-    { name: "Divisha Tiwari", image: "/team/Divisha Tiwari_ Chem-E-Car Chair_.jpg" },
-    { name: "Yashu Raj", image: "/team/Yashu Raj_Chair_Designing.jpg" }
+    { name: "Shubhendra Singh", image: "https://res.cloudinary.com/cnocxcvz/image/upload/v1783560169/site/team/tensoezneukr6an6gxjc.jpg" },
+    { name: "Rudrakesh", image: "https://res.cloudinary.com/cnocxcvz/image/upload/v1783560144/site/team/y0xqopmq6e6sv0ahqcki.jpg" },
+    { name: "Chirantan Toley", image: "https://res.cloudinary.com/cnocxcvz/image/upload/v1783560115/site/team/rsew7qelfjbdy1c5ofcz.jpg" },
+    { name: "Divisha Tiwari", image: "https://res.cloudinary.com/cnocxcvz/image/upload/v1783560119/site/team/xeqxlaulnzdmtfr0rutt.jpg" },
+    { name: "Yashu Raj", image: "https://res.cloudinary.com/cnocxcvz/image/upload/v1783560177/site/team/rhrxdhdylkz6sttpagda.jpg" }
   ];
 
   return (

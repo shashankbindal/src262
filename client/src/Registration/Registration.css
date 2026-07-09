@@ -65,7 +65,7 @@
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background-image: var(--bg-img, url('/bg.png'));
+  background-image: var(--bg-img, url('https://res.cloudinary.com/cnocxcvz/image/upload/v1783560048/site/nhezjpxd3ca6an2d5ooh.png'));
   background-size: cover;
   background-position: center;
   opacity: 0;
