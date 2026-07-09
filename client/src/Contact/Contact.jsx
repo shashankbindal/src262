@@ -202,7 +202,7 @@ const Contact = () => {
           ></iframe>
         </div>
         <a
-          href="https://res.cloudinary.com/cnocxcvz/raw/upload/v1783564361/site/pisimederbvwn6bwjfqb.pdf"
+          href="https://drive.google.com/file/d/164FPyzWmiCJtGW-PrfaMIE7HFTd7GNov/view?usp=sharing"
           target="_blank"
           rel="noreferrer"
           className="how-to-reach-download"
