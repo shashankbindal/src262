@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { Analytics } from "@vercel/analytics/react";
 
 /* Layout */
 import Navbar from "./shared/Navbar.jsx";
@@ -195,6 +196,7 @@ export default function App() {
     <Router>
       <AuthProvider>
         <AppContent />
+        <Analytics />
       </AuthProvider>
     </Router>
   );
