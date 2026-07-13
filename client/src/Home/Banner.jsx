@@ -189,8 +189,9 @@ const Banner = () => {
             </span>
           ))}
         </h1>
-        <p className="banner-subtitle">Engineering the
-Decarbonization Revolution</p>
+        <p className="banner-subtitle">
+          Engineering the<br className="banner-subtitle-break" /> Decarbonization Revolution
+        </p>
       </div>
       <ScrollCue />
     </div>

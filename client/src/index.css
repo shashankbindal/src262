@@ -363,3 +363,13 @@ html.lenis, html.lenis body { height: auto; }
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
 }
+
+@media (max-width: 768px) {
+  body {
+    font-size: 16px;
+  }
+
+  p {
+    font-size: 0.95rem;
+  }
+}

@@ -292,11 +292,33 @@
 
 @media (max-width: 768px) {
   .fan-section {
-    padding: 100px 4%;
+    padding: 100px 16px;
+  }
+
+  .fan-header {
+    margin-bottom: 48px;
+    gap: 20px;
+  }
+
+  .fan-header-right {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .fan-explore-btn {
+    width: 100%;
+    text-align: center;
+    padding: 14px 24px;
+    box-sizing: border-box;
   }
 
   .fan-stage {
-    padding: 24px 20px 40px;
+    padding: 24px 12px 40px;
+    overflow: hidden;
+  }
+
+  .fan-track {
+    overflow: hidden;
   }
 
   .fan-corner {
@@ -328,11 +350,19 @@
 
 @media (max-width: 480px) {
   .fan-section {
-    padding: 80px 4%;
+    padding: 80px 12px;
+  }
+
+  .fan-header {
+    margin-bottom: 36px;
+  }
+
+  .fan-title {
+    font-size: clamp(1.8rem, 7vw, 2.4rem);
   }
 
   .fan-stage {
-    padding: 18px 14px 34px;
+    padding: 18px 8px 34px;
   }
 
   .fan-corner {

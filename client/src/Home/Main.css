@@ -1,0 +1,19 @@
+/* Home page layout — prevent horizontal overflow on small screens */
+.home-page {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  .home-page section,
+  .home-page .fan-section,
+  .home-page .src-section-ref,
+  .home-page .notebook-feature-wrapper,
+  .home-page .premium-sponsors-section,
+  .home-page .teams-teaser-section,
+  .home-page .faq-section {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}

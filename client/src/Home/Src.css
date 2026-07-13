@@ -254,13 +254,18 @@
 @media (max-width: 768px) {
   .src-section-ref {
     gap: 100px;
-    padding: 100px 0;
+    padding: 100px 16px;
   }
 
   .ref-block {
     display: flex !important;
     flex-direction: column-reverse !important;
     gap: 32px;
+  }
+
+  .ref-text-content {
+    padding: 0;
+    max-width: 100%;
   }
 
   .ref-image-wrapper {
@@ -275,24 +280,42 @@
     font-size: clamp(1.5rem, 5vw, 2.2rem);
     margin-bottom: 24px;
   }
+
+  .ref-desc p {
+    text-align: left;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
 }
 
 @media (max-width: 480px) {
   .src-section-ref {
     gap: 80px;
-    padding: 80px 0;
+    padding: 80px 12px;
   }
 
   .ref-image-wrapper {
-    height: 260px;
+    height: 240px;
+    border-radius: 16px !important;
   }
 
   .ref-subtitle {
     font-size: 0.68rem;
     gap: 10px;
+    flex-wrap: wrap;
   }
 
   .ref-line {
     width: 28px;
+  }
+
+  .ref-title {
+    font-size: clamp(1.35rem, 5.5vw, 1.8rem);
+    margin-bottom: 18px;
+  }
+
+  .ref-desc p {
+    font-size: 0.9rem;
+    line-height: 1.7;
   }
 }

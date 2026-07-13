@@ -62,7 +62,7 @@ const Sponsors = () => {
     const interval = setInterval(() => {
       if (sliderRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current;
-        const cardWidth = window.innerWidth <= 768 ? (window.innerWidth * 0.5) : 204;
+        const cardWidth = window.innerWidth <= 480 ? 98 : window.innerWidth <= 768 ? 112 : 136;
         
         // If we are at the end, smoothly scroll back to start
         if (scrollLeft >= scrollWidth - clientWidth - 10) {
@@ -106,7 +106,7 @@ const Sponsors = () => {
 
   const scrollSlider = (direction) => {
     if (sliderRef.current) {
-      const cardWidth = window.innerWidth <= 768 ? (window.innerWidth * 0.5) : 204;
+      const cardWidth = window.innerWidth <= 480 ? 98 : window.innerWidth <= 768 ? 112 : 136;
       const offset = direction === 'left' ? -cardWidth * 2 : cardWidth * 2;
       sliderRef.current.scrollBy({ left: offset, behavior: 'smooth' });
     }

@@ -205,10 +205,13 @@
 
 @media (max-width: 768px) {
   .notebook-container { height: auto; min-height: auto; padding: 10px; }
+  .notebook-content { padding: 48px 24px 28px; }
   .notebook-inner-content { padding: 10px 0 0 0; gap: 20px; }
-  .notebook-title { font-size: 2.2rem; }
+  .notebook-title { font-size: clamp(1.8rem, 6vw, 2.2rem); }
   .notebook-details { flex-direction: column; gap: 16px; margin-top: 12px; }
   .detail-item { gap: 6px; }
+  .notebook-actions { flex-direction: column; width: 100%; }
+  .notebook-register-btn, .notebook-explore-btn { width: 100%; justify-content: center; box-sizing: border-box; }
   .spirals-container { padding: 0 10px; }
   .spiral-unit:nth-child(n+9) { display: none; }
 }

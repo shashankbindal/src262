@@ -12,20 +12,27 @@ const eventData = [
   { id: 6, title: "Flagship Event", desc: "", img: "https://res.cloudinary.com/cnocxcvz/image/upload/v1783560057/site/bkmu0ksvaygfsfmxi9ii.jpg" }
 ]
 
-const TX_MAP = [0, 105, 190] // Percentages of width
 const SCALE_MAP = [1, 0.8, 0.6]
 const OPACITY_MAP = [1, 0.7, 0.4]
 
-const getCardStyle = (offset) => {
+const getTxMap = () => {
+  const w = window.innerWidth
+  if (w <= 360) return [0, 68, 120]
+  if (w <= 480) return [0, 78, 138]
+  if (w <= 768) return [0, 88, 158]
+  return [0, 105, 190]
+}
+
+const getCardStyle = (offset, txMap) => {
   const abs = Math.abs(offset)
   const sign = Math.sign(offset)
 
   if (abs > 2) {
-    return { opacity: 0, pointerEvents: 'none', transform: `translateX(${sign * 260}%) scale(0.4)`, zIndex: 1 }
+    return { opacity: 0, pointerEvents: 'none', transform: `translateX(${sign * 220}%) scale(0.4)`, zIndex: 1 }
   }
 
   return {
-    transform: `translateX(${sign * TX_MAP[abs]}%) scale(${SCALE_MAP[abs]})`,
+    transform: `translateX(${sign * txMap[abs]}%) scale(${SCALE_MAP[abs]})`,
     zIndex: 10 - abs,
     opacity: OPACITY_MAP[abs],
     pointerEvents: 'auto',
@@ -37,7 +44,14 @@ const SWIPE_THRESHOLD = 40 // px
 const Events = () => {
   const [ref, isVisible] = useReveal(0.1)
   const [activeIndex, setActiveIndex] = useState(2)
+  const [txMap, setTxMap] = useState(getTxMap)
   const touchStartX = React.useRef(null)
+
+  useEffect(() => {
+    const onResize = () => setTxMap(getTxMap())
+    window.addEventListener('resize', onResize, { passive: true })
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   const goPrev = () => setActiveIndex(prev => (prev - 1 + eventData.length) % eventData.length)
   const goNext = () => setActiveIndex(prev => (prev + 1) % eventData.length)
@@ -69,7 +83,7 @@ const Events = () => {
             Featured Events
           </h2>
         </div>
-        <div className="fan-header-right" style={{ justifyContent: 'center', alignItems: 'flex-end' }}>
+        <div className="fan-header-right">
           <Link to="/events" className="fan-explore-btn" data-magnetic>View All Events</Link>
         </div>
       </div>
@@ -100,7 +114,7 @@ const Events = () => {
               <div
                 key={event.id}
                 className={`fan-card${isCenter ? ' fan-card--active' : ''}`}
-                style={getCardStyle(offset)}
+                style={getCardStyle(offset, txMap)}
                 onClick={() => { if (!isCenter) setActiveIndex(index) }}
               >
                 <img src={event.img} alt={event.title} className="fan-card-img" loading="lazy" decoding="async" />

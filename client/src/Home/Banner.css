@@ -318,11 +318,11 @@
 
 @media (max-width: 768px) {
   .banner-container {
-    min-height: 380px;
+    min-height: 72vh;
     height: auto;
-    aspect-ratio: 16 / 10;
-    padding-bottom: 6%;
-    margin-bottom: 1rem;
+    aspect-ratio: unset;
+    padding: 80px 0 48px;
+    margin-bottom: 0;
   }
 
   .banner-container::after {
@@ -337,15 +337,51 @@
     z-index: 2;
   }
 
+  .banner-content {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 20px;
+    gap: 12px;
+  }
+
+  .banner-eyebrow {
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    line-height: 1.6;
+    max-width: 100%;
+    padding: 0 4px;
+  }
+
   .banner-title {
-    font-size: 5.2rem;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    font-size: clamp(2.4rem, 13vw, 4.8rem);
+    letter-spacing: 0.06em;
     z-index: 3;
     position: relative;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .char-wrapper {
+    padding-bottom: 16px;
+    margin-bottom: -16px;
+    padding-top: 8px;
+    margin-top: -8px;
   }
 
   .banner-subtitle {
-    font-size: 0.9rem;
-    letter-spacing: 0.22em;
+    font-size: clamp(0.7rem, 2.8vw, 0.9rem);
+    letter-spacing: 0.14em;
+    line-height: 1.5;
+    max-width: 100%;
+    padding: 0 8px 12px;
+    text-wrap: balance;
+  }
+
+  .banner-subtitle-break {
+    display: none;
   }
 
   .banner-cta-link {
@@ -355,42 +391,41 @@
   }
 
   .banner-bg {
-    object-position: top;
+    object-position: center top;
   }
 }
 
 @media (max-width: 480px) {
   .banner-container {
-    min-height: 340px;
-    height: auto;
-    aspect-ratio: 16 / 10;
-    padding-bottom: 8%;
+    min-height: 68vh;
+    padding: 72px 0 40px;
   }
 
-  .banner-container::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 40%;
-    background: linear-gradient(to bottom, transparent, var(--bg-primary));
-    pointer-events: none;
-    z-index: 2;
+  .banner-content {
+    padding: 0 16px;
+    gap: 10px;
+  }
+
+  .banner-eyebrow {
+    font-size: 0.52rem;
+    letter-spacing: 0.08em;
   }
 
   .banner-title {
-    font-size: 3.6rem;
+    font-size: clamp(2rem, 12vw, 3.4rem);
+    letter-spacing: 0.04em;
+  }
+
+  .banner-subtitle {
+    font-size: 0.68rem;
     letter-spacing: 0.1em;
-    z-index: 3;
-    position: relative;
   }
 
   .banner-cta-link {
     display: inline-flex;
     font-size: 0.6rem;
     padding: 10px 22px;
-    margin-top: 12px;
+    margin-top: 8px;
   }
 
   .cta-icon {
@@ -399,6 +434,17 @@
   }
 
   .banner-bg {
-    object-position: top;
+    object-position: center top;
+  }
+}
+
+@media (max-width: 360px) {
+  .banner-title {
+    font-size: clamp(1.75rem, 11vw, 2.8rem);
+    letter-spacing: 0.02em;
+  }
+
+  .banner-eyebrow {
+    font-size: 0.48rem;
   }
 }

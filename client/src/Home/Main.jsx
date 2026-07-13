@@ -12,7 +12,7 @@ import './animations.css'
 
 const Main = () => {
   return (
-    <>
+    <div className="home-page">
       <Banner />
       <NotebookFeature />
       <Sponsors />
@@ -21,7 +21,7 @@ const Main = () => {
       <Events />
       <Teams />
       <Faq />
-    </>
+    </div>
   )
 }
 

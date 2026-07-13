@@ -35,9 +35,34 @@
 }
 
 @media (max-width: 600px) {
-  .ref-stats-row { gap: 12px; flex-wrap: nowrap; justify-content: space-between; }
+  .ref-stats-row {
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding-top: 24px;
+  }
+
+  .ref-stat {
+    flex: 1 1 calc(33.333% - 12px);
+    min-width: 88px;
+  }
+
   .ref-stat-num { font-size: 1.2rem; }
   .ref-stat-label { font-size: 0.55rem; letter-spacing: 0.05em; }
+}
+
+@media (max-width: 400px) {
+  .ref-stats-row {
+    gap: 12px;
+  }
+
+  .ref-stat {
+    flex: 1 1 calc(50% - 8px);
+  }
+
+  .ref-stat:last-child {
+    flex: 1 1 100%;
+  }
 }
 
 /* ===== CTA SECTION ===== */
