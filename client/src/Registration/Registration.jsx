@@ -68,6 +68,9 @@ export default function Registration() {
   const [error, setError]   = useState('');
   const [successReg, setSuccessReg] = useState(null);
 
+  /* Config state */
+  const [config, setConfig] = useState(null);
+
   /* Conference registration status */
   const [confReg, setConfReg]           = useState(null);
   const [confRegLoading, setConfRegLoading] = useState(true);
@@ -106,11 +109,15 @@ export default function Registration() {
     sessionStorage.setItem('er_members', JSON.stringify(memberEmails));
   }, [memberEmails]);
 
-  /* Load events */
+  /* Load events and config */
   useEffect(() => {
     api.get('/events')
       .then((res) => setEvents(res.data || []))
       .finally(() => setEventsLoading(false));
+
+    api.get('/conference-registration/config')
+      .then((res) => setConfig(res.data || null))
+      .catch(() => setConfig(null));
   }, []);
 
   /* Load conference registration status */
@@ -190,12 +197,25 @@ export default function Registration() {
             <>
               <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🎫</div>
               <h1 className="reg-simple-title">Register for the Conference First</h1>
-              <p className="reg-simple-desc">
+              <p className="reg-simple-desc" style={{ marginBottom: '16px' }}>
                 You need an approved conference registration to sign up for events.
               </p>
+
+              <div className="reg-gate-fees">
+                <div className="reg-gate-fee-card">
+                  <span className="rg-fee-type">Registration Only</span>
+                  <span className="rg-fee-val">₹{(config?.feeBase ?? 3000).toLocaleString('en-IN')}</span>
+                  <span className="rg-fee-desc">Access to all conference events</span>
+                </div>
+                <div className="reg-gate-fee-card highlighted">
+                  <span className="rg-fee-type">Registration + Accommodation</span>
+                  <span className="rg-fee-val">₹{(config?.feeWithAccommodation ?? 5500).toLocaleString('en-IN')}</span>
+                  <span className="rg-fee-desc">Events access + accommodation at campus</span>
+                </div>
+              </div>
             </>
           )}
-          <Link to="/conference-registration" className="reg-simple-btn" style={{ textDecoration: 'none', marginTop: '16px' }} data-magnetic>
+          <Link to="/conference-registration" className="reg-simple-btn" style={{ textDecoration: 'none', marginTop: '8px' }} data-magnetic>
             {isPending ? 'View Status' : isRejected ? 'Re-submit Payment' : 'Register for Conference'}
           </Link>
         </div>

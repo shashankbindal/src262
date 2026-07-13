@@ -220,6 +220,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
+  overflow-y: auto;
 }
 .admin-modal {
   background: #FFFFFF;
@@ -228,6 +229,9 @@
   padding: 40px;
   max-width: 480px;
   width: 100%;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   box-shadow: 0 24px 50px rgba(0, 0, 0, 0.1);
 }
 .admin-modal h3 {
@@ -258,7 +262,54 @@
   border-color: #2F8F62;
   box-shadow: 0 0 0 3px rgba(47, 143, 98, 0.18);
 }
-.admin-modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
+.admin-modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+
+/* ── Event form: landscape/compact layout so it fits without scrolling ── */
+.admin-modal--wide {
+  max-width: 760px;
+}
+.ef-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ef-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.ef-field {
+  flex: 1 1 180px;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+}
+.ef-field-full {
+  flex-basis: 100%;
+}
+.ef-field .auth-label {
+  margin-bottom: 6px;
+}
+.ef-field .admin-modal-input,
+.ef-field select.admin-modal-input,
+.ef-field textarea.admin-modal-input {
+  margin-bottom: 0;
+}
+.ef-field textarea.admin-modal-input {
+  min-height: 56px;
+}
+.ef-checkboxes {
+  flex: 1 1 180px;
+  justify-content: center;
+  gap: 10px;
+}
+.ef-checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
 
 /* ── Participant detail grid ── */
 .detail-grid {

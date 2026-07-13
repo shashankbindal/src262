@@ -2,6 +2,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { useDocumentTitle } from '../../shared/useDocumentTitle.js';
+import { getDirectDownloadLink } from '../../shared/utils.js';
 import '../../Home/animations.css';
 import './Event.css';
 
@@ -20,7 +21,7 @@ const EVENTS = [
       'A flagship AIChE event that challenges students to design and build a small vehicle powered and controlled entirely by chemical reactions. Combining innovation, engineering design, and problem-solving, the competition showcases the practical application of chemical engineering principles in a fun and competitive environment.Participants apply technical knowledge, creativity, and teamwork to solve real-world engineering problems.',
     image:
       'https://www.aiche.org/sites/default/files/images/conference/event/23370477461_f16f1dd228_z.jpg',
-    rulebookLink: '#',
+    rulebookLink: 'https://drive.google.com/file/d/1LiD5YpYc1cQSrJQxU1MDJ0-oolf6zxsd/view?usp=drivesdk',
     chairs: [
       { role: 'Chair (External)', name: 'Divisha Tiwari' },
       { role: 'Chair (Internal)', name: 'Tapesh Kumar' },
@@ -103,7 +104,7 @@ const EVENTS = [
       'ChemE Jeopardy is a fast-paced academic competition that challenges participants to think critically, respond quickly, and apply their knowledge in a fun and engaging format. Inspired by the popular Jeopardy-style game, teams compete by identifying the correct questions to given answers while demonstrating teamwork, strategy, and problem-solving skills. The event provides a platform for students to showcase their abilities and learn from their peers.',
     image:
       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5jUsij8b-x-PBqn3yMZbAYUwfyACiF3GPAw&s',
-    rulebookLink: '#',
+    rulebookLink: 'https://drive.google.com/file/d/1jxlaNR5wLsEJuPaNlwztfhhXygMwauhK/view?usp=sharing',
     chairs: [{ role: 'Chair', name: 'Shreeyanshi Tripathi' }],
     coordinators: [{ role: 'Coordinator', name: 'Haritha Sree Vakati' }],
   },
@@ -298,7 +299,7 @@ export default function Event() {
               </svg>
             </a>
             
-            <a href={ev.rulebookLink || "#"} className="ev-cta ev-cta--rulebook" target="_blank" rel="noreferrer" data-magnetic>
+            <a href={getDirectDownloadLink(ev.rulebookLink)} className="ev-cta ev-cta--rulebook" target="_blank" rel="noreferrer" data-magnetic>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>

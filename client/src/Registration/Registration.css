@@ -362,3 +362,91 @@
   .reg-content-wrapper { padding: 32px 20px; border-radius: 16px; }
   .reg-simple-title { font-size: clamp(1.5rem, 6vw, 2rem); }
 }
+
+/* ── Gate Fee Cards ── */
+.reg-gate-fees {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 32px 0;
+  width: 100%;
+}
+
+.reg-gate-fee-card {
+  background: var(--bg-secondary, #f8f9fa);
+  border: 1px solid var(--border-medium, rgba(0, 0, 0, 0.08));
+  border-radius: var(--radius-lg, 12px);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: all var(--transition-medium, 0.3s ease);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.reg-gate-fee-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+
+.reg-gate-fee-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary, #0b5d46);
+  box-shadow: 0 12px 24px rgba(11, 93, 70, 0.06);
+}
+
+.reg-gate-fee-card.highlighted {
+  border-color: rgba(11, 93, 70, 0.15);
+  background: rgba(11, 93, 70, 0.03);
+}
+
+.reg-gate-fee-card.highlighted::before {
+  background: var(--primary, #0b5d46);
+}
+
+.reg-gate-fee-card.highlighted:hover {
+  border-color: var(--primary, #0b5d46);
+  box-shadow: 0 12px 24px rgba(11, 93, 70, 0.1);
+}
+
+.rg-fee-type {
+  font-family: var(--font-body, inherit);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary, #57606a);
+  text-align: center;
+}
+
+.rg-fee-val {
+  font-family: var(--font-mono, monospace);
+  font-size: 1.6rem;
+  font-weight: 850;
+  color: var(--primary, #0b5d46);
+  margin-top: 4px;
+}
+
+.rg-fee-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted, #888);
+  text-align: center;
+  line-height: 1.4;
+}
+
+@media (max-width: 480px) {
+  .reg-gate-fees {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+}
