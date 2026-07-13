@@ -182,7 +182,8 @@ export default function Registration() {
               <h1 className="reg-simple-title">Registration Under Review</h1>
               <p className="reg-simple-desc">
                 Your conference registration payment is being reviewed by the organizing team.
-                You'll be able to register for events once it's approved.
+                You will receive a confirmation email within 24–48 hours, and you'll be able to
+                register for events once it's approved.
               </p>
             </>
           ) : isRejected ? (
@@ -208,9 +209,9 @@ export default function Registration() {
                   <span className="rg-fee-desc">Access to all conference events</span>
                 </div>
                 <div className="reg-gate-fee-card highlighted">
-                  <span className="rg-fee-type">Registration + Accommodation</span>
+                  <span className="rg-fee-type">Registration + Accommodation & Fooding</span>
                   <span className="rg-fee-val">₹{(config?.feeWithAccommodation ?? 5500).toLocaleString('en-IN')}</span>
-                  <span className="rg-fee-desc">Events access + accommodation at campus</span>
+                  <span className="rg-fee-desc">Events access + accommodation & fooding at campus</span>
                 </div>
               </div>
             </>

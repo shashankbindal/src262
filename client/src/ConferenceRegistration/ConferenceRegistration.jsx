@@ -578,7 +578,7 @@ function PaymentStage({ config, needsAccommodation, setNeedsAccommodation, trans
           <label className={`cr-fee-option${needsAccommodation ? ' selected' : ''}`}>
             <input type="radio" name="accommodation" checked={needsAccommodation}
               onChange={() => setNeedsAccommodation(true)} />
-            <span className="cr-fee-option-title">Conference Registration + Accommodation</span>
+            <span className="cr-fee-option-title">Conference Registration + Accommodation & Fooding</span>
             <span className="cr-fee-option-amount">₹{config?.feeWithAccommodation ?? '—'}</span>
           </label>
         </div>
@@ -758,9 +758,9 @@ function SuccessScreen({ confReg }) {
         Your conference registration has been successfully submitted and is currently awaiting
         manual verification by the organizing committee.
         <br /><br />
-        Once your payment has been verified, an administrator will assign your SRC ID.
-        You will be able to register for conference events only after your Conference Registration
-        has been approved.
+        <strong>You will receive a confirmation email within 24–48 hours</strong> once your payment
+        has been verified and your SRC ID has been assigned. You will be able to register for
+        conference events only after your Conference Registration has been approved.
       </div>
 
       <div className="cr-success-note">
@@ -783,7 +783,7 @@ function PendingScreen({ confReg }) {
       <h2 className="cr-status-title">Your Registration is Under Review</h2>
       <p className="cr-status-sub">
         Your conference registration payment has been submitted and is being reviewed by
-        the organizing committee. This usually takes 1–2 business days.
+        the organizing committee. You will receive a confirmation email within 24–48 hours.
       </p>
       <div className="cr-status-details">
         <div className="cr-status-row">

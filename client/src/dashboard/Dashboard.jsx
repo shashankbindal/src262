@@ -170,7 +170,7 @@ function ConferenceRegBanner() {
       <div className="confbanner confbanner-pending">
         <div className="confbanner-body">
           <span className="confbanner-label">Conference Registration · Under Review</span>
-          <p className="confbanner-msg">Your payment has been submitted and is being reviewed. Approval usually takes 1–2 business days.</p>
+          <p className="confbanner-msg">Your payment has been submitted and is being reviewed. You will receive a confirmation email within 24–48 hours.</p>
           <div className="confbanner-meta">
             {confReg.referenceNumber && (
               <span className="confbanner-meta-item">
