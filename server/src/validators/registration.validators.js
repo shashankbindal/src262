@@ -138,10 +138,9 @@ const submitConferenceRegistrationValidator = [
     .isLength({ min: 6, max: 100 }).withMessage('Transaction ID must be 6–100 characters')
     .matches(/^[A-Za-z0-9\-_\/]+$/).withMessage('Transaction ID must be alphanumeric'),
 
-  /* Sent as a string ("true"/"false") since this arrives via multipart/form-data */
-  body('needsAccommodation')
-    .optional()
-    .isIn(['true', 'false']).withMessage('needsAccommodation must be true or false'),
+  body('registrationTier')
+    .trim().notEmpty().withMessage('Registration tier is required')
+    .isIn(['base', 'fooding', 'accommodation']).withMessage('Please select a valid registration tier'),
 
   body('merchSize')
     .trim().notEmpty().withMessage('Merch size is required')

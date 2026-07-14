@@ -28,7 +28,16 @@ const conferenceRegistrationSchema = new mongoose.Schema(
     photoUrl: { type: String, default: '' },
     photoKey: { type: String, default: '' },
 
-    /* Whether the registrant opted into the accommodation add-on (affects fee) */
+    /* Which registration tier was purchased — determines the fee.
+     * 'base': registration only. 'fooding': registration + fooding.
+     * 'accommodation': registration + accommodation & fooding. */
+    registrationTier: {
+      type: String,
+      enum: ['base', 'fooding', 'accommodation'],
+      default: 'base',
+    },
+    /* Kept in sync with registrationTier (true only for 'accommodation') —
+     * older code/exports read this boolean directly. */
     needsAccommodation: { type: Boolean, default: false },
 
     /* Admin approval */

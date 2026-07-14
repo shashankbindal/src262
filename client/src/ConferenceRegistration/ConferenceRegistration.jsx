@@ -34,6 +34,12 @@ function formatDate(iso) {
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
 }
 
+const TIER_LABELS = {
+  base: 'Registration Only',
+  fooding: 'Registration + Fooding',
+  accommodation: 'Registration + Accommodation & Fooding',
+};
+
 function maskId(num) {
   if (!num || num.length < 4) return num;
   return `${'X'.repeat(Math.max(num.length - 4, 4))} ${num.slice(-4)}`;
@@ -527,7 +533,7 @@ function BankRow({ label, value, copyable }) {
 }
 
 /* ══════════════════════════════════ PAYMENT STAGE */
-function PaymentStage({ config, needsAccommodation, setNeedsAccommodation, transactionId, setTransactionId, screenshotFile, setScreenshotFile, errors, setErrors, onBack, onNext }) {
+function PaymentStage({ config, registrationTier, setRegistrationTier, transactionId, setTransactionId, screenshotFile, setScreenshotFile, errors, setErrors, onBack, onNext }) {
   const shotRef = useRef(null);
   const [copied, setCopied] = useState(false);
 
@@ -569,15 +575,21 @@ function PaymentStage({ config, needsAccommodation, setNeedsAccommodation, trans
       <div className="cr-fee-card">
         <span className="cr-fee-label">Choose your registration type</span>
         <div className="cr-fee-options">
-          <label className={`cr-fee-option${!needsAccommodation ? ' selected' : ''}`}>
-            <input type="radio" name="accommodation" checked={!needsAccommodation}
-              onChange={() => setNeedsAccommodation(false)} />
+          <label className={`cr-fee-option${registrationTier === 'base' ? ' selected' : ''}`}>
+            <input type="radio" name="registrationTier" checked={registrationTier === 'base'}
+              onChange={() => setRegistrationTier('base')} />
             <span className="cr-fee-option-title">Conference Registration Only</span>
             <span className="cr-fee-option-amount">₹{config?.feeBase ?? '—'}</span>
           </label>
-          <label className={`cr-fee-option${needsAccommodation ? ' selected' : ''}`}>
-            <input type="radio" name="accommodation" checked={needsAccommodation}
-              onChange={() => setNeedsAccommodation(true)} />
+          <label className={`cr-fee-option${registrationTier === 'fooding' ? ' selected' : ''}`}>
+            <input type="radio" name="registrationTier" checked={registrationTier === 'fooding'}
+              onChange={() => setRegistrationTier('fooding')} />
+            <span className="cr-fee-option-title">Conference Registration + Fooding</span>
+            <span className="cr-fee-option-amount">₹{config?.feeFooding ?? '—'}</span>
+          </label>
+          <label className={`cr-fee-option${registrationTier === 'accommodation' ? ' selected' : ''}`}>
+            <input type="radio" name="registrationTier" checked={registrationTier === 'accommodation'}
+              onChange={() => setRegistrationTier('accommodation')} />
             <span className="cr-fee-option-title">Conference Registration + Accommodation & Fooding</span>
             <span className="cr-fee-option-amount">₹{config?.feeWithAccommodation ?? '—'}</span>
           </label>
@@ -795,8 +807,8 @@ function PendingScreen({ confReg }) {
           <strong className="cr-mono">{confReg.transactionId || '—'}</strong>
         </div>
         <div className="cr-status-row">
-          <span>Accommodation</span>
-          <strong>{confReg.needsAccommodation ? 'Yes' : 'No'}</strong>
+          <span>Registration Type</span>
+          <strong>{TIER_LABELS[confReg.registrationTier] || (confReg.needsAccommodation ? 'Registration + Accommodation & Fooding' : 'Registration Only')}</strong>
         </div>
         <div className="cr-status-row">
           <span>Registration Fee</span>
@@ -830,8 +842,8 @@ function ApprovedScreen({ confReg }) {
           <strong className="cr-mono">{confReg.referenceNumber || '—'}</strong>
         </div>
         <div className="cr-status-row">
-          <span>Accommodation</span>
-          <strong>{confReg.needsAccommodation ? 'Yes' : 'No'}</strong>
+          <span>Registration Type</span>
+          <strong>{TIER_LABELS[confReg.registrationTier] || (confReg.needsAccommodation ? 'Registration + Accommodation & Fooding' : 'Registration Only')}</strong>
         </div>
         <div className="cr-status-row">
           <span>Approved On</span>
@@ -872,7 +884,11 @@ export default function ConferenceRegistration() {
   const [idCardFile, setIdCardFile] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
   const [transactionId, setTxId] = useState(() => sessionStorage.getItem('cr_txId') || '');
-  const [needsAccommodation, setNeedsAccommodation] = useState(() => sessionStorage.getItem('cr_accommodation') === 'true');
+  const [registrationTier, setRegistrationTier] = useState(() => {
+    const saved = sessionStorage.getItem('cr_tier');
+    if (saved) return saved;
+    return sessionStorage.getItem('cr_accommodation') === 'true' ? 'accommodation' : 'base';
+  });
   const [screenshotFile, setShot] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitErr] = useState('');
@@ -933,8 +949,8 @@ export default function ConferenceRegistration() {
   }, [transactionId]);
 
   useEffect(() => {
-    sessionStorage.setItem('cr_accommodation', String(needsAccommodation));
-  }, [needsAccommodation]);
+    sessionStorage.setItem('cr_tier', registrationTier);
+  }, [registrationTier]);
 
   /* Scroll to top on stage change */
   useEffect(() => {
@@ -1012,7 +1028,7 @@ export default function ConferenceRegistration() {
       if (form.merchSize) fd.append('merchSize', form.merchSize);
       /* Payment */
       fd.append('transactionId', transactionId.trim());
-      fd.append('needsAccommodation', String(needsAccommodation));
+      fd.append('registrationTier', registrationTier);
       fd.append('screenshot', screenshotFile);
       /* ID card (optional on re-submission) */
       if (idCardFile) fd.append('universityIdCard', idCardFile);
@@ -1023,6 +1039,7 @@ export default function ConferenceRegistration() {
       sessionStorage.removeItem('cr_stage');
       sessionStorage.removeItem('cr_form');
       sessionStorage.removeItem('cr_txId');
+      sessionStorage.removeItem('cr_tier');
       sessionStorage.removeItem('cr_accommodation');
       setConfReg(res.data);
       setStage('success');
@@ -1077,7 +1094,7 @@ export default function ConferenceRegistration() {
         {stage === 'payment' && (
           <PaymentStage
             config={config}
-            needsAccommodation={needsAccommodation} setNeedsAccommodation={setNeedsAccommodation}
+            registrationTier={registrationTier} setRegistrationTier={setRegistrationTier}
             transactionId={transactionId} setTransactionId={setTxId}
             screenshotFile={screenshotFile} setScreenshotFile={setShot}
             errors={errors} setErrors={setErrors}

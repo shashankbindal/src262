@@ -18,6 +18,27 @@ const EVENT_STATUS_TABS = [
   { id: 'completed',          label: 'Completed' },
 ];
 
+/* ── Conference registration tier labels ── */
+const TIER_LABELS = {
+  base: 'Registration Only',
+  fooding: 'Registration + Fooding',
+  accommodation: 'Registration + Accommodation & Fooding',
+};
+
+function tierLabel(reg) {
+  return TIER_LABELS[reg?.registrationTier] || (reg?.needsAccommodation ? TIER_LABELS.accommodation : TIER_LABELS.base);
+}
+
+const TIER_LABELS_SHORT = {
+  base: 'Registration Only',
+  fooding: 'Fooding',
+  accommodation: 'Accommodation',
+};
+
+function tierLabelShort(reg) {
+  return TIER_LABELS_SHORT[reg?.registrationTier] || (reg?.needsAccommodation ? TIER_LABELS_SHORT.accommodation : TIER_LABELS_SHORT.base);
+}
+
 /* ══════════════════════════════════════ CONFERENCE REGISTRATION COMPONENTS */
 
 /* ── Conf Reg: Reject Modal ── */
@@ -169,7 +190,7 @@ function ConfDetailModal({ confRegId, onClose }) {
               <Row label="State" value={u.state} />
               <Row label="Country" value={u.country} />
               <Row label="Merch Size" value={u.merchSize} />
-              <Row label="Accommodation" value={detail.needsAccommodation ? 'Yes' : 'No'} />
+              <Row label="Registration Type" value={tierLabel(detail)} />
               <Row label="Registration Fee" value={`₹${detail.registrationFee ?? '—'}`} />
               <Row label="Transaction ID" value={detail.transactionId} />
               <Row label="Status" value={detail.status} />
@@ -237,7 +258,7 @@ function ConfRegRow({ confReg, onRefresh }) {
           {confReg.transactionId || '—'}
         </td>
         <td>{confReg.srcId ? <strong style={{ color: 'var(--primary)' }}>{confReg.srcId}</strong> : '—'}</td>
-        <td>{confReg.needsAccommodation ? 'Yes' : 'No'}</td>
+        <td>{tierLabelShort(confReg)}</td>
         <td>₹{confReg.registrationFee ?? '—'}</td>
         <td>{new Date(confReg.createdAt).toLocaleDateString('en-IN')}</td>
         <td>
@@ -349,7 +370,7 @@ function ConfRegSection({ counts }) {
                 <th>College</th>
                 <th>Transaction ID</th>
                 <th>SRC ID</th>
-                <th>Accommodation</th>
+                <th>Registration Type</th>
                 <th>Fee Paid</th>
                 <th>Submitted</th>
                 <th>Actions</th>

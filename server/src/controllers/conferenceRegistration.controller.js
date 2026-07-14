@@ -39,7 +39,7 @@ const submitConferenceRegistration = asyncHandler(async (req, res) => {
     studentChapterName, facultyAdvisorName, facultyAdvisorEmail,
     idType, idNumber, aicheId,
     city, state, country,
-    transactionId, needsAccommodation, merchSize,
+    transactionId, registrationTier, merchSize,
   } = req.body;
 
   const screenshotUpload = await cloudinaryService.uploadFile(
@@ -77,7 +77,7 @@ const submitConferenceRegistration = asyncHandler(async (req, res) => {
     photoFileUrl: photoUpload?.secure_url || null,
     photoFileKey: photoUpload?.public_id   || null,
     transactionId,
-    needsAccommodation,
+    registrationTier,
     merchSize,
     screenshotUrl: screenshotUpload.secure_url,
     screenshotKey: screenshotUpload.public_id,

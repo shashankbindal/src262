@@ -33,12 +33,18 @@ async function submitConferenceRegistration(userId, {
   /* Conference pass photo */
   photoFileUrl, photoFileKey,
   /* Payment */
-  transactionId, screenshotUrl, screenshotKey, needsAccommodation,
+  transactionId, screenshotUrl, screenshotKey, registrationTier,
   /* Merch */
   merchSize,
 }) {
-  const accommodation = needsAccommodation === true || needsAccommodation === 'true';
-  const registrationFee = accommodation ? conferenceConfig.feeWithAccommodation : conferenceConfig.feeBase;
+  const tier = ['base', 'fooding', 'accommodation'].includes(registrationTier) ? registrationTier : 'base';
+  const accommodation = tier === 'accommodation';
+  const FEE_BY_TIER = {
+    base:          conferenceConfig.feeBase,
+    fooding:       conferenceConfig.feeFooding,
+    accommodation: conferenceConfig.feeWithAccommodation,
+  };
+  const registrationFee = FEE_BY_TIER[tier];
 
   const user = await User.findById(userId);
   if (!user) throw ApiError.notFound('User not found');
@@ -106,6 +112,7 @@ async function submitConferenceRegistration(userId, {
     existing.paymentScreenshotKey  = screenshotKey;
     existing.transactionId         = transactionId;
     existing.paymentTimestamp      = new Date();
+    existing.registrationTier      = tier;
     existing.needsAccommodation    = accommodation;
     existing.registrationFee       = registrationFee;
     existing.qrVersion             = conferenceConfig.qrVersion;
@@ -128,6 +135,7 @@ async function submitConferenceRegistration(userId, {
     paymentScreenshotUrl: screenshotUrl,
     paymentScreenshotKey: screenshotKey,
     paymentTimestamp:     new Date(),
+    registrationTier:     tier,
     needsAccommodation:   accommodation,
     registrationFee,
     qrVersion:            conferenceConfig.qrVersion,
@@ -161,6 +169,7 @@ async function getMyConferenceRegistration(userId) {
 function getRegistrationConfig() {
   return {
     feeBase:                conferenceConfig.feeBase,
+    feeFooding:             conferenceConfig.feeFooding,
     feeWithAccommodation:   conferenceConfig.feeWithAccommodation,
     upiId:                  conferenceConfig.upiId,
     qrVersion:              conferenceConfig.qrVersion,
@@ -371,6 +380,7 @@ async function exportConferenceRegistrationsCSV(status) {
       state:               u.state || '',
       country:             u.country || '',
       merchSize:           u.merchSize || '',
+      registrationTier:    r.registrationTier || 'base',
       needsAccommodation:  r.needsAccommodation ? 'Yes' : 'No',
       registrationFee:     r.registrationFee ?? '',
       transactionId:       r.transactionId || '',
