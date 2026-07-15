@@ -1,6 +1,7 @@
 'use strict';
 const passport                = require('passport');
 const { Strategy: GoogleStrategy } = require('passport-google-oauth20');
+const validator                = require('validator');
 const User                    = require('../models/User');
 const { env }                 = require('./env');
 const logger                  = require('../utils/logger');
@@ -20,8 +21,12 @@ if (env.GOOGLE_OAUTH_ENABLED) {
       },
       async (_accessToken, _refreshToken, profile, done) => {
         try {
-          const email = profile.emails?.[0]?.value;
-          if (!email) return done(new Error('No email returned from Google'), null);
+          const rawEmail = profile.emails?.[0]?.value;
+          if (!rawEmail) return done(new Error('No email returned from Google'), null);
+          /* Match the same normalization applied at password signup (normalizeEmail
+           * strips Gmail dots/+tags), so a Google login can't create a duplicate
+           * account for someone who already registered with a dotted/tagged address. */
+          const email = validator.normalizeEmail(rawEmail) || rawEmail.toLowerCase();
 
           let user = await User.findOne({ $or: [{ googleId: profile.id }, { email }] });
 

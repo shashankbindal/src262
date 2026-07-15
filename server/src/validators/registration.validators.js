@@ -15,7 +15,8 @@ const createRegistrationValidator = [
     .isArray().withMessage('memberEmails must be an array of strings'),
 
   body('memberEmails.*')
-    .isEmail().withMessage('All member emails must be valid'),
+    .isEmail().withMessage('All member emails must be valid')
+    .normalizeEmail(),
 ];
 
 const updateRegistrationValidator = [
@@ -29,7 +30,8 @@ const updateRegistrationValidator = [
     .isArray().withMessage('memberEmails must be an array of strings'),
 
   body('memberEmails.*')
-    .isEmail().withMessage('All member emails must be valid'),
+    .isEmail().withMessage('All member emails must be valid')
+    .normalizeEmail(),
 ];
 
 const YEAR_OPTIONS = [
