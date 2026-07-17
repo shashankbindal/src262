@@ -77,7 +77,7 @@ export default function Registration() {
 
   /* Form state */
   const [teamName, setTeamName]         = useState(() => sessionStorage.getItem('er_teamName') || '');
-  const [memberEmails, setMemberEmails] = useState(() => {
+  const [memberSrcIds, setMemberSrcIds] = useState(() => {
     try {
       const saved = sessionStorage.getItem('er_members');
       if (saved) return JSON.parse(saved);
@@ -106,8 +106,8 @@ export default function Registration() {
     sessionStorage.setItem('er_teamName', teamName);
   }, [teamName]);
   useEffect(() => {
-    sessionStorage.setItem('er_members', JSON.stringify(memberEmails));
-  }, [memberEmails]);
+    sessionStorage.setItem('er_members', JSON.stringify(memberSrcIds));
+  }, [memberSrcIds]);
 
   /* Load events and config */
   useEffect(() => {
@@ -297,13 +297,13 @@ export default function Registration() {
   const maxMembers = (selectedEvent?.maxTeamSize || 4) - 1;
 
   const addMember = () => {
-    if (memberEmails.length < maxMembers) setMemberEmails([...memberEmails, '']);
+    if (memberSrcIds.length < maxMembers) setMemberSrcIds([...memberSrcIds, '']);
   };
-  const removeMember = (i) => setMemberEmails(memberEmails.filter((_, idx) => idx !== i));
+  const removeMember = (i) => setMemberSrcIds(memberSrcIds.filter((_, idx) => idx !== i));
   const updateMember = (i, val) => {
-    const arr = [...memberEmails];
+    const arr = [...memberSrcIds];
     arr[i] = val;
-    setMemberEmails(arr);
+    setMemberSrcIds(arr);
   };
 
   const submit = async (e) => {
@@ -317,13 +317,13 @@ export default function Registration() {
     }
 
     if (isTeam) {
-      const filled = memberEmails.filter((m) => m.trim());
+      const filled = memberSrcIds.filter((m) => m.trim());
       if (filled.length < minMembers) {
         setError(`Team must have at least ${minMembers} member(s) besides the leader.`);
         return;
       }
-      for (const em of filled) {
-        if (!/\S+@\S+\.\S+/.test(em)) { setError(`"${em}" is not a valid email.`); return; }
+      for (const id of filled) {
+        if (!id.trim() || id.trim().length > 50) { setError(`"${id}" is not a valid SRC ID.`); return; }
       }
     }
 
@@ -332,7 +332,7 @@ export default function Registration() {
       const body = {};
       if (isTeam) {
         body.teamName = teamName.trim() || undefined;
-        body.memberEmails = memberEmails.filter((m) => m.trim());
+        body.memberSrcIds = memberSrcIds.filter((m) => m.trim());
       }
 
       const res = await api.post(`/registrations/event/${selectedEvent._id}`, body);
@@ -418,19 +418,19 @@ export default function Registration() {
                   Team Members (min {minMembers}, max {maxMembers} besides you)
                 </label>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 10px', lineHeight: 1.5 }}>
-                  All members must have an account with an approved conference registration.
+                  Enter each teammate's SRC ID (shown on their dashboard). They must have an approved conference registration.
                 </p>
-                {memberEmails.map((email, i) => (
+                {memberSrcIds.map((srcId, i) => (
                   <div key={i} style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
                     <input
                       className="auth-input"
-                      type="email"
-                      placeholder={`Member ${i + 1} email`}
-                      value={email}
+                      type="text"
+                      placeholder={`Member ${i + 1} SRC ID`}
+                      value={srcId}
                       onChange={(e) => updateMember(i, e.target.value)}
-                      style={{ flex: 1 }}
+                      style={{ flex: 1, textTransform: 'uppercase' }}
                     />
-                    {memberEmails.length > 1 && (
+                    {memberSrcIds.length > 1 && (
                       <button
                         type="button"
                         className="reg-remove-btn"
@@ -440,7 +440,7 @@ export default function Registration() {
                     )}
                   </div>
                 ))}
-                {memberEmails.length < maxMembers && (
+                {memberSrcIds.length < maxMembers && (
                   <button type="button" className="reg-add-member-btn" onClick={addMember}>
                     + Add Member
                   </button>

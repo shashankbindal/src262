@@ -10,13 +10,15 @@ const createRegistrationValidator = [
     .trim()
     .isLength({ max: 80 }).withMessage('Team name cannot exceed 80 characters'),
 
-  body('memberEmails')
+  body('memberSrcIds')
     .optional()
-    .isArray().withMessage('memberEmails must be an array of strings'),
+    .isArray().withMessage('memberSrcIds must be an array of strings'),
 
-  body('memberEmails.*')
-    .isEmail().withMessage('All member emails must be valid')
-    .normalizeEmail(),
+  body('memberSrcIds.*')
+    .trim()
+    .notEmpty().withMessage('All member SRC IDs are required')
+    .isLength({ max: 50 }).withMessage('SRC ID too long')
+    .customSanitizer((val) => val.toUpperCase()),
 ];
 
 const updateRegistrationValidator = [
@@ -25,13 +27,15 @@ const updateRegistrationValidator = [
     .trim()
     .isLength({ max: 80 }).withMessage('Team name cannot exceed 80 characters'),
 
-  body('memberEmails')
+  body('memberSrcIds')
     .optional()
-    .isArray().withMessage('memberEmails must be an array of strings'),
+    .isArray().withMessage('memberSrcIds must be an array of strings'),
 
-  body('memberEmails.*')
-    .isEmail().withMessage('All member emails must be valid')
-    .normalizeEmail(),
+  body('memberSrcIds.*')
+    .trim()
+    .notEmpty().withMessage('All member SRC IDs are required')
+    .isLength({ max: 50 }).withMessage('SRC ID too long')
+    .customSanitizer((val) => val.toUpperCase()),
 ];
 
 const YEAR_OPTIONS = [

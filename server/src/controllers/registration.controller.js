@@ -5,12 +5,12 @@ const registrationService = require('../services/registration.service');
 
 const createRegistration = asyncHandler(async (req, res) => {
   const { eventId } = req.params;
-  const { teamName, memberEmails } = req.body;
+  const { teamName, memberSrcIds } = req.body;
 
   const registration = await registrationService.createRegistration(
     req.user._id,
     eventId,
-    { teamName, memberEmails }
+    { teamName, memberSrcIds }
   );
 
   ApiResponse.created(res, 'Registration created successfully', registration);
@@ -18,12 +18,12 @@ const createRegistration = asyncHandler(async (req, res) => {
 
 const updateRegistration = asyncHandler(async (req, res) => {
   const { registrationId } = req.params;
-  const { teamName, memberEmails } = req.body;
+  const { teamName, memberSrcIds } = req.body;
 
   const registration = await registrationService.updateRegistration(
     req.user._id,
     registrationId,
-    { teamName, memberEmails }
+    { teamName, memberSrcIds }
   );
 
   ApiResponse.ok(res, 'Registration updated successfully', registration);

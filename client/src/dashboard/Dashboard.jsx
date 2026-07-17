@@ -289,8 +289,8 @@ function SubmissionUploadForm({ registrationId, onDone }) {
 /* ═══════════════════════════════════════════════════════════ EDIT FORM */
 function EditRegistrationForm({ reg, onDone }) {
   const [teamName, setTeamName] = useState(reg.teamId?.teamName || '');
-  const [emails, setEmails] = useState(
-    reg.teamId?.members?.map(m => m.email).join(', ') || ''
+  const [srcIds, setSrcIds] = useState(
+    reg.teamId?.members?.map(m => m.srcId).join(', ') || ''
   );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -300,13 +300,13 @@ function EditRegistrationForm({ reg, onDone }) {
     setBusy(true);
     setError('');
 
-    const memberEmails = emails
+    const memberSrcIds = srcIds
       .split(',')
-      .map((e) => e.trim())
+      .map((s) => s.trim())
       .filter(Boolean);
 
     try {
-      await api.patch(`/registrations/${reg._id}`, { teamName, memberEmails });
+      await api.patch(`/registrations/${reg._id}`, { teamName, memberSrcIds });
       onDone();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Update failed.');
@@ -328,12 +328,13 @@ function EditRegistrationForm({ reg, onDone }) {
         />
       </div>
       <div>
-        <label>Member Emails (comma-separated)</label>
+        <label>Member SRC IDs (comma-separated)</label>
         <input
           type="text"
-          placeholder="member1@example.com, member2@example.com"
-          value={emails}
-          onChange={(e) => setEmails(e.target.value)}
+          placeholder="SRC1234, SRC5678"
+          value={srcIds}
+          onChange={(e) => setSrcIds(e.target.value)}
+          style={{ textTransform: 'uppercase' }}
         />
       </div>
       <button className="reg-action-btn primary" type="submit" disabled={busy}>
