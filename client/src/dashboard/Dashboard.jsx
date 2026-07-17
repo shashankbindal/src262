@@ -289,6 +289,9 @@ function SubmissionUploadForm({ registrationId, onDone }) {
 /* ═══════════════════════════════════════════════════════════ EDIT FORM */
 function EditRegistrationForm({ reg, onDone }) {
   const [teamName, setTeamName] = useState(reg.teamId?.teamName || '');
+  const [names, setNames] = useState(
+    reg.teamId?.members?.map(m => m.name).join(', ') || ''
+  );
   const [srcIds, setSrcIds] = useState(
     reg.teamId?.members?.map(m => m.srcId).join(', ') || ''
   );
@@ -297,8 +300,14 @@ function EditRegistrationForm({ reg, onDone }) {
 
   const submit = async (e) => {
     e.preventDefault();
-    setBusy(true);
     setError('');
+
+    if (!teamName.trim()) {
+      setError('Team name is required.');
+      return;
+    }
+
+    setBusy(true);
 
     const memberSrcIds = srcIds
       .split(',')
@@ -325,10 +334,20 @@ function EditRegistrationForm({ reg, onDone }) {
           placeholder="Your team name"
           value={teamName}
           onChange={(e) => setTeamName(e.target.value)}
+          required
         />
       </div>
       <div>
-        <label>Member SRC IDs (comma-separated)</label>
+        <label>Member Names (comma-separated, for your reference)</label>
+        <input
+          type="text"
+          placeholder="Priya Sharma, Rahul Verma"
+          value={names}
+          onChange={(e) => setNames(e.target.value)}
+        />
+      </div>
+      <div>
+        <label>Member SRC IDs (comma-separated, same order as names)</label>
         <input
           type="text"
           placeholder="SRC1234, SRC5678"

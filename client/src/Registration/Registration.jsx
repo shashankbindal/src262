@@ -77,12 +77,18 @@ export default function Registration() {
 
   /* Form state */
   const [teamName, setTeamName]         = useState(() => sessionStorage.getItem('er_teamName') || '');
-  const [memberSrcIds, setMemberSrcIds] = useState(() => {
+  const [members, setMembers] = useState(() => {
     try {
       const saved = sessionStorage.getItem('er_members');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.every((m) => typeof m === 'string')) {
+          return parsed.map((srcId) => ({ name: '', srcId }));
+        }
+        return parsed;
+      }
     } catch (e) {}
-    return [''];
+    return [{ name: '', srcId: '' }];
   });
 
   /* Persist state.
@@ -106,8 +112,8 @@ export default function Registration() {
     sessionStorage.setItem('er_teamName', teamName);
   }, [teamName]);
   useEffect(() => {
-    sessionStorage.setItem('er_members', JSON.stringify(memberSrcIds));
-  }, [memberSrcIds]);
+    sessionStorage.setItem('er_members', JSON.stringify(members));
+  }, [members]);
 
   /* Load events and config */
   useEffect(() => {
@@ -297,13 +303,13 @@ export default function Registration() {
   const maxMembers = (selectedEvent?.maxTeamSize || 4) - 1;
 
   const addMember = () => {
-    if (memberSrcIds.length < maxMembers) setMemberSrcIds([...memberSrcIds, '']);
+    if (members.length < maxMembers) setMembers([...members, { name: '', srcId: '' }]);
   };
-  const removeMember = (i) => setMemberSrcIds(memberSrcIds.filter((_, idx) => idx !== i));
-  const updateMember = (i, val) => {
-    const arr = [...memberSrcIds];
-    arr[i] = val;
-    setMemberSrcIds(arr);
+  const removeMember = (i) => setMembers(members.filter((_, idx) => idx !== i));
+  const updateMember = (i, field, val) => {
+    const arr = [...members];
+    arr[i] = { ...arr[i], [field]: val };
+    setMembers(arr);
   };
 
   const submit = async (e) => {
@@ -317,13 +323,18 @@ export default function Registration() {
     }
 
     if (isTeam) {
-      const filled = memberSrcIds.filter((m) => m.trim());
+      if (!teamName.trim()) {
+        setError('Team name is required.');
+        return;
+      }
+      const filled = members.filter((m) => m.srcId.trim() || m.name.trim());
       if (filled.length < minMembers) {
         setError(`Team must have at least ${minMembers} member(s) besides the leader.`);
         return;
       }
-      for (const id of filled) {
-        if (!id.trim() || id.trim().length > 50) { setError(`"${id}" is not a valid SRC ID.`); return; }
+      for (const m of filled) {
+        if (!m.name.trim()) { setError('Please enter a name for each team member.'); return; }
+        if (!m.srcId.trim() || m.srcId.trim().length > 50) { setError(`"${m.srcId}" is not a valid SRC ID.`); return; }
       }
     }
 
@@ -331,8 +342,8 @@ export default function Registration() {
     try {
       const body = {};
       if (isTeam) {
-        body.teamName = teamName.trim() || undefined;
-        body.memberSrcIds = memberSrcIds.filter((m) => m.trim());
+        body.teamName = teamName.trim();
+        body.memberSrcIds = members.filter((m) => m.srcId.trim()).map((m) => m.srcId.trim());
       }
 
       const res = await api.post(`/registrations/event/${selectedEvent._id}`, body);
@@ -404,12 +415,13 @@ export default function Registration() {
             <div className="reg-section">
               <h3 className="reg-section-title">Team Details</h3>
               <div className="auth-field">
-                <label className="auth-label">Team Name (optional)</label>
+                <label className="auth-label">Team Name</label>
                 <input
                   className="auth-input"
                   placeholder={`${user?.name}'s Team`}
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
+                  required
                 />
               </div>
 
@@ -418,19 +430,27 @@ export default function Registration() {
                   Team Members (min {minMembers}, max {maxMembers} besides you)
                 </label>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 10px', lineHeight: 1.5 }}>
-                  Enter each teammate's SRC ID (shown on their dashboard). They must have an approved conference registration.
+                  Enter each teammate's name and SRC ID (shown on their dashboard). The SRC ID must belong to an approved conference registration — the name is just for your reference and isn't verified.
                 </p>
-                {memberSrcIds.map((srcId, i) => (
+                {members.map((m, i) => (
                   <div key={i} style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
                     <input
                       className="auth-input"
                       type="text"
+                      placeholder={`Member ${i + 1} name`}
+                      value={m.name}
+                      onChange={(e) => updateMember(i, 'name', e.target.value)}
+                      style={{ flex: 1 }}
+                    />
+                    <input
+                      className="auth-input"
+                      type="text"
                       placeholder={`Member ${i + 1} SRC ID`}
-                      value={srcId}
-                      onChange={(e) => updateMember(i, e.target.value)}
+                      value={m.srcId}
+                      onChange={(e) => updateMember(i, 'srcId', e.target.value)}
                       style={{ flex: 1, textTransform: 'uppercase' }}
                     />
-                    {memberSrcIds.length > 1 && (
+                    {members.length > 1 && (
                       <button
                         type="button"
                         className="reg-remove-btn"
@@ -440,7 +460,7 @@ export default function Registration() {
                     )}
                   </div>
                 ))}
-                {memberSrcIds.length < maxMembers && (
+                {members.length < maxMembers && (
                   <button type="button" className="reg-add-member-btn" onClick={addMember}>
                     + Add Member
                   </button>

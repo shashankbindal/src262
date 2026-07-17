@@ -48,6 +48,14 @@ async function createRegistration(userId, eventId, { teamName, memberSrcIds = []
   const existing = await Registration.findOne({ userId, eventId });
   if (existing) throw ApiError.conflict('You have already registered for this event');
 
+  /* A user already added as a member of someone else's team for this event
+   * (who therefore has no Registration row of their own yet) must not also
+   * be able to register solo or lead a separate team for the same event. */
+  const existingTeamMembership = await Team.findOne({ eventId, 'members.userId': userId });
+  if (existingTeamMembership) {
+    throw ApiError.conflict('You are already part of another team for this event');
+  }
+
   const user = await User.findById(userId).lean();
   if (!user) throw ApiError.notFound('User not found');
 
@@ -59,6 +67,9 @@ async function createRegistration(userId, eventId, { teamName, memberSrcIds = []
   let teamDoc = null;
 
   if (event.type === 'team') {
+    if (!teamName || !teamName.trim()) {
+      throw ApiError.badRequest('Team name is required');
+    }
     if (event.minTeamSize && memberSrcIds.length + 1 < event.minTeamSize) {
       throw ApiError.badRequest(`Team must have at least ${event.minTeamSize} members`);
     }
@@ -96,13 +107,14 @@ async function createRegistration(userId, eventId, { teamName, memberSrcIds = []
         email:   member.email,
         srcId,
         college: member.college || '',
+        phone:   member.phone   || '',
       };
     }));
 
     teamDoc = await Team.create({
       eventId,
       leaderId: userId,
-      teamName: teamName || `${user.name}'s Team`,
+      teamName: teamName.trim(),
       members,
     });
   }
@@ -151,6 +163,10 @@ async function updateRegistration(userId, registrationId, { teamName, memberSrcI
     throw ApiError.badRequest('Only team registrations can be edited');
   }
 
+  if (!teamName || !teamName.trim()) {
+    throw ApiError.badRequest('Team name is required');
+  }
+
   const leaderConfReg = await ConferenceRegistration.findOne({ userId: reg.userId }).lean();
 
   if (event.minTeamSize && memberSrcIds.length + 1 < event.minTeamSize) {
@@ -195,11 +211,12 @@ async function updateRegistration(userId, registrationId, { teamName, memberSrcI
       email:   member.email,
       srcId,
       college: member.college || '',
+      phone:   member.phone   || '',
     };
   }));
 
   const teamDoc = await Team.findById(reg.teamId._id);
-  if (teamName) teamDoc.teamName = teamName;
+  teamDoc.teamName = teamName.trim();
   teamDoc.members = members;
   await teamDoc.save();
 

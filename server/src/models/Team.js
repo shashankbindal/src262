@@ -8,6 +8,7 @@ const memberSchema = new mongoose.Schema(
     email:   { type: String, required: true, lowercase: true },
     srcId:   { type: String, default: '' },
     college: { type: String, default: '' },
+    phone:   { type: String, default: '' },
   },
   { _id: false }
 );
