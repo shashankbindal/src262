@@ -1,6 +1,39 @@
 'use strict';
+const fs   = require('fs');
+const path = require('path');
 const PDFDocument = require('pdfkit');
-const logger = require('../utils/logger');
+const QRCode      = require('qrcode');
+const logger      = require('../utils/logger');
+
+/* The ID-card template (591 × 1004 px). All overlay coordinates below are in
+ * template pixels with a top-left origin; the PDF page is created at the same
+ * pixel dimensions so 1pt === 1px and coordinates map 1:1 onto the artwork. */
+const TEMPLATE_PATH = path.join(__dirname, '../assets/idcard.png');
+const CARD_W = 591;
+const CARD_H = 1004;
+
+/* Where each dynamic element sits on the template. The template already prints
+ * the "SRC ID:" and "INSTITUTE NAME:" labels, so only the values are drawn —
+ * positioned just after each printed label. If the artwork changes, adjust
+ * these constants only. */
+const LAYOUT = {
+  photo:     { cx: 294, cy: 288, r: 156 },
+  name:      { y: 478, size: 50, color: '#E6CFA7' },
+  qr:        { x: 392, y: 556, size: 156 },
+  srcId:     { x: 208, y: 748, size: 30, color: '#E6CFA7' },
+  institute: { x: 224, y: 806, w: 352, size: 15, color: '#E6CFA7' },
+};
+
+/* What the QR encodes — a verification URL keyed by SRC ID, so the code on the
+ * pass can be scanned to confirm the registration is genuine. */
+const VERIFY_BASE_URL = process.env.ID_CARD_VERIFY_URL || 'https://viplavsrc.com/verify';
+
+/* Template is read once and reused for every card. */
+let templateBuffer = null;
+function getTemplate() {
+  if (!templateBuffer) templateBuffer = fs.readFileSync(TEMPLATE_PATH);
+  return templateBuffer;
+}
 
 /**
  * Forces Cloudinary to deliver the image as a JPEG regardless of the stored
@@ -17,52 +50,62 @@ async function fetchImageBuffer(url) {
 }
 
 /**
- * Generates a conference ID card as a PDF buffer.
+ * Generates the conference ID card as a PDF buffer: the branded template with
+ * the participant's photo, name, SRC ID, institute and a verification QR code
+ * composited on top.
  */
 async function generateIdCardPdf({ name, srcId, college, photoUrl }) {
-  const photoBuffer = await fetchImageBuffer(photoUrl);
+  const [photoBuffer, qrBuffer] = await Promise.all([
+    fetchImageBuffer(photoUrl),
+    QRCode.toBuffer(`${VERIFY_BASE_URL}/${encodeURIComponent(srcId || '')}`, {
+      margin: 1,
+      width: 320,
+      color: { dark: '#1A2332', light: '#FFFFFF' },
+    }),
+  ]);
 
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ size: [340, 500], margin: 0 });
+    const doc = new PDFDocument({ size: [CARD_W, CARD_H], margin: 0 });
     const chunks = [];
     doc.on('data', (chunk) => chunks.push(chunk));
     doc.on('end', () => resolve(Buffer.concat(chunks)));
     doc.on('error', reject);
 
-    /* Background */
-    doc.rect(0, 0, 340, 500).fill('#0F1319');
+    /* Branded background */
+    doc.image(getTemplate(), 0, 0, { width: CARD_W, height: CARD_H });
 
-    /* Header band */
-    doc.rect(0, 0, 340, 90).fill('#1A2332');
-    doc.fillColor('#F5DFB3').fontSize(19).font('Helvetica-Bold')
-      .text("VIPLAV '26", 0, 24, { align: 'center', width: 340 });
-    doc.fillColor('#9CA3AF').fontSize(9).font('Helvetica')
-      .text('AIChE India SRC 2026 — Conference Pass', 0, 52, { align: 'center', width: 340 });
-
-    /* Photo */
-    const photoSize = 140;
-    const photoX = (340 - photoSize) / 2;
-    doc.image(photoBuffer, photoX, 115, { width: photoSize, height: photoSize, fit: [photoSize, photoSize] });
-    doc.rect(photoX, 115, photoSize, photoSize).lineWidth(2).stroke('#F5DFB3');
+    /* Participant photo — cover-fit into the circular window, then framed */
+    const p = LAYOUT.photo;
+    doc.save();
+    doc.circle(p.cx, p.cy, p.r).clip();
+    doc.image(photoBuffer, p.cx - p.r, p.cy - p.r, {
+      cover: [p.r * 2, p.r * 2],
+      align: 'center',
+      valign: 'center',
+    });
+    doc.restore();
+    doc.circle(p.cx, p.cy, p.r).lineWidth(4).stroke('#E6CFA7');
 
     /* Name */
-    doc.fillColor('#F9FAFB').fontSize(16).font('Helvetica-Bold')
-      .text(name, 20, 278, { align: 'center', width: 300 });
+    doc.fillColor(LAYOUT.name.color).font('Helvetica-Bold').fontSize(LAYOUT.name.size)
+      .text(name || '', 0, LAYOUT.name.y, { align: 'center', width: CARD_W, lineBreak: false });
 
-    /* SRC ID */
-    doc.fillColor('#F5DFB3').fontSize(13).font('Helvetica-Bold')
-      .text(srcId, 20, 302, { align: 'center', width: 300 });
+    /* Verification QR — white backing so it stays scannable on any artwork */
+    const q = LAYOUT.qr;
+    doc.rect(q.x - 6, q.y - 6, q.size + 12, q.size + 12).fill('#FFFFFF');
+    doc.image(qrBuffer, q.x, q.y, { width: q.size, height: q.size });
 
-    /* College */
+    /* SRC ID value (the "SRC ID:" label is printed on the template) */
+    doc.fillColor(LAYOUT.srcId.color).font('Helvetica-Bold').fontSize(LAYOUT.srcId.size)
+      .text(srcId || '', LAYOUT.srcId.x, LAYOUT.srcId.y, { lineBreak: false });
+
+    /* Institute value — flows after the printed "INSTITUTE NAME:" label,
+     * wrapping onto further lines if long */
     if (college) {
-      doc.fillColor('#D1D5DB').fontSize(10).font('Helvetica')
-        .text(college, 30, 328, { align: 'center', width: 280 });
+      const i = LAYOUT.institute;
+      doc.fillColor(i.color).font('Helvetica-Bold').fontSize(i.size)
+        .text(college, i.x, i.y, { width: i.w });
     }
-
-    /* Footer */
-    doc.fillColor('#6B7280').fontSize(8).font('Helvetica')
-      .text('Rajiv Gandhi Institute of Petroleum Technology, Jais, Uttar Pradesh', 20, 460, { align: 'center', width: 300 })
-      .text('21–23 August 2026', 20, 474, { align: 'center', width: 300 });
 
     doc.end();
   });
