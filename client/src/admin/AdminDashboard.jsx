@@ -482,7 +482,9 @@ function RegRow({ reg, onRefresh }) {
             <td>{m.email || '—'}</td>
             <td>{m.college || '—'}</td>
             <td>—</td>
-            <td>—</td>
+            <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--primary)', fontWeight: '600' }}>
+              {m.srcId || '—'}
+            </td>
             <td>—</td>
             <td>—</td>
           </tr>

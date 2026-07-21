@@ -38,7 +38,7 @@ async function assertConferenceApproved(userId) {
  * Creates a registration for a solo or team event.
  * Requires an approved conference registration for the leader and all members.
  */
-async function createRegistration(userId, eventId, { teamName, memberEmails = [] } = {}) {
+async function createRegistration(userId, eventId, { teamName, memberSrcIds = [] } = {}) {
   const event = await Event.findById(eventId);
   if (!event)                 throw ApiError.notFound('Event not found');
   if (!event.registrationEnabled) throw ApiError.badRequest('Registrations are closed for this event');
@@ -47,6 +47,14 @@ async function createRegistration(userId, eventId, { teamName, memberEmails = []
   /* Prevent duplicate registration */
   const existing = await Registration.findOne({ userId, eventId });
   if (existing) throw ApiError.conflict('You have already registered for this event');
+
+  /* A user already added as a member of someone else's team for this event
+   * (who therefore has no Registration row of their own yet) must not also
+   * be able to register solo or lead a separate team for the same event. */
+  const existingTeamMembership = await Team.findOne({ eventId, 'members.userId': userId });
+  if (existingTeamMembership) {
+    throw ApiError.conflict('You are already part of another team for this event');
+  }
 
   const user = await User.findById(userId).lean();
   if (!user) throw ApiError.notFound('User not found');
@@ -59,51 +67,54 @@ async function createRegistration(userId, eventId, { teamName, memberEmails = []
   let teamDoc = null;
 
   if (event.type === 'team') {
-    if (event.minTeamSize && memberEmails.length + 1 < event.minTeamSize) {
+    if (!teamName || !teamName.trim()) {
+      throw ApiError.badRequest('Team name is required');
+    }
+    if (event.minTeamSize && memberSrcIds.length + 1 < event.minTeamSize) {
       throw ApiError.badRequest(`Team must have at least ${event.minTeamSize} members`);
     }
-    if (event.maxTeamSize && memberEmails.length + 1 > event.maxTeamSize) {
+    if (event.maxTeamSize && memberSrcIds.length + 1 > event.maxTeamSize) {
       throw ApiError.badRequest(`Team cannot exceed ${event.maxTeamSize} members`);
     }
 
     /* Validated concurrently — each member's checks are independent, so
      * running them in parallel turns N*4 sequential round-trips into ~2. */
-    const members = await Promise.all(memberEmails.map(async (email) => {
-      if (email.toLowerCase() === user.email.toLowerCase()) {
+    const members = await Promise.all(memberSrcIds.map(async (rawSrcId) => {
+      const srcId = rawSrcId.trim().toUpperCase();
+      if (srcId === leaderConfReg.srcId) {
         throw ApiError.badRequest('You cannot add yourself as a team member');
       }
 
-      const member = await User.findOne({ email: email.toLowerCase() }).lean();
-      if (!member) {
-        throw ApiError.badRequest(`No account found for ${email}. All members must be registered.`);
-      }
-
-      const [memberConfReg, memberReg, inAnotherTeam] = await Promise.all([
-        ConferenceRegistration.findOne({ userId: member._id }).lean(),
-        Registration.findOne({ userId: member._id, eventId }),
-        Team.findOne({ eventId, 'members.userId': member._id }),
-      ]);
-
-      if (!memberConfReg || memberConfReg.status !== 'approved' || !memberConfReg.srcId) {
+      const memberConfReg = await ConferenceRegistration.findOne({ srcId }).lean();
+      if (!memberConfReg || memberConfReg.status !== 'approved') {
         throw ApiError.badRequest(
-          `${email} does not have an approved Conference Registration. All team members must be approved.`
+          `SRC ID ${srcId} does not have an approved Conference Registration. All team members must be approved.`
         );
       }
-      if (memberReg) throw ApiError.conflict(`${email} is already registered for this event`);
-      if (inAnotherTeam) throw ApiError.conflict(`${email} is already in a team for this event`);
+
+      const [member, memberReg, inAnotherTeam] = await Promise.all([
+        User.findById(memberConfReg.userId).lean(),
+        Registration.findOne({ userId: memberConfReg.userId, eventId }),
+        Team.findOne({ eventId, 'members.userId': memberConfReg.userId }),
+      ]);
+
+      if (memberReg) throw ApiError.conflict(`SRC ID ${srcId} is already registered for this event`);
+      if (inAnotherTeam) throw ApiError.conflict(`SRC ID ${srcId} is already in a team for this event`);
 
       return {
         userId:  member._id,
         name:    member.name,
         email:   member.email,
+        srcId,
         college: member.college || '',
+        phone:   member.phone   || '',
       };
     }));
 
     teamDoc = await Team.create({
       eventId,
       leaderId: userId,
-      teamName: teamName || `${user.name}'s Team`,
+      teamName: teamName.trim(),
       members,
     });
   }
@@ -132,7 +143,7 @@ async function createRegistration(userId, eventId, { teamName, memberEmails = []
  * Updates a team registration (team name / members) before event starts.
  * Validates conference registration for all new members.
  */
-async function updateRegistration(userId, registrationId, { teamName, memberEmails = [] }) {
+async function updateRegistration(userId, registrationId, { teamName, memberSrcIds = [] }) {
   const teams   = await Team.find({ 'members.userId': userId }).select('_id').lean();
   const teamIds = teams.map(t => t._id);
 
@@ -152,56 +163,60 @@ async function updateRegistration(userId, registrationId, { teamName, memberEmai
     throw ApiError.badRequest('Only team registrations can be edited');
   }
 
-  const leaderUser = await User.findById(reg.userId).lean();
+  if (!teamName || !teamName.trim()) {
+    throw ApiError.badRequest('Team name is required');
+  }
 
-  if (event.minTeamSize && memberEmails.length + 1 < event.minTeamSize) {
+  const leaderConfReg = await ConferenceRegistration.findOne({ userId: reg.userId }).lean();
+
+  if (event.minTeamSize && memberSrcIds.length + 1 < event.minTeamSize) {
     throw ApiError.badRequest(`Team must have at least ${event.minTeamSize} members`);
   }
-  if (event.maxTeamSize && memberEmails.length + 1 > event.maxTeamSize) {
+  if (event.maxTeamSize && memberSrcIds.length + 1 > event.maxTeamSize) {
     throw ApiError.badRequest(`Team cannot exceed ${event.maxTeamSize} members`);
   }
 
   /* Validated concurrently — see createRegistration for why. */
-  const members = await Promise.all(memberEmails.map(async (email) => {
-    if (email.toLowerCase() === leaderUser.email.toLowerCase()) {
+  const members = await Promise.all(memberSrcIds.map(async (rawSrcId) => {
+    const srcId = rawSrcId.trim().toUpperCase();
+    if (srcId === leaderConfReg?.srcId) {
       throw ApiError.badRequest('The leader cannot be added to the members list');
     }
 
-    const member = await User.findOne({ email: email.toLowerCase() }).lean();
-    if (!member) throw ApiError.badRequest(`No account found for ${email}.`);
+    const memberConfReg = await ConferenceRegistration.findOne({ srcId }).lean();
+    if (!memberConfReg || memberConfReg.status !== 'approved') {
+      throw ApiError.badRequest(`SRC ID ${srcId} does not have an approved Conference Registration`);
+    }
 
-    const [memberConfReg, memberReg, inAnotherTeam] = await Promise.all([
-      ConferenceRegistration.findOne({ userId: member._id }).lean(),
-      Registration.findOne({ userId: member._id, eventId: event._id }),
+    const [member, memberReg, inAnotherTeam] = await Promise.all([
+      User.findById(memberConfReg.userId).lean(),
+      Registration.findOne({ userId: memberConfReg.userId, eventId: event._id }),
       Team.findOne({
         eventId: event._id,
-        'members.userId': member._id,
+        'members.userId': memberConfReg.userId,
         _id: { $ne: reg.teamId._id },
       }),
     ]);
 
-    if (!memberConfReg || memberConfReg.status !== 'approved' || !memberConfReg.srcId) {
-      throw ApiError.badRequest(
-        `${email} does not have an approved Conference Registration`
-      );
-    }
     if (memberReg && memberReg._id.toString() !== reg._id.toString()) {
-      throw ApiError.conflict(`${email} is already registered for this event`);
+      throw ApiError.conflict(`SRC ID ${srcId} is already registered for this event`);
     }
     if (inAnotherTeam) {
-      throw ApiError.conflict(`${email} is already in another team for this event`);
+      throw ApiError.conflict(`SRC ID ${srcId} is already in another team for this event`);
     }
 
     return {
       userId:  member._id,
       name:    member.name,
       email:   member.email,
+      srcId,
       college: member.college || '',
+      phone:   member.phone   || '',
     };
   }));
 
   const teamDoc = await Team.findById(reg.teamId._id);
-  if (teamName) teamDoc.teamName = teamName;
+  teamDoc.teamName = teamName.trim();
   teamDoc.members = members;
   await teamDoc.save();
 

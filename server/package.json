@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "seed:events": "node src/scripts/seedEvents.js"
+    "seed:events": "node src/scripts/seedEvents.js",
+    "backfill:team-contact": "node src/scripts/backfillTeamMemberContactInfo.js"
   },
   "engines": {
     "node": ">=18.0.0"

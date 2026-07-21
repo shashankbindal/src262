@@ -289,24 +289,33 @@ function SubmissionUploadForm({ registrationId, onDone }) {
 /* ═══════════════════════════════════════════════════════════ EDIT FORM */
 function EditRegistrationForm({ reg, onDone }) {
   const [teamName, setTeamName] = useState(reg.teamId?.teamName || '');
-  const [emails, setEmails] = useState(
-    reg.teamId?.members?.map(m => m.email).join(', ') || ''
+  const [names, setNames] = useState(
+    reg.teamId?.members?.map(m => m.name).join(', ') || ''
+  );
+  const [srcIds, setSrcIds] = useState(
+    reg.teamId?.members?.map(m => m.srcId).join(', ') || ''
   );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
   const submit = async (e) => {
     e.preventDefault();
-    setBusy(true);
     setError('');
 
-    const memberEmails = emails
+    if (!teamName.trim()) {
+      setError('Team name is required.');
+      return;
+    }
+
+    setBusy(true);
+
+    const memberSrcIds = srcIds
       .split(',')
-      .map((e) => e.trim())
+      .map((s) => s.trim())
       .filter(Boolean);
 
     try {
-      await api.patch(`/registrations/${reg._id}`, { teamName, memberEmails });
+      await api.patch(`/registrations/${reg._id}`, { teamName, memberSrcIds });
       onDone();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Update failed.');
@@ -325,15 +334,26 @@ function EditRegistrationForm({ reg, onDone }) {
           placeholder="Your team name"
           value={teamName}
           onChange={(e) => setTeamName(e.target.value)}
+          required
         />
       </div>
       <div>
-        <label>Member Emails (comma-separated)</label>
+        <label>Member Names (comma-separated, for your reference)</label>
         <input
           type="text"
-          placeholder="member1@example.com, member2@example.com"
-          value={emails}
-          onChange={(e) => setEmails(e.target.value)}
+          placeholder="Priya Sharma, Rahul Verma"
+          value={names}
+          onChange={(e) => setNames(e.target.value)}
+        />
+      </div>
+      <div>
+        <label>Member SRC IDs (comma-separated, same order as names)</label>
+        <input
+          type="text"
+          placeholder="SRC1234, SRC5678"
+          value={srcIds}
+          onChange={(e) => setSrcIds(e.target.value)}
+          style={{ textTransform: 'uppercase' }}
         />
       </div>
       <button className="reg-action-btn primary" type="submit" disabled={busy}>

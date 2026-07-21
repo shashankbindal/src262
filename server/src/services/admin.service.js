@@ -115,16 +115,34 @@ async function exportRegistrationsCSV(eventId, status) {
     .populate('teamId', 'teamName members')
     .lean();
 
-  const rows = regs.map((r) => ({
-    name:        r.participantSnapshot?.name    || r.userId?.name,
-    email:       r.participantSnapshot?.email   || r.userId?.email,
-    college:     r.participantSnapshot?.college || r.userId?.college,
-    phone:       r.participantSnapshot?.phone   || r.userId?.phone,
-    srcId:       r.srcId || '',
-    status:      r.status,
-    teamName:    r.teamId?.teamName || '',
-    registeredAt: r.createdAt,
-  }));
+  const rows = [];
+  for (const r of regs) {
+    rows.push({
+      name:        r.participantSnapshot?.name    || r.userId?.name,
+      email:       r.participantSnapshot?.email   || r.userId?.email,
+      college:     r.participantSnapshot?.college || r.userId?.college,
+      phone:       r.participantSnapshot?.phone   || r.userId?.phone,
+      srcId:       r.srcId || '',
+      role:        r.teamId ? 'Leader' : '',
+      status:      r.status,
+      teamName:    r.teamId?.teamName || '',
+      registeredAt: r.createdAt,
+    });
+
+    for (const m of r.teamId?.members || []) {
+      rows.push({
+        name:        m.name    || '',
+        email:       m.email   || '',
+        college:     m.college || '',
+        phone:       m.phone   || '',
+        srcId:       m.srcId   || '',
+        role:        'Member',
+        status:      r.status,
+        teamName:    r.teamId?.teamName || '',
+        registeredAt: r.createdAt,
+      });
+    }
+  }
 
   const parser = new Parser();
   return parser.parse(rows);
@@ -149,6 +167,7 @@ async function exportRegistrationsExcel(eventId, status) {
     { header: 'College',      key: 'college',       width: 30 },
     { header: 'Phone',        key: 'phone',         width: 15 },
     { header: 'SRC ID',       key: 'srcId',         width: 15 },
+    { header: 'Role',         key: 'role',          width: 12 },
     { header: 'Status',       key: 'status',        width: 20 },
     { header: 'Team Name',    key: 'teamName',      width: 20 },
     { header: 'Registered At',key: 'registeredAt',  width: 22 },
@@ -161,10 +180,25 @@ async function exportRegistrationsExcel(eventId, status) {
       college:      r.participantSnapshot?.college || r.userId?.college || '',
       phone:        r.participantSnapshot?.phone   || r.userId?.phone   || '',
       srcId:        r.srcId || '',
+      role:         r.teamId ? 'Leader' : '',
       status:       r.status,
       teamName:     r.teamId?.teamName || '',
       registeredAt: r.createdAt?.toISOString() || '',
     });
+
+    for (const m of r.teamId?.members || []) {
+      ws.addRow({
+        name:         m.name    || '',
+        email:        m.email   || '',
+        college:      m.college || '',
+        phone:        m.phone   || '',
+        srcId:        m.srcId   || '',
+        role:         'Member',
+        status:       r.status,
+        teamName:     r.teamId?.teamName || '',
+        registeredAt: r.createdAt?.toISOString() || '',
+      });
+    }
   }
 
   return wb;
