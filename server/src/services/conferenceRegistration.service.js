@@ -15,6 +15,18 @@ function generateReferenceNumber() {
   return `VPL2026-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
 }
 
+/* Human-readable label for each registration tier. */
+const TIER_LABELS = {
+  base:          'Registration Only',
+  fooding:       'Registration + Fooding',
+  accommodation: 'Registration + Accommodation & Fooding',
+};
+
+function tierLabel(reg) {
+  return TIER_LABELS[reg?.registrationTier]
+    || (reg?.needsAccommodation ? TIER_LABELS.accommodation : TIER_LABELS.base);
+}
+
 /* ─── User-facing ─────────────────────────────────────────────────────────── */
 
 /**
@@ -413,10 +425,37 @@ async function getConferenceRegistrationOverview() {
   };
 }
 
+/**
+ * Public verification lookup used by the QR code on the conference ID card.
+ * Returns only non-sensitive confirmation data, and only for an approved
+ * registration — an unknown or not-yet-approved SRC ID is treated as invalid.
+ */
+async function verifyBySrcId(srcId) {
+  if (!srcId || !srcId.trim()) throw ApiError.badRequest('SRC ID is required');
+  const normalized = srcId.trim().toUpperCase();
+
+  const reg = await ConferenceRegistration.findOne({ srcId: normalized, status: 'approved' })
+    .populate('userId', 'name college')
+    .lean();
+
+  if (!reg) throw ApiError.notFound('No approved registration found for this SRC ID');
+
+  return {
+    valid:            true,
+    srcId:            reg.srcId,
+    name:             reg.userId?.name || '',
+    institute:        reg.userId?.college || '',
+    photoUrl:         reg.photoUrl || '',
+    registrationType: tierLabel(reg),
+    approvedOn:       reg.approvalTimestamp || null,
+  };
+}
+
 module.exports = {
   submitConferenceRegistration,
   getMyConferenceRegistration,
   getRegistrationConfig,
+  verifyBySrcId,
   getConferenceRegistrations,
   getConferenceRegistrationDetail,
   getIdCardPreview,

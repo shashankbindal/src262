@@ -23,6 +23,7 @@ import Registration from "./Registration/Registration.jsx";
 import Sponsor from "./Sponsors/Sponsor.jsx";
 import PrivacyPolicy from "./policies/Privacy.jsx";
 import TermsConditions from "./policies/Terms.jsx";
+import Verify from "./Verify/Verify.jsx";
 
 /* Auth pages */
 import Login from "./auth/Login.jsx";
@@ -140,6 +141,7 @@ const AppContent = () => {
             <Route path="/sponsors" element={<PageTransition><Sponsor /></PageTransition>} />
             <Route path="/privacy-policy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
             <Route path="/terms-and-conditions" element={<PageTransition><TermsConditions /></PageTransition>} />
+            <Route path="/verify/:srcId" element={<PageTransition><Verify /></PageTransition>} />
 
             {/* ── Registration (auth-gated internally) ── */}
             <Route path="/register" element={<PageTransition><Registration /></PageTransition>} />

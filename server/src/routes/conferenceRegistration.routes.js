@@ -14,6 +14,9 @@ const router = express.Router();
 /* Public — no auth required */
 router.get('/config', ctrl.getConfig);
 
+/* Public — verify a conference pass by SRC ID (QR-code target) */
+router.get('/verify/:srcId', ctrl.verifyRegistration);
+
 /* All other routes require auth + verified email */
 router.use(authenticate, requireVerifiedEmail);
 

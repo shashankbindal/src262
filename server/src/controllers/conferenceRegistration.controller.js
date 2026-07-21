@@ -12,6 +12,12 @@ const getConfig = asyncHandler(async (_req, res) => {
   ApiResponse.ok(res, 'Conference registration config', config);
 });
 
+/* Public verification of a conference pass by its SRC ID (QR-code target). */
+const verifyRegistration = asyncHandler(async (req, res) => {
+  const result = await confRegService.verifyBySrcId(req.params.srcId);
+  ApiResponse.ok(res, 'Registration verified', result);
+});
+
 /* ─── User endpoints ─────────────────────────────────────────────────────── */
 
 const MAX_PHOTO_BYTES = 200 * 1024; // 200KB
@@ -93,6 +99,7 @@ const getMyConferenceRegistration = asyncHandler(async (req, res) => {
 
 module.exports = {
   getConfig,
+  verifyRegistration,
   submitConferenceRegistration,
   getMyConferenceRegistration,
 };
