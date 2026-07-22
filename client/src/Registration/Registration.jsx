@@ -188,7 +188,7 @@ export default function Registration() {
               <h1 className="reg-simple-title">Registration Under Review</h1>
               <p className="reg-simple-desc">
                 Your conference registration payment is being reviewed by the organizing team.
-                You will receive a confirmation email within 24–48 hours, and you'll be able to
+                You will receive a confirmation email within 24–72 hours, and you'll be able to
                 register for events once it's approved.
               </p>
             </>

@@ -770,7 +770,7 @@ function SuccessScreen({ confReg }) {
         Your conference registration has been successfully submitted and is currently awaiting
         manual verification by the organizing committee.
         <br /><br />
-        <strong>You will receive a confirmation email within 24–48 hours</strong> once your payment
+        <strong>You will receive a confirmation email within 24–72 hours</strong> once your payment
         has been verified and your SRC ID has been assigned. You will be able to register for
         conference events only after your Conference Registration has been approved.
       </div>
@@ -795,7 +795,7 @@ function PendingScreen({ confReg }) {
       <h2 className="cr-status-title">Your Registration is Under Review</h2>
       <p className="cr-status-sub">
         Your conference registration payment has been submitted and is being reviewed by
-        the organizing committee. You will receive a confirmation email within 24–48 hours.
+        the organizing committee. You will receive a confirmation email within 24–72 hours.
       </p>
       <div className="cr-status-details">
         <div className="cr-status-row">

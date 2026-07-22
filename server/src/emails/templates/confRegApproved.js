@@ -17,7 +17,7 @@ module.exports = function confRegApprovedTemplate({ name, srcId }) {
           <span style="font-size:26px;font-weight:700;letter-spacing:4px;color:#2C3424;font-family:'Courier New',monospace;">${srcId}</span>
         </div>
       </div>
-      <p>Your conference ID card is attached to this email as a PDF — please carry a printed or digital copy with you as your conference pass.</p>
+      <p>Your digital conference ID card is attached to this email as a PDF — this is your conference pass. A printed copy is <strong>not</strong> required; simply keep the digital ID on your phone for entry and verification.</p>
       <p>You can now log in to register for individual events (Chem-E-Car, Chem-E-Jeopardy, paper/poster presentations, and K-12 STEM).</p>
       <hr class="divider" />
       <p><strong>Join the official Viplav '26 WhatsApp group</strong> for schedule updates, announcements, and quick support from the organizing team:</p>
