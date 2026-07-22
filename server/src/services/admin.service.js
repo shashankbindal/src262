@@ -149,7 +149,7 @@ async function getSubmissionsByEvent(eventId, { status, page = 1, limit = 50 } =
   result.docs = await Promise.all(
     result.docs.map(async (sub) => ({
       ...sub,
-      signedUrl: await cloudinaryService.getSignedDownloadUrl(sub.fileKey, sub.fileUrl, sub.fileName),
+      signedUrl: await cloudinaryService.getSignedDownloadUrl(sub.fileKey, sub.fileUrl, sub.originalFileName || sub.fileName),
     }))
   );
 
@@ -163,7 +163,7 @@ async function getSubmissionFile(registrationId) {
   const sub = await Submission.findOne({ registrationId }).lean();
   if (!sub) throw ApiError.notFound('No submission found for this registration');
 
-  const signedUrl = await cloudinaryService.getSignedDownloadUrl(sub.fileKey, sub.fileUrl, sub.fileName);
+  const signedUrl = await cloudinaryService.getSignedDownloadUrl(sub.fileKey, sub.fileUrl, sub.originalFileName || sub.fileName);
   return { ...sub, signedUrl };
 }
 

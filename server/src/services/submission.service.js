@@ -8,7 +8,7 @@ const ApiError       = require('../utils/ApiError');
 const cloudinaryService = require('./cloudinary.service');
 const logger         = require('../utils/logger');
 
-async function uploadSubmission(userId, registrationId, { fileUrl, fileKey, fileName, fileMimeType, fileSizeBytes }) {
+async function uploadSubmission(userId, registrationId, { fileUrl, fileKey, fileName, originalFileName, fileMimeType, fileSizeBytes }) {
   const teams   = await Team.find({ 'members.userId': userId }).select('_id').lean();
   const teamIds = teams.map(t => t._id);
 
@@ -43,12 +43,13 @@ async function uploadSubmission(userId, registrationId, { fileUrl, fileKey, file
   const existing = await Submission.findOne({ registrationId });
   if (existing) {
     await cloudinaryService.deleteFile(existing.fileKey).catch(() => {});
-    existing.fileUrl       = fileUrl;
-    existing.fileKey       = fileKey;
-    existing.fileName      = fileName;
-    existing.fileMimeType  = fileMimeType;
-    existing.fileSizeBytes = fileSizeBytes;
-    existing.status        = 'submitted';
+    existing.fileUrl          = fileUrl;
+    existing.fileKey          = fileKey;
+    existing.fileName         = fileName;
+    existing.originalFileName = originalFileName;
+    existing.fileMimeType     = fileMimeType;
+    existing.fileSizeBytes    = fileSizeBytes;
+    existing.status           = 'submitted';
     await existing.save();
 
     reg.status = 'submitted';
@@ -63,6 +64,7 @@ async function uploadSubmission(userId, registrationId, { fileUrl, fileKey, file
     fileUrl,
     fileKey,
     fileName,
+    originalFileName,
     fileMimeType,
     fileSizeBytes,
   });
@@ -87,7 +89,7 @@ async function getMySubmission(userId, registrationId) {
   const submission = await Submission.findOne({ registrationId }).lean();
   if (!submission) throw ApiError.notFound('No submission found');
 
-  submission.signedFileUrl = await cloudinaryService.getSignedDownloadUrl(submission.fileKey, submission.fileUrl, submission.fileName);
+  submission.signedFileUrl = await cloudinaryService.getSignedDownloadUrl(submission.fileKey, submission.fileUrl, submission.originalFileName || submission.fileName);
   return submission;
 }
 

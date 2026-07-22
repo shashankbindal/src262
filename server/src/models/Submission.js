@@ -23,6 +23,7 @@ const submissionSchema = new mongoose.Schema(
     fileUrl:      { type: String, required: true },
     fileKey:      { type: String, required: true },  // Cloudinary public_id for deletion/replacement
     fileName:     { type: String, required: true },
+    originalFileName: { type: String },
     fileMimeType: { type: String, required: true },
     fileSizeBytes: { type: Number, required: true },
     status: {

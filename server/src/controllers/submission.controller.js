@@ -21,6 +21,7 @@ const uploadSubmission = asyncHandler(async (req, res) => {
       fileUrl: uploadResult.secure_url,
       fileKey: uploadResult.public_id,
       fileName: req.file.originalname,
+      originalFileName: req.file.originalname,
       fileMimeType: req.file.mimetype,
       fileSizeBytes: req.file.size,
     }

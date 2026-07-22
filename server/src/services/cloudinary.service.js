@@ -78,19 +78,33 @@ async function deleteFile(publicId) {
 async function getSignedDownloadUrl(publicId, secureUrl, originalName = '') {
   if (!publicId) return secureUrl || '';
 
-  const ext = originalName.toLowerCase().split('.').pop();
-  const resource_type = (ext === 'pdf' || ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) 
-    ? 'image' 
-    : 'raw';
+  // Parse resource_type and type (e.g. 'image', 'raw', 'upload', 'private') from secureUrl
+  let resource_type = 'image';
+  let type = 'upload';
+
+  if (secureUrl && typeof secureUrl === 'string') {
+    const parts = secureUrl.split('/');
+    // Cloudinary URL format: https://res.cloudinary.com/cloud_name/resource_type/type/...
+    if (parts.length > 5) {
+      resource_type = parts[4];
+      type = parts[5];
+    }
+  } else if (originalName) {
+    const ext = originalName.toLowerCase().split('.').pop();
+    resource_type = (ext === 'pdf' || ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) 
+      ? 'image' 
+      : 'raw';
+  }
 
   const options = {
     secure: true,
     resource_type,
+    type,
   };
 
   if (originalName) {
     const nameWithoutExt = originalName.split('.').slice(0, -1).join('.') || originalName;
-    const safeName = nameWithoutExt.replace(/[^a-zA-Z0-9-_]/g, '_');
+    const safeName = nameWithoutExt.replace(/[^a-zA-Z0-9-_\s]/g, '_');
     options.flags = `attachment:${safeName}`;
     options.sign_url = true;
   }
