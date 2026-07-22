@@ -75,11 +75,27 @@ async function deleteFile(publicId) {
  * @param {string} publicId - The Cloudinary public_id
  * @param {string} secureUrl - The stored secure_url
  */
-async function getSignedDownloadUrl(publicId, secureUrl) {
-  // If we just have the secureUrl, return it. If we need a signed URL, we can generate it.
-  // For simplicity and matching the previous signature, we return the secure URL.
-  // We can also use cloudinary.url(publicId, { secure: true, sign_url: true }) if strict auth is needed.
-  return secureUrl || cloudinary.url(publicId, { secure: true });
+async function getSignedDownloadUrl(publicId, secureUrl, originalName = '') {
+  if (!publicId) return secureUrl || '';
+
+  const ext = originalName.toLowerCase().split('.').pop();
+  const resource_type = (ext === 'pdf' || ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) 
+    ? 'image' 
+    : 'raw';
+
+  const options = {
+    secure: true,
+    resource_type,
+  };
+
+  if (originalName) {
+    const nameWithoutExt = originalName.split('.').slice(0, -1).join('.') || originalName;
+    const safeName = nameWithoutExt.replace(/[^a-zA-Z0-9-_]/g, '_');
+    options.flags = `attachment:${safeName}`;
+    options.sign_url = true;
+  }
+
+  return cloudinary.url(publicId, options);
 }
 
 function publicUrl(publicId) {

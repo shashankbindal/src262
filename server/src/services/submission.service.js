@@ -87,7 +87,7 @@ async function getMySubmission(userId, registrationId) {
   const submission = await Submission.findOne({ registrationId }).lean();
   if (!submission) throw ApiError.notFound('No submission found');
 
-  submission.signedFileUrl = await cloudinaryService.getSignedDownloadUrl(submission.fileKey);
+  submission.signedFileUrl = await cloudinaryService.getSignedDownloadUrl(submission.fileKey, submission.fileUrl, submission.fileName);
   return submission;
 }
 
