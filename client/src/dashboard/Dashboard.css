@@ -578,3 +578,75 @@
 .confbanner-btn.outlined:hover {
   background: rgba(11,93,70,.08);
 }
+
+/* ── File upload box ─────────────────────────────────────── */
+.cr-upload-box {
+  border: 2px dashed var(--border-medium, #959581);
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: #ffffff;
+  margin-top: 8px;
+}
+
+.cr-upload-box:hover,
+.cr-upload-box:focus {
+  border-color: var(--primary, #4C583E);
+  background: var(--primary-glow, rgba(76, 88, 62, 0.08));
+  outline: none;
+}
+
+.cr-upload-placeholder,
+.cr-upload-existing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted, #768064);
+  font-size: 0.82rem;
+}
+
+.cr-upload-icon {
+  font-size: 1.4rem;
+  color: var(--primary, #4C583E);
+}
+
+/* File thumbnails */
+.cr-file-thumb {
+  max-width: 180px;
+  max-height: 130px;
+  object-fit: contain;
+  border-radius: 4px;
+  border: 1px solid var(--border-medium, #959581);
+}
+
+.cr-file-thumb-pdf {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  max-width: 100%;
+}
+
+.cr-pdf-icon {
+  background: #e53935;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 3px;
+  letter-spacing: 0.06em;
+}
+
+.cr-file-name {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #4c583e);
+  word-break: break-all;
+}

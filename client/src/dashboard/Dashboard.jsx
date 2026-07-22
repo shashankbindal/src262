@@ -250,6 +250,50 @@ function SubmissionUploadForm({ registrationId, onDone }) {
   const [file, setFile]   = useState(null);
   const [busy, setBusy]   = useState(false);
   const [error, setError] = useState('');
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileRef = React.useRef(null);
+
+  const validateAndSetFile = (selectedFile) => {
+    if (selectedFile.type !== 'application/pdf') {
+      setError('Please select a PDF file.');
+      setFile(null);
+      return;
+    }
+
+    if (selectedFile.size > 10 * 1024 * 1024) {
+      setError('File size exceeds the 10MB limit.');
+      setFile(null);
+      return;
+    }
+
+    setFile(selectedFile);
+    setError('');
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      validateAndSetFile(selectedFile);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const selectedFile = e.dataTransfer.files[0];
+    if (selectedFile) {
+      validateAndSetFile(selectedFile);
+    }
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -273,11 +317,35 @@ function SubmissionUploadForm({ registrationId, onDone }) {
       {error && <div className="auth-error" style={{ margin: 0 }}>{error}</div>}
       <div>
         <label>Upload File (PDF)</label>
-        <input
-          type="file"
-          accept="application/pdf"
-          onChange={(e) => setFile(e.target.files[0])}
-        />
+        <div
+          className={`cr-upload-box ${isDragOver ? 'drag-over' : ''}`}
+          onClick={() => fileRef.current?.click()}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && fileRef.current?.click()}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
+          <input
+            ref={fileRef}
+            type="file"
+            accept="application/pdf"
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+          />
+          {file ? (
+            <div className="cr-file-thumb cr-file-thumb-pdf">
+              <span className="cr-pdf-icon">PDF</span>
+              <span className="cr-file-name">{file.name}</span>
+            </div>
+          ) : (
+            <div className="cr-upload-placeholder">
+              <span className="cr-upload-icon">⬆</span>
+              <span>Click to upload (PDF — max 10 MB)</span>
+            </div>
+          )}
+        </div>
       </div>
       <button className="reg-action-btn primary" type="submit" disabled={busy}>
         {busy ? <><span className="btn-spinner" /> Uploading…</> : 'Submit File'}
