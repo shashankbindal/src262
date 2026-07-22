@@ -304,6 +304,7 @@ function ConfRegSection({ counts }) {
   const [rows, setRows]           = useState([]);
   const [loading, setLoading]     = useState(false);
   const [loadError, setLoadError] = useState('');
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   const CONF_TABS = [
     { id: 'pending',  label: 'Pending',  count: counts?.pending  || 0 },
@@ -312,75 +313,96 @@ function ConfRegSection({ counts }) {
   ];
 
   const load = useCallback(() => {
+    if (isCollapsed) return;
     setLoading(true);
     setLoadError('');
     api.get(`/admin/conference-registrations?status=${activeTab}&limit=100`)
       .then((res) => setRows(res.data?.docs || []))
       .catch(() => { setRows([]); setLoadError('Failed to load registrations.'); })
       .finally(() => setLoading(false));
-  }, [activeTab]);
+  }, [activeTab, isCollapsed]);
 
   useEffect(() => { load(); }, [load]);
 
   return (
     <div className="admin-event-section">
-      <h2 className="admin-event-title">
-        Conference Registrations
-        <span style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', fontWeight: 400 }}>
-          {(counts?.total || 0)} total
-        </span>
-      </h2>
-
-      <div className="export-bar">
-        <a
-          href={`${API_BASE}/admin/conference-registrations/export/csv?status=${activeTab}`}
-          className="export-btn"
-          target="_blank"
-          rel="noreferrer"
-        >
-          ↓ Export CSV
-        </a>
-      </div>
-
-      <div className="admin-status-tabs">
-        {CONF_TABS.map((t) => (
-          <button
-            key={t.id}
-            className={`admin-status-tab${activeTab === t.id ? ' active' : ''}`}
-            onClick={() => setActiveTab(t.id)}
+      <div 
+        className="collapsible-section-header" 
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        <div className="csh-left">
+          <span 
+            className="csh-arrow" 
+            style={{ transform: isCollapsed ? 'rotate(0deg)' : 'rotate(90deg)' }}
           >
-            {t.label}{t.count > 0 ? ` (${t.count})` : ''}
-          </button>
-        ))}
+            ▶
+          </span>
+          <span className="csh-title">
+            Conference Registrations
+            <span className="csh-count">
+              ({(counts?.total || 0)} total)
+            </span>
+          </span>
+        </div>
+        <div className="csh-right">
+          {isCollapsed ? 'Expand' : 'Collapse'}
+        </div>
       </div>
 
-      {loading ? (
-        <div style={{ padding: '32px', textAlign: 'center' }}><div className="auth-spinner" style={{ margin: '0 auto' }} /></div>
-      ) : loadError ? (
-        <div className="admin-empty">{loadError}</div>
-      ) : rows.length === 0 ? (
-        <div className="admin-empty">No registrations in this category.</div>
-      ) : (
-        <div className="admin-table-wrap">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>College</th>
-                <th>Transaction ID</th>
-                <th>SRC ID</th>
-                <th>Registration Type</th>
-                <th>Fee Paid</th>
-                <th>Submitted</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => <ConfRegRow key={r._id} confReg={r} onRefresh={load} />)}
-            </tbody>
-          </table>
-        </div>
+      {!isCollapsed && (
+        <>
+          <div className="export-bar">
+            <a
+              href={`${API_BASE}/admin/conference-registrations/export/csv?status=${activeTab}`}
+              className="export-btn"
+              target="_blank"
+              rel="noreferrer"
+            >
+              ↓ Export CSV
+            </a>
+          </div>
+
+          <div className="admin-status-tabs">
+            {CONF_TABS.map((t) => (
+              <button
+                key={t.id}
+                className={`admin-status-tab${activeTab === t.id ? ' active' : ''}`}
+                onClick={() => setActiveTab(t.id)}
+              >
+                {t.label}{t.count > 0 ? ` (${t.count})` : ''}
+              </button>
+            ))}
+          </div>
+
+          {loading ? (
+            <div style={{ padding: '32px', textAlign: 'center' }}><div className="auth-spinner" style={{ margin: '0 auto' }} /></div>
+          ) : loadError ? (
+            <div className="admin-empty">{loadError}</div>
+          ) : rows.length === 0 ? (
+            <div className="admin-empty">No registrations in this category.</div>
+          ) : (
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>College</th>
+                    <th>Transaction ID</th>
+                    <th>SRC ID</th>
+                    <th>Registration Type</th>
+                    <th>Fee Paid</th>
+                    <th>Submitted</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => <ConfRegRow key={r._id} confReg={r} onRefresh={load} />)}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -447,48 +469,68 @@ function SubmissionCell({ registrationId, status, onRefresh }) {
 function RegRow({ reg, onRefresh }) {
   const participant = reg.participantSnapshot || reg.userId || {};
   const team        = reg.teamId;
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   if (team) {
     return (
       <>
-        <tr className="team-header-row" style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}>
-          <td colSpan="7" style={{ padding: '12px 16px', fontWeight: 'bold', color: 'var(--primary)' }}>
-            Team: {team.teamName} <span style={{ fontSize: '0.85em', color: 'var(--text-muted)' }}>({(team.members?.length || 0) + 1} members)</span>
+        <tr 
+          className="team-header-row" 
+          style={{ backgroundColor: 'rgba(255,255,255,0.03)', userSelect: 'none' }}
+        >
+          <td 
+            colSpan="6" 
+            style={{ padding: '12px 16px', fontWeight: 'bold', color: 'var(--primary)', cursor: 'pointer' }}
+            onClick={() => setIsCollapsed(!isCollapsed)}
+          >
+            <span style={{ 
+              marginRight: '8px', 
+              display: 'inline-block', 
+              fontSize: '0.8em',
+              transition: 'transform 0.2s',
+              transform: isCollapsed ? 'rotate(0deg)' : 'rotate(90deg)'
+            }}>▶</span>
+            Team: {team.teamName} <span style={{ fontSize: '0.85em', color: 'var(--text-muted)', fontWeight: 'normal' }}>({(team.members?.length || 0) + 1} members)</span>
           </td>
-        </tr>
-        <tr>
-          <td className="name-cell">
-            {participant.name || '—'}
-            <span style={{ fontSize: '0.65rem', padding: '2px 6px', background: 'rgba(56, 189, 114, 0.2)', color: 'var(--primary)', borderRadius: '4px', marginLeft: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Leader</span>
-          </td>
-          <td>{participant.email || '—'}</td>
-          <td>{participant.college || '—'}</td>
-          <td>—</td>
-          <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--primary)', fontWeight: '600' }}>
-            {reg.srcId || '—'}
-          </td>
-          <td>{new Date(reg.createdAt).toLocaleDateString('en-IN')}</td>
           <td>
             {['submitted', 'completed'].includes(reg.status) && (
               <SubmissionCell registrationId={reg._id} status={reg.status} onRefresh={onRefresh} />
             )}
           </td>
         </tr>
-        {team.members?.map((m) => (
-          <tr key={m.userId || m._id || m.email} style={{ opacity: 0.85 }}>
-            <td className="name-cell" style={{ paddingLeft: '24px' }}>
-              ↳ {m.name || '—'}
-            </td>
-            <td>{m.email || '—'}</td>
-            <td>{m.college || '—'}</td>
-            <td>—</td>
-            <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--primary)', fontWeight: '600' }}>
-              {m.srcId || '—'}
-            </td>
-            <td>—</td>
-            <td>—</td>
-          </tr>
-        ))}
+        {!isCollapsed && (
+          <>
+            <tr>
+              <td className="name-cell">
+                {participant.name || '—'}
+                <span style={{ fontSize: '0.65rem', padding: '2px 6px', background: 'rgba(56, 189, 114, 0.2)', color: 'var(--primary)', borderRadius: '4px', marginLeft: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Leader</span>
+              </td>
+              <td>{participant.email || '—'}</td>
+              <td>{participant.college || '—'}</td>
+              <td>—</td>
+              <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--primary)', fontWeight: '600' }}>
+                {reg.srcId || '—'}
+              </td>
+              <td>{new Date(reg.createdAt).toLocaleDateString('en-IN')}</td>
+              <td>—</td>
+            </tr>
+            {team.members?.map((m) => (
+              <tr key={m.userId || m._id || m.email} style={{ opacity: 0.85 }}>
+                <td className="name-cell" style={{ paddingLeft: '24px' }}>
+                  ↳ {m.name || '—'}
+                </td>
+                <td>{m.email || '—'}</td>
+                <td>{m.college || '—'}</td>
+                <td>—</td>
+                <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--primary)', fontWeight: '600' }}>
+                  {m.srcId || '—'}
+                </td>
+                <td>—</td>
+                <td>—</td>
+              </tr>
+            ))}
+          </>
+        )}
       </>
     );
   }

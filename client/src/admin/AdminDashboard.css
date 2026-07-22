@@ -104,6 +104,18 @@
   align-items: center;
   gap: 12px;
 }
+.admin-event-title.collapsible {
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--transition-fast);
+}
+.admin-event-title.collapsible:hover {
+  color: var(--primary);
+}
+
+.team-header-row:hover td {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
 
 /* ── Status tabs ── */
 .admin-status-tabs {
@@ -406,4 +418,66 @@
 .admin-modal-input:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(11,93,70,.1);
+}
+
+/* ── Collapsible Section Header Card ── */
+.collapsible-section-header {
+  background: #FFFFFF;
+  border: 1px solid var(--border-medium);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-fast);
+  margin-bottom: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
+.collapsible-section-header:hover {
+  border-color: var(--primary);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+}
+
+.csh-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.csh-arrow {
+  color: #556b2f; /* Darker green arrow */
+  font-size: 0.75em;
+  transition: transform 0.2s ease;
+}
+
+.csh-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.csh-count {
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-left: 8px;
+}
+
+.csh-right {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #556b2f; /* Matching green for expand/collapse button */
+  transition: opacity 0.2s;
+}
+
+.collapsible-section-header:hover .csh-right {
+  opacity: 0.85;
 }
