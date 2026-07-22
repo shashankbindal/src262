@@ -262,7 +262,7 @@ function ConfRegRow({ confReg, onRefresh }) {
         <td>₹{confReg.registrationFee ?? '—'}</td>
         <td>{new Date(confReg.createdAt).toLocaleDateString('en-IN')}</td>
         <td>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: '120px' }}>
             <button className="tbl-btn" onClick={() => setShowDetail(true)}>View Details</button>
             {confReg.paymentScreenshotUrl && (
               <button className="tbl-btn" onClick={viewScreenshot}>Screenshot</button>
@@ -606,6 +606,7 @@ const EMPTY_EVENT_FORM = {
   registrationDeadline: '', submissionDeadline: '',
   fileUploadRequired: false, maxFileSizeMB: 10,
   minTeamSize: 2, maxTeamSize: 4, registrationEnabled: true,
+  whatsappGroupLink: '',
 };
 
 function toDatetimeLocal(iso) {
@@ -631,6 +632,7 @@ function EventFormModal({ event, onClose, onDone }) {
     minTeamSize: event.minTeamSize || 2,
     maxTeamSize: event.maxTeamSize || 4,
     registrationEnabled: event.registrationEnabled !== false,
+    whatsappGroupLink: event.whatsappGroupLink || '',
   } : EMPTY_EVENT_FORM);
   const [busy, setBusy]   = useState(false);
   const [error, setError] = useState('');
@@ -657,6 +659,7 @@ function EventFormModal({ event, onClose, onDone }) {
         fileUploadRequired: form.fileUploadRequired,
         maxFileSizeMB: Number(form.maxFileSizeMB) || 10,
         registrationEnabled: form.registrationEnabled,
+        whatsappGroupLink: form.whatsappGroupLink.trim(),
       };
       if (form.type === 'team') {
         body.minTeamSize = Number(form.minTeamSize) || 1;
@@ -698,6 +701,13 @@ function EventFormModal({ event, onClose, onDone }) {
             <div className="ef-field ef-field-full">
               <label className="auth-label">Description</label>
               <textarea className="admin-modal-input" name="description" placeholder="Description" value={form.description} onChange={handle} rows={2} />
+            </div>
+          </div>
+
+          <div className="ef-row">
+            <div className="ef-field ef-field-full">
+              <label className="auth-label">WhatsApp Group Link</label>
+              <input className="admin-modal-input" name="whatsappGroupLink" placeholder="WhatsApp Group invite URL" value={form.whatsappGroupLink} onChange={handle} />
             </div>
           </div>
 
@@ -910,6 +920,7 @@ function UserFormModal({ onClose, onDone }) {
 
 /* ── User Management Section ── */
 function UserManagementSection() {
+  const [isOpen, setIsOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -918,6 +929,7 @@ function UserManagementSection() {
   const [deletingId, setDeletingId] = useState(null);
 
   const load = useCallback(() => {
+    if (!isOpen) return;
     setLoading(true);
     setLoadError('');
     const qs = search.trim() ? `?search=${encodeURIComponent(search.trim())}&limit=100` : '?limit=100';
@@ -925,12 +937,13 @@ function UserManagementSection() {
       .then((res) => setUsers(res.data?.docs || []))
       .catch(() => { setUsers([]); setLoadError('Failed to load users.'); })
       .finally(() => setLoading(false));
-  }, [search]);
+  }, [search, isOpen]);
 
   useEffect(() => {
+    if (!isOpen) return;
     const t = setTimeout(load, 300); // debounce search
     return () => clearTimeout(t);
-  }, [load]);
+  }, [load, isOpen]);
 
   const deleteUser = async (u) => {
     if (!window.confirm(
@@ -949,60 +962,96 @@ function UserManagementSection() {
   };
 
   return (
-    <div className="admin-event-section">
-      <h2 className="admin-event-title">
-        User Management
-        <button className="tbl-btn approve" onClick={() => setShowCreate(true)}>+ Add User</button>
-      </h2>
+    <div className="admin-event-section" style={{ border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-lg)', padding: '24px', background: '#ffffff' }}>
+      <div 
+        style={{ 
+          cursor: 'pointer', 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          userSelect: 'none'
+        }} 
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <h2 className="admin-event-title" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ 
+            transition: 'transform 0.2s', 
+            transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)', 
+            display: 'inline-block',
+            fontSize: '0.9rem',
+            color: 'var(--text-muted)'
+          }}>▶</span>
+          User Management
+        </h2>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {isOpen && (
+            <button 
+              className="tbl-btn approve" 
+              onClick={(e) => { e.stopPropagation(); setShowCreate(true); }}
+              style={{ height: '32px', padding: '0 16px', fontSize: '0.72rem' }}
+            >
+              + Add User
+            </button>
+          )}
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            {isOpen ? 'Collapse' : 'Expand'}
+          </span>
+        </div>
+      </div>
 
-      <input
-        className="admin-modal-input"
-        placeholder="Search by name or email…"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ marginBottom: '16px', maxWidth: '320px' }}
-      />
+      {isOpen && (
+        <div style={{ marginTop: '24px', borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
+          <input
+            className="admin-modal-input"
+            placeholder="Search by name or email…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ marginBottom: '16px', maxWidth: '320px' }}
+          />
 
-      {loading ? (
-        <div style={{ padding: '32px', textAlign: 'center' }}><div className="auth-spinner" style={{ margin: '0 auto' }} /></div>
-      ) : loadError ? (
-        <div className="admin-empty">{loadError}</div>
-      ) : users.length === 0 ? (
-        <div className="admin-empty">No users found.</div>
-      ) : (
-        <div className="admin-table-wrap">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Verified</th>
-                <th>Joined</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((u) => (
-                <tr key={u._id}>
-                  <td className="name-cell">{u.name}</td>
-                  <td>{u.email}</td>
-                  <td style={{ textTransform: 'capitalize' }}>{u.role}</td>
-                  <td>{u.isEmailVerified ? 'Yes' : 'No'}</td>
-                  <td>{new Date(u.createdAt).toLocaleDateString('en-IN')}</td>
-                  <td>
-                    <button
-                      className="tbl-btn reject"
-                      onClick={() => deleteUser(u)}
-                      disabled={deletingId === u._id}
-                    >
-                      {deletingId === u._id ? '…' : 'Delete'}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {loading ? (
+            <div style={{ padding: '32px', textAlign: 'center' }}><div className="auth-spinner" style={{ margin: '0 auto' }} /></div>
+          ) : loadError ? (
+            <div className="admin-empty">{loadError}</div>
+          ) : users.length === 0 ? (
+            <div className="admin-empty">No users found.</div>
+          ) : (
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Verified</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((u) => (
+                    <tr key={u._id}>
+                      <td className="name-cell">{u.name}</td>
+                      <td>{u.email}</td>
+                      <td style={{ textTransform: 'capitalize' }}>{u.role}</td>
+                      <td>{u.isEmailVerified ? 'Yes' : 'No'}</td>
+                      <td>{new Date(u.createdAt).toLocaleDateString('en-IN')}</td>
+                      <td>
+                        <button
+                          className="tbl-btn reject"
+                          onClick={() => deleteUser(u)}
+                          disabled={deletingId === u._id}
+                        >
+                          {deletingId === u._id ? '…' : 'Delete'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
@@ -1038,7 +1087,7 @@ export default function AdminDashboard() {
   return (
     <div className="admin-layout">
       <div className="admin-header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1400px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1600px', margin: '0 auto' }}>
           <div>
             <h1>Admin Dashboard</h1>
             <p>VIPLAV '26 — Registration Management</p>

@@ -8,7 +8,7 @@ const createUserValidator = [
 
   body('email')
     .trim().isEmail().withMessage('Please provide a valid email')
-    .normalizeEmail(),
+    .normalizeEmail({ gmail_remove_dots: false }),
 
   body('password')
     .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')

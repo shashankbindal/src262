@@ -31,7 +31,7 @@
 
 .admin-body {
   padding: 48px 5%;
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
@@ -150,11 +150,11 @@
 .admin-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 700px;
+  min-width: 1000px;
 }
 
 .admin-table th {
-  padding: 16px 20px;
+  padding: 12px 10px;
   text-align: left;
   font-family: var(--font-body);
   font-size: 0.68rem;
@@ -168,7 +168,7 @@
 }
 
 .admin-table td {
-  padding: 16px 20px;
+  padding: 12px 10px;
   font-family: var(--font-body);
   font-size: 0.9rem;
   color: var(--text-secondary);
@@ -185,7 +185,7 @@
 
 /* ── Action buttons in table ── */
 .tbl-btn {
-  padding: 6px 14px;
+  padding: 6px 10px;
   height: 30px;
   font-family: var(--font-body);
   font-size: 0.68rem;

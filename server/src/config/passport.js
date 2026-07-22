@@ -26,7 +26,7 @@ if (env.GOOGLE_OAUTH_ENABLED) {
           /* Match the same normalization applied at password signup (normalizeEmail
            * strips Gmail dots/+tags), so a Google login can't create a duplicate
            * account for someone who already registered with a dotted/tagged address. */
-          const email = validator.normalizeEmail(rawEmail) || rawEmail.toLowerCase();
+          const email = validator.normalizeEmail(rawEmail, { gmail_remove_dots: false }) || rawEmail.toLowerCase();
 
           let user = await User.findOne({ $or: [{ googleId: profile.id }, { email }] });
 

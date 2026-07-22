@@ -8,6 +8,7 @@ const Team                   = require('../models/Team');
 const ApiError               = require('../utils/ApiError');
 const cloudinaryService      = require('./cloudinary.service');
 const confRegService         = require('./conferenceRegistration.service');
+const emailService           = require('./email.service');
 const logger                 = require('../utils/logger');
 const { Parser }             = require('json2csv');
 const ExcelJS                = require('exceljs');
@@ -52,7 +53,7 @@ async function getRegistrationsByEvent(eventId, { status, page = 1, limit = 50 }
 async function markSubmissionComplete(adminId, submissionId, { reviewNotes = '' } = {}) {
   const sub = await Submission.findById(submissionId)
     .populate('userId', 'name email')
-    .populate('eventId', 'name');
+    .populate('eventId', 'name whatsappGroupLink');
 
   if (!sub) throw ApiError.notFound('Submission not found');
 
@@ -60,7 +61,69 @@ async function markSubmissionComplete(adminId, submissionId, { reviewNotes = '' 
   sub.reviewNotes = reviewNotes;
   await sub.save();
 
-  await Registration.findByIdAndUpdate(sub.registrationId, { status: 'completed' });
+  // Find the registration to get team information
+  const reg = await Registration.findById(sub.registrationId)
+    .populate({
+      path: 'userId',
+      select: 'name email',
+    })
+    .populate('teamId');
+
+  if (reg) {
+    reg.status = 'completed';
+    await reg.save();
+
+    // Trigger emails to all team members
+    const eventName = sub.eventId?.name || 'Event';
+    const whatsappGroupLink = sub.eventId?.whatsappGroupLink || '';
+    const teamName = reg.teamId?.teamName || '';
+
+    // Collect recipient list
+    const recipients = [];
+
+    // 1. Add the main registrant (leader/solo)
+    if (reg.userId && reg.userId.email) {
+      recipients.push({
+        name: reg.userId.name,
+        email: reg.userId.email,
+      });
+    } else if (reg.participantSnapshot && reg.participantSnapshot.email) {
+      recipients.push({
+        name: reg.participantSnapshot.name,
+        email: reg.participantSnapshot.email,
+      });
+    }
+
+    // 2. Add other team members if applicable
+    if (reg.teamId && Array.isArray(reg.teamId.members)) {
+      for (const member of reg.teamId.members) {
+        if (member.email) {
+          recipients.push({
+            name: member.name,
+            email: member.email,
+          });
+        }
+      }
+    }
+
+    // 3. Send emails concurrently
+    Promise.all(
+      recipients.map((recipient) =>
+        emailService.sendEventRegistrationComplete({
+          name: recipient.name,
+          email: recipient.email,
+          eventName,
+          teamName,
+          whatsappGroupLink,
+          hasSubmission: true,
+        }).catch((err) => {
+          logger.error(`Error triggering completion email to ${recipient.email}: ${err.message}`);
+        })
+      )
+    ).catch((err) => {
+      logger.error(`Uncaught promise error in completion email loop: ${err.message}`);
+    });
+  }
 
   logger.info(`Admin ${adminId} marked submission ${submissionId} as completed`);
   return sub;
@@ -248,7 +311,7 @@ function slugify(name) {
 const EVENT_UPDATABLE_FIELDS = [
   'name', 'slug', 'description', 'type', 'registrationDeadline', 'submissionDeadline',
   'fileUploadRequired', 'allowedFileTypes', 'maxFileSizeMB', 'minTeamSize', 'maxTeamSize',
-  'registrationEnabled',
+  'registrationEnabled', 'whatsappGroupLink',
 ];
 
 async function createEvent(data) {
@@ -270,6 +333,7 @@ async function createEvent(data) {
     minTeamSize:          data.minTeamSize,
     maxTeamSize:          data.maxTeamSize,
     registrationEnabled:  data.registrationEnabled !== undefined ? data.registrationEnabled : true,
+    whatsappGroupLink:    data.whatsappGroupLink || '',
   });
 
   logger.info(`Event created: ${event.name} (${event._id})`);

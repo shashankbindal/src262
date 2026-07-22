@@ -7,6 +7,7 @@ const otpTemplate             = require('../emails/templates/otp');
 const resetPasswordTemplate   = require('../emails/templates/resetPassword');
 const confRegApprovedTemplate = require('../emails/templates/confRegApproved');
 const confRegRejectedTemplate = require('../emails/templates/confRegRejected');
+const eventRegistrationCompleteTemplate = require('../emails/templates/eventRegistrationComplete');
 
 const resend = new Resend(env.RESEND_API_KEY);
 const FROM   = `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`;
@@ -56,9 +57,24 @@ async function sendConfRegRejected({ name, email, reason }) {
   });
 }
 
+async function sendEventRegistrationComplete({ name, email, eventName, teamName, whatsappGroupLink, hasSubmission = true }) {
+  await send({
+    to:      email,
+    subject: `Your Registration for ${eventName} is Confirmed! — Viplav 2026`,
+    html:    eventRegistrationCompleteTemplate({
+      name: filterXSS(name),
+      eventName: filterXSS(eventName),
+      teamName: teamName ? filterXSS(teamName) : undefined,
+      whatsappGroupLink: whatsappGroupLink ? filterXSS(whatsappGroupLink) : undefined,
+      hasSubmission,
+    }),
+  });
+}
+
 module.exports = {
   sendOTP,
   sendPasswordReset,
   sendConfRegApproved,
   sendConfRegRejected,
+  sendEventRegistrationComplete,
 };
