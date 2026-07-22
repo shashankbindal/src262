@@ -1,7 +1,6 @@
 'use strict';
 const cloudinary = require('../config/cloudinary');
 const logger = require('../utils/logger');
-const streamifier = require('streamifier');
 const { env } = require('../config/env');
 
 /**
@@ -13,18 +12,26 @@ const { env } = require('../config/env');
  */
 function uploadFile(buffer, folder, originalName = '') {
   return new Promise((resolve, reject) => {
-    // Determine resource_type based on file extension to prevent uploading arbitrary executables
-    let resource_type = 'image';
+    // Determine extension
     const ext = originalName.toLowerCase().split('.').pop();
+    
+    // Treat PDFs and standard image types as 'image' resources (Cloudinary's recommended setting)
+    const resource_type = (ext === 'pdf' || ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) 
+      ? 'image' 
+      : 'raw';
+
+    const uploadOptions = {
+      folder,
+      resource_type,
+    };
+
+    // If it's a PDF, explicitly set the format to ensure correct parsing
     if (ext === 'pdf') {
-      resource_type = 'raw'; 
+      uploadOptions.format = 'pdf';
     }
 
     const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder,
-        resource_type,
-      },
+      uploadOptions,
       (error, result) => {
         if (error) {
           logger.error(`Cloudinary upload failed: ${error.message}`);
@@ -34,7 +41,8 @@ function uploadFile(buffer, folder, originalName = '') {
       }
     );
 
-    streamifier.createReadStream(buffer).pipe(uploadStream);
+    // Stream the buffer directly to Cloudinary
+    uploadStream.end(buffer);
   });
 }
 

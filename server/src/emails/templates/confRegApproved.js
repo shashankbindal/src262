@@ -9,7 +9,7 @@ module.exports = function confRegApprovedTemplate({ name, srcId }) {
     preheader: `You're approved! Your SRC ID is ${srcId}`,
     body:  `
       <span class="tag">REGISTRATION APPROVED</span>
-      <h2 style="margin-top:16px;">You're approved, ${name}! 🎉</h2>
+      <h2 style="margin-top:16px;">Congratulations, ${name}! Your registration has been approved. 🎉</h2>
       <p>Your conference registration for <strong>AIChE India SRC 2026 (VIPLAV '26)</strong> has been reviewed and approved.</p>
       <div style="text-align:center;margin:32px 0;">
         <div style="display:inline-block;padding:16px 40px;background:rgba(76,88,62,0.08);border:2px solid rgba(76,88,62,0.2);border-radius:12px;">
