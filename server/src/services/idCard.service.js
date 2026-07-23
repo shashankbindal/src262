@@ -86,9 +86,16 @@ async function generateIdCardPdf({ name, srcId, college, photoUrl }) {
     doc.restore();
     doc.circle(p.cx, p.cy, p.r).lineWidth(4).stroke('#E6CFA7');
 
-    /* Name */
-    doc.fillColor(LAYOUT.name.color).font('Helvetica-Bold').fontSize(LAYOUT.name.size)
-      .text(name || '', 0, LAYOUT.name.y, { align: 'center', width: CARD_W, lineBreak: false });
+    /* Name - dynamically scale font size to fit on a single line */
+    let fontSize = LAYOUT.name.size;
+    doc.font('Helvetica-Bold');
+    const maxNameWidth = CARD_W - 60; // 30px margin on each side
+    while (fontSize > 12 && doc.fontSize(fontSize).widthOfString(name || '') > maxNameWidth) {
+      fontSize -= 1;
+    }
+    const yOffset = (LAYOUT.name.size - fontSize) / 2;
+    doc.fillColor(LAYOUT.name.color).fontSize(fontSize)
+      .text(name || '', 0, LAYOUT.name.y + yOffset, { align: 'center', width: CARD_W, lineBreak: false });
 
     /* Verification QR — white backing so it stays scannable on any artwork */
     const q = LAYOUT.qr;
