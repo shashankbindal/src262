@@ -10,7 +10,7 @@ const registerValidator = [
   body('email')
     .trim()
     .isEmail().withMessage('Please provide a valid email')
-    .normalizeEmail(),
+    .normalizeEmail({ gmail_remove_dots: false }),
 
   body('password')
     .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
@@ -23,14 +23,14 @@ const sendOTPValidator = [
   body('email')
     .trim()
     .isEmail().withMessage('Please provide a valid email')
-    .normalizeEmail(),
+    .normalizeEmail({ gmail_remove_dots: false }),
 ];
 
 const verifyOTPValidator = [
   body('email')
     .trim()
     .isEmail().withMessage('Please provide a valid email')
-    .normalizeEmail(),
+    .normalizeEmail({ gmail_remove_dots: false }),
 
   body('otp')
     .trim()
@@ -44,7 +44,7 @@ const loginValidator = [
     .trim()
     .notEmpty().withMessage('Email is required')
     .isEmail().withMessage('Please provide a valid email')
-    .normalizeEmail(),
+    .normalizeEmail({ gmail_remove_dots: false }),
 
   body('password')
     .notEmpty().withMessage('Password is required'),
@@ -54,7 +54,7 @@ const forgotPasswordValidator = [
   body('email')
     .trim()
     .isEmail().withMessage('Please provide a valid email')
-    .normalizeEmail(),
+    .normalizeEmail({ gmail_remove_dots: false }),
 ];
 
 const resetPasswordValidator = [

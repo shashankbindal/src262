@@ -1,7 +1,6 @@
 'use strict';
 const cloudinary = require('../config/cloudinary');
 const logger = require('../utils/logger');
-const streamifier = require('streamifier');
 const { env } = require('../config/env');
 
 /**
@@ -13,18 +12,26 @@ const { env } = require('../config/env');
  */
 function uploadFile(buffer, folder, originalName = '') {
   return new Promise((resolve, reject) => {
-    // Determine resource_type based on file extension to prevent uploading arbitrary executables
-    let resource_type = 'image';
+    // Determine extension
     const ext = originalName.toLowerCase().split('.').pop();
+    
+    // Treat PDFs and standard image types as 'image' resources (Cloudinary's recommended setting)
+    const resource_type = (ext === 'pdf' || ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) 
+      ? 'image' 
+      : 'raw';
+
+    const uploadOptions = {
+      folder,
+      resource_type,
+    };
+
+    // If it's a PDF, explicitly set the format to ensure correct parsing
     if (ext === 'pdf') {
-      resource_type = 'raw'; 
+      uploadOptions.format = 'pdf';
     }
 
     const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder,
-        resource_type,
-      },
+      uploadOptions,
       (error, result) => {
         if (error) {
           logger.error(`Cloudinary upload failed: ${error.message}`);
@@ -34,7 +41,8 @@ function uploadFile(buffer, folder, originalName = '') {
       }
     );
 
-    streamifier.createReadStream(buffer).pipe(uploadStream);
+    // Stream the buffer directly to Cloudinary
+    uploadStream.end(buffer);
   });
 }
 
@@ -67,11 +75,41 @@ async function deleteFile(publicId) {
  * @param {string} publicId - The Cloudinary public_id
  * @param {string} secureUrl - The stored secure_url
  */
-async function getSignedDownloadUrl(publicId, secureUrl) {
-  // If we just have the secureUrl, return it. If we need a signed URL, we can generate it.
-  // For simplicity and matching the previous signature, we return the secure URL.
-  // We can also use cloudinary.url(publicId, { secure: true, sign_url: true }) if strict auth is needed.
-  return secureUrl || cloudinary.url(publicId, { secure: true });
+async function getSignedDownloadUrl(publicId, secureUrl, originalName = '') {
+  if (!publicId) return secureUrl || '';
+
+  // Parse resource_type and type (e.g. 'image', 'raw', 'upload', 'private') from secureUrl
+  let resource_type = 'image';
+  let type = 'upload';
+
+  if (secureUrl && typeof secureUrl === 'string') {
+    const parts = secureUrl.split('/');
+    // Cloudinary URL format: https://res.cloudinary.com/cloud_name/resource_type/type/...
+    if (parts.length > 5) {
+      resource_type = parts[4];
+      type = parts[5];
+    }
+  } else if (originalName) {
+    const ext = originalName.toLowerCase().split('.').pop();
+    resource_type = (ext === 'pdf' || ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) 
+      ? 'image' 
+      : 'raw';
+  }
+
+  const options = {
+    secure: true,
+    resource_type,
+    type,
+  };
+
+  if (originalName) {
+    const nameWithoutExt = originalName.split('.').slice(0, -1).join('.') || originalName;
+    const safeName = nameWithoutExt.replace(/[^a-zA-Z0-9-_\s]/g, '_');
+    options.flags = `attachment:${safeName}`;
+    options.sign_url = true;
+  }
+
+  return cloudinary.url(publicId, options);
 }
 
 function publicUrl(publicId) {

@@ -53,6 +53,11 @@ const eventSchema = new mongoose.Schema(
       type:    Boolean,
       default: true,
     },
+    whatsappGroupLink: {
+      type:    String,
+      trim:    true,
+      default: '',
+    },
   },
   { timestamps: true }
 );

@@ -6,6 +6,7 @@ const Event                  = require('../models/Event');
 const Team                   = require('../models/Team');
 const User                   = require('../models/User');
 const ApiError               = require('../utils/ApiError');
+const emailService           = require('./email.service');
 const logger                 = require('../utils/logger');
 
 /**
@@ -136,6 +137,55 @@ async function createRegistration(userId, eventId, { teamName, memberSrcIds = []
   });
 
   logger.info(`Event registration created: user=${userId} event=${eventId}`);
+
+  // If no file submission is required, registration is immediately complete. Send emails.
+  if (!event.fileUploadRequired) {
+    const eventName = event.name || 'Event';
+    const whatsappGroupLink = event.whatsappGroupLink || '';
+    const teamName = teamDoc?.teamName || '';
+
+    // Collect recipient list
+    const recipients = [];
+
+    // 1. Add the main registrant (leader/solo)
+    if (user.email) {
+      recipients.push({
+        name: user.name,
+        email: user.email,
+      });
+    }
+
+    // 2. Add other team members if applicable
+    if (teamDoc && Array.isArray(teamDoc.members)) {
+      for (const member of teamDoc.members) {
+        if (member.email) {
+          recipients.push({
+            name: member.name,
+            email: member.email,
+          });
+        }
+      }
+    }
+
+    // 3. Send emails concurrently
+    Promise.all(
+      recipients.map((recipient) =>
+        emailService.sendEventRegistrationComplete({
+          name: recipient.name,
+          email: recipient.email,
+          eventName,
+          teamName,
+          whatsappGroupLink,
+          hasSubmission: false,
+        }).catch((err) => {
+          logger.error(`Error triggering instant completion email to ${recipient.email}: ${err.message}`);
+        })
+      )
+    ).catch((err) => {
+      logger.error(`Uncaught promise error in instant completion email loop: ${err.message}`);
+    });
+  }
+
   return registration;
 }
 

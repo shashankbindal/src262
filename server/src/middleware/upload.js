@@ -5,7 +5,7 @@ const ApiError = require('../utils/ApiError');
 const ALLOWED_PAYMENT_MIMES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
 const ALLOWED_SUBMISSION_MIMES = ['application/pdf'];
 const MAX_PAYMENT_MB = 5;
-const MAX_SUBMISSION_MB = 20;
+const MAX_SUBMISSION_MB = 10;
 
 function buildUpload({ allowedMimes, maxMB }) {
   const storage = multer.memoryStorage();

@@ -16,6 +16,7 @@ const events = [
     minTeamSize:          2,
     maxTeamSize:          4,
     registrationEnabled:  true,
+    whatsappGroupLink:    'https://chat.whatsapp.com/dummy-jeopardy',
   },
   {
     name:                 'Chem-E-Car',
@@ -30,6 +31,7 @@ const events = [
     minTeamSize:          2,
     maxTeamSize:          6,
     registrationEnabled:  true,
+    whatsappGroupLink:    'https://chat.whatsapp.com/dummy-car',
   },
   {
     name:                 'Poster Presentation',
@@ -42,6 +44,7 @@ const events = [
     allowedFileTypes:     ['application/pdf'],
     maxFileSizeMB:        10,
     registrationEnabled:  true,
+    whatsappGroupLink:    'https://chat.whatsapp.com/dummy-poster',
   },
   {
     name:                 'Paper Presentation',
@@ -54,6 +57,7 @@ const events = [
     allowedFileTypes:     ['application/pdf'],
     maxFileSizeMB:        10,
     registrationEnabled:  true,
+    whatsappGroupLink:    'https://chat.whatsapp.com/dummy-paper',
   },
   {
     name:                 'K-12 STEM',
@@ -65,6 +69,7 @@ const events = [
     minTeamSize:          2,
     maxTeamSize:          5,
     registrationEnabled:  true,
+    whatsappGroupLink:    'https://chat.whatsapp.com/dummy-k12',
   },
 ];
 
