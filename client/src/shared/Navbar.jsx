@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useAnnouncementBadge } from './useAnnouncementBadge.js';
 import './Navbar.css';
 import StaggerText from './StaggerText';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/' },
   { label: 'Events', href: '/events' },
+  { label: 'Updates', href: '/updates', badge: true },
   { label: 'Registration', href: '/register' },
   // { label: 'Accommodation', href: '/accommodation' },
   { label: 'Sponsors', href: '/sponsors' },
@@ -14,7 +16,7 @@ const NAV_ITEMS = [
   { label: 'Contact', href: '/contact' },
 ];
 
-const NavItem = ({ item, onClose }) => (
+const NavItem = ({ item, onClose, hasNewUpdate }) => (
   <li className="nav-item">
     <Link
       to={item.href}
@@ -22,12 +24,14 @@ const NavItem = ({ item, onClose }) => (
       onClick={onClose}
     >
       <StaggerText text={item.label} hoverColor="var(--primary)" />
+      {item.badge && hasNewUpdate && <span className="nav-badge-dot" aria-label="New updates available" />}
     </Link>
   </li>
 );
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const hasNewUpdate = useAnnouncementBadge();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -94,7 +98,7 @@ const Navbar = () => {
 
           <ul className="nav-menu">
             {NAV_ITEMS.map(item => (
-              <NavItem key={item.href} item={item} onClose={closeMenu} />
+              <NavItem key={item.href} item={item} onClose={closeMenu} hasNewUpdate={hasNewUpdate} />
             ))}
           </ul>
 
@@ -165,7 +169,7 @@ const Navbar = () => {
       <div ref={menuRef} className={`mobile-nav-overlay ${mobileMenuOpen ? 'active' : ''}`}>
         <ul className="mobile-nav-menu">
           {NAV_ITEMS.map(item => (
-            <NavItem key={`mobile-${item.href}`} item={item} onClose={closeMenu} />
+            <NavItem key={`mobile-${item.href}`} item={item} onClose={closeMenu} hasNewUpdate={hasNewUpdate} />
           ))}
         </ul>
       </div>

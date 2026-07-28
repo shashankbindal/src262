@@ -5,6 +5,7 @@ const Submission             = require('../models/Submission');
 const Event                  = require('../models/Event');
 const User                   = require('../models/User');
 const Team                   = require('../models/Team');
+const Announcement           = require('../models/Announcement');
 const ApiError               = require('../utils/ApiError');
 const cloudinaryService      = require('./cloudinary.service');
 const confRegService         = require('./conferenceRegistration.service');
@@ -12,6 +13,7 @@ const emailService           = require('./email.service');
 const logger                 = require('../utils/logger');
 const { Parser }             = require('json2csv');
 const ExcelJS                = require('exceljs');
+const filterXSS              = require('xss');
 
 /* ─── Conference Registration Management ──────────────────────────────────── */
 
@@ -447,6 +449,47 @@ async function deleteUser(adminId, userId) {
   logger.info(`Admin ${adminId} deleted user ${userId}`);
 }
 
+/* ─── Announcement Management (create / update / delete) ──────────────────── */
+
+async function createAnnouncement(admin, data) {
+  const announcement = await Announcement.create({
+    title:         filterXSS(data.title),
+    content:       filterXSS(data.content),
+    createdBy:     admin._id,
+  });
+
+  logger.info(`Announcement created: "${announcement.title}" (${announcement._id}) by ${admin.email}`);
+  return announcement;
+}
+
+const ANNOUNCEMENT_UPDATABLE_FIELDS = ['title', 'content'];
+
+async function updateAnnouncement(adminEmail, announcementId, data) {
+  const update = {};
+  for (const field of ANNOUNCEMENT_UPDATABLE_FIELDS) {
+    if (data[field] === undefined) continue;
+    if (field === 'title' || field === 'content') {
+      update[field] = filterXSS(data[field]);
+    } else {
+      update[field] = data[field];
+    }
+  }
+
+  const announcement = await Announcement.findByIdAndUpdate(announcementId, { $set: update }, { new: true, runValidators: true });
+  if (!announcement) throw ApiError.notFound('Announcement not found');
+
+  logger.info(`Announcement updated: "${announcement.title}" (${announcement._id}) by ${adminEmail}`);
+  return announcement;
+}
+
+async function deleteAnnouncement(adminEmail, announcementId) {
+  const announcement = await Announcement.findById(announcementId);
+  if (!announcement) throw ApiError.notFound('Announcement not found');
+
+  await announcement.deleteOne();
+  logger.info(`Announcement deleted: "${announcement.title}" (${announcementId}) by ${adminEmail}`);
+}
+
 module.exports = {
   /* Conference Registration */
   getConferenceRegistrations,
@@ -476,4 +519,8 @@ module.exports = {
   getUsers,
   createUser,
   deleteUser,
+  /* Announcement Management */
+  createAnnouncement,
+  updateAnnouncement,
+  deleteAnnouncement,
 };

@@ -73,10 +73,37 @@ const deleteUserValidator = [
   param('userId').isMongoId().withMessage('Invalid user ID'),
 ];
 
+const createAnnouncementValidator = [
+  body('title')
+    .trim().notEmpty().withMessage('Title is required')
+    .isLength({ max: 200 }).withMessage('Title cannot exceed 200 characters'),
+
+  body('content')
+    .trim().notEmpty().withMessage('Content is required')
+    .isLength({ max: 5000 }).withMessage('Content cannot exceed 5000 characters'),
+];
+
+const updateAnnouncementValidator = [
+  param('id').isMongoId().withMessage('Invalid announcement ID'),
+
+  body('title').optional().trim().notEmpty().withMessage('Title cannot be empty')
+    .isLength({ max: 200 }).withMessage('Title cannot exceed 200 characters'),
+
+  body('content').optional().trim().notEmpty().withMessage('Content cannot be empty')
+    .isLength({ max: 5000 }).withMessage('Content cannot exceed 5000 characters'),
+];
+
+const deleteAnnouncementValidator = [
+  param('id').isMongoId().withMessage('Invalid announcement ID'),
+];
+
 module.exports = {
   createUserValidator,
   deleteUserValidator,
   createEventValidator,
   updateEventValidator,
   deleteEventValidator,
+  createAnnouncementValidator,
+  updateAnnouncementValidator,
+  deleteAnnouncementValidator,
 };

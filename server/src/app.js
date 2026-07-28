@@ -24,6 +24,7 @@ const registrationRoutes           = require('./routes/registration.routes');
 const submissionRoutes             = require('./routes/submission.routes');
 const adminRoutes                  = require('./routes/admin.routes');
 const contactRoutes                = require('./routes/contact.routes');
+const announcementRoutes           = require('./routes/announcement.routes');
 
 const app = express();
 
@@ -89,6 +90,7 @@ app.use(`${V1}/registrations`,           registrationRoutes);
 app.use(`${V1}/submissions`,             submissionRoutes);
 app.use(`${V1}/admin`,                   adminRoutes);
 app.use(`${V1}/contact`,                 contactRoutes);
+app.use(`${V1}/announcements`,           announcementRoutes);
 
 /* ─── 404 handler ────────────────────────────────────────────────────────── */
 app.use((_req, res) => {

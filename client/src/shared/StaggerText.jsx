@@ -81,9 +81,9 @@ const StaggerText = forwardRef(({
     <div
       ref={wrapperRef}
       className={className}
-      style={{ position: "relative", overflow: "hidden", display: "flex" }}
+      style={{ position: "relative", overflow: "hidden", display: "flex", paddingRight: "16px", marginRight: "-16px" }}
     >
-      <div ref={originalRef} style={{ display: "block", whiteSpace: "pre" }}>
+      <div ref={originalRef} style={{ display: "block", whiteSpace: "pre", paddingRight: "16px" }}>
         {text}
       </div>
 
@@ -96,6 +96,7 @@ const StaggerText = forwardRef(({
           display: "block",
           whiteSpace: "pre",
           color: hoverColor,
+          paddingRight: "16px",
         }}
       >
         {text}

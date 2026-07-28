@@ -281,6 +281,24 @@
   background: transparent;
 }
 
+/* ── "New update" badge dot ── */
+.nav-badge-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff3b3b;
+  box-shadow: 0 0 8px rgba(255, 59, 59, 0.9), 0 0 18px rgba(255, 59, 59, 0.6);
+  animation: navBadgePulse 1.6s ease-in-out infinite;
+}
+
+@keyframes navBadgePulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.35); opacity: 0.65; }
+}
+
 /* Mobile */
 .mobile-menu-icon {
   display: none;
@@ -333,7 +351,7 @@
   display: none;
 }
 
-@media (max-width: 990px) {
+@media (max-width: 1200px) {
   .navbar {
     padding: 14px 32px;
   }
@@ -343,7 +361,21 @@
   }
 }
 
-@media (max-width: 860px) {
+@media (min-width: 1150px) and (max-width: 1300px) {
+  .nav-link {
+    padding: 8px 8px;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+  }
+  .nav-menu {
+    gap: 0;
+  }
+  .nav-brand {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 1150px) {
   .navbar {
     top: 8px;
     padding: 8px 14px;

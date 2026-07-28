@@ -8,6 +8,7 @@ import Navbar from "./shared/Navbar.jsx";
 import Footer from "./shared/Footer.jsx";
 import SmoothScroller from "./shared/SmoothScroller.jsx";
 import ScrollToTop from "./shared/ScrollToTop.jsx";
+import AnnouncementPopup from "./shared/AnnouncementPopup.jsx";
 
 /* Auth */
 import { AuthProvider } from "./context/AuthContext.jsx";
@@ -24,6 +25,7 @@ import Sponsor from "./Sponsors/Sponsor.jsx";
 import PrivacyPolicy from "./policies/Privacy.jsx";
 import TermsConditions from "./policies/Terms.jsx";
 import Verify from "./Verify/Verify.jsx";
+import Updates from "./Updates/Updates.jsx";
 
 /* Auth pages */
 import Login from "./auth/Login.jsx";
@@ -139,6 +141,7 @@ const AppContent = () => {
             <Route path="/team"    element={<PageTransition><Team /></PageTransition>} />
             <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
             <Route path="/sponsors" element={<PageTransition><Sponsor /></PageTransition>} />
+            <Route path="/updates" element={<PageTransition><Updates /></PageTransition>} />
             <Route path="/privacy-policy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
             <Route path="/terms-and-conditions" element={<PageTransition><TermsConditions /></PageTransition>} />
             <Route path="/verify/:srcId" element={<PageTransition><Verify /></PageTransition>} />
@@ -193,6 +196,7 @@ const AppContent = () => {
       </main>
 
       {!hideNavFooter && <Footer />}
+      <AnnouncementPopup />
     </SmoothScroller>
   );
 };

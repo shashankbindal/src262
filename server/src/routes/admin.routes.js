@@ -4,6 +4,7 @@ const ctrl     = require('../controllers/admin.controller');
 const { authenticate } = require('../middleware/auth.middleware');
 const { requireAdmin } = require('../middleware/admin.middleware');
 const validate = require('../middleware/validate');
+const { announcementLimiter } = require('../middleware/rateLimiter');
 const {
   adminConfRegDecisionValidator,
 } = require('../validators/registration.validators');
@@ -13,6 +14,9 @@ const {
   createEventValidator,
   updateEventValidator,
   deleteEventValidator,
+  createAnnouncementValidator,
+  updateAnnouncementValidator,
+  deleteAnnouncementValidator,
 } = require('../validators/admin.validators');
 
 const router = express.Router();
@@ -56,5 +60,10 @@ router.delete('/events/:eventId', deleteEventValidator, validate, ctrl.deleteEve
 router.get('/users',    ctrl.getUsers);
 router.post('/users',   createUserValidator, validate, ctrl.createUser);
 router.delete('/users/:userId', deleteUserValidator, validate, ctrl.deleteUser);
+
+/* ─── Announcement Management ────────────────────────────────────────────── */
+router.post('/announcements', announcementLimiter, createAnnouncementValidator, validate, ctrl.createAnnouncement);
+router.put('/announcements/:id', updateAnnouncementValidator, validate, ctrl.updateAnnouncement);
+router.delete('/announcements/:id', deleteAnnouncementValidator, validate, ctrl.deleteAnnouncement);
 
 module.exports = router;

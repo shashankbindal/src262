@@ -49,4 +49,15 @@ const uploadLimiter = rateLimit({
   message:         { success: false, message: 'Upload limit exceeded. Try again later.' },
 });
 
-module.exports = { globalLimiter, authLimiter, authSlowDown, uploadLimiter };
+/* Guards against accidental spam from the admin announcement form —
+ * generous enough for legitimate publishing bursts, tight enough to
+ * catch a stuck form/double-click loop. */
+const announcementLimiter = rateLimit({
+  windowMs:        60 * 60 * 1000, // 1 hour
+  max:             30,
+  standardHeaders: true,
+  legacyHeaders:   false,
+  message:         { success: false, message: 'Too many announcements created. Please slow down.' },
+});
+
+module.exports = { globalLimiter, authLimiter, authSlowDown, uploadLimiter, announcementLimiter };

@@ -1107,6 +1107,231 @@ function UserManagementSection() {
   );
 }
 
+/* ══════════════════════════════════════ ANNOUNCEMENT MANAGEMENT COMPONENTS */
+
+const EMPTY_ANNOUNCEMENT_FORM = { title: '', content: '' };
+
+function announcementTimeAgo(dateString) {
+  const diffSec = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000);
+  if (diffSec < 60) return 'Just now';
+  const min = Math.floor(diffSec / 60);
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}h ago`;
+  const day = Math.floor(hr / 24);
+  if (day < 30) return `${day}d ago`;
+  return new Date(dateString).toLocaleDateString('en-IN');
+}
+
+/* ── Announcement create/edit modal ── */
+function AnnouncementFormModal({ announcement, onClose, onDone }) {
+  const isEdit = Boolean(announcement);
+  const [form, setForm] = useState(() => announcement ? {
+    title: announcement.title || '',
+    content: announcement.content || '',
+  } : EMPTY_ANNOUNCEMENT_FORM);
+  const [busy, setBusy]   = useState(false);
+  const [error, setError] = useState('');
+
+  const handle = (e) => {
+    const { name, type, checked, value } = e.target;
+    setForm((f) => ({ ...f, [name]: type === 'checkbox' ? checked : value }));
+  };
+
+  const submit = async () => {
+    if (!form.title.trim()) { setError('Title is required.'); return; }
+    if (!form.content.trim()) { setError('Content is required.'); return; }
+
+    setBusy(true);
+    setError('');
+    try {
+      const body = {
+        title:    form.title.trim(),
+        content:  form.content.trim(),
+      };
+
+      if (isEdit) {
+        await api.put(`/admin/announcements/${announcement._id}`, body);
+      } else {
+        await api.post('/admin/announcements', body);
+      }
+      onDone();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to save announcement.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="admin-modal-bg" onClick={onClose} data-lenis-prevent>
+      <div className="admin-modal admin-modal--wide" onClick={(e) => e.stopPropagation()}>
+        <h3>{isEdit ? 'Edit Announcement' : 'Publish Announcement'}</h3>
+        {error && <div className="auth-error" style={{ marginBottom: '12px' }}>{error}</div>}
+
+        <div className="ef-grid">
+          <div className="ef-row">
+            <div className="ef-field ef-field-full">
+              <label className="auth-label">Title</label>
+              <input className="admin-modal-input" name="title" placeholder="Announcement title" value={form.title} onChange={handle} autoFocus maxLength={200} />
+            </div>
+          </div>
+
+
+
+          <div className="ef-row">
+            <div className="ef-field ef-field-full">
+              <label className="auth-label">Content</label>
+              <textarea className="admin-modal-input" name="content" placeholder="Announcement content" value={form.content} onChange={handle} rows={6} maxLength={5000} />
+            </div>
+          </div>
+        </div>
+
+        <div className="admin-modal-actions">
+          <button className="tbl-btn" onClick={onClose}>Cancel</button>
+          <button className="tbl-btn approve" onClick={submit} disabled={busy}>
+            {busy ? 'Saving…' : isEdit ? 'Save Changes' : 'Publish Announcement'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Announcements Management Section ── */
+function AnnouncementsSection() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [items, setItems]   = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState('');
+  const [showCreate, setShowCreate] = useState(false);
+  const [editingAnnouncement, setEditingAnnouncement] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+
+  const load = useCallback(() => {
+    if (!isOpen) return;
+    setLoading(true);
+    setLoadError('');
+    api.get('/announcements?limit=50')
+      .then((res) => setItems(res.data?.docs || []))
+      .catch(() => { setItems([]); setLoadError('Failed to load announcements.'); })
+      .finally(() => setLoading(false));
+  }, [isOpen]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const deleteAnnouncement = async (a) => {
+    if (!window.confirm(`Delete "${a.title}"? This action cannot be undone.`)) return;
+
+    setDeletingId(a._id);
+    try {
+      await api.delete(`/admin/announcements/${a._id}`);
+      load();
+    } catch (err) {
+      alert(err instanceof ApiError ? err.message : 'Failed to delete announcement.');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  return (
+    <div className="admin-event-section" style={{ border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-lg)', padding: '24px', background: '#ffffff' }}>
+      <div
+        style={{
+          cursor: 'pointer',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          userSelect: 'none'
+        }}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <h2 className="admin-event-title" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{
+            transition: 'transform 0.2s',
+            transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+            display: 'inline-block',
+            fontSize: '0.9rem',
+            color: 'var(--text-muted)'
+          }}>▶</span>
+          Announcements Management
+        </h2>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {isOpen && (
+            <button
+              className="tbl-btn approve"
+              onClick={(e) => { e.stopPropagation(); setShowCreate(true); }}
+              style={{ height: '32px', padding: '0 16px', fontSize: '0.72rem' }}
+            >
+              + Publish Announcement
+            </button>
+          )}
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            {isOpen ? 'Collapse' : 'Expand'}
+          </span>
+        </div>
+      </div>
+
+      {isOpen && (
+        <div style={{ marginTop: '24px', borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
+          {loading ? (
+            <div style={{ padding: '32px', textAlign: 'center' }}><div className="auth-spinner" style={{ margin: '0 auto' }} /></div>
+          ) : loadError ? (
+            <div className="admin-empty">{loadError}</div>
+          ) : items.length === 0 ? (
+            <div className="admin-empty">No announcements yet. Publish one to get started.</div>
+          ) : (
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((a) => (
+                    <tr key={a._id}>
+                      <td className="name-cell">{a.title}</td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button className="tbl-btn" onClick={() => setEditingAnnouncement(a)}>Edit</button>
+                          <button
+                            className="tbl-btn reject"
+                            onClick={() => deleteAnnouncement(a)}
+                            disabled={deletingId === a._id}
+                          >
+                            {deletingId === a._id ? '…' : 'Delete'}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {showCreate && (
+        <AnnouncementFormModal
+          onClose={() => setShowCreate(false)}
+          onDone={() => { setShowCreate(false); load(); }}
+        />
+      )}
+      {editingAnnouncement && (
+        <AnnouncementFormModal
+          announcement={editingAnnouncement}
+          onClose={() => setEditingAnnouncement(null)}
+          onDone={() => { setEditingAnnouncement(null); load(); }}
+        />
+      )}
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════ ADMIN ROOT */
 export default function AdminDashboard() {
   const { logout } = useAuth();
@@ -1209,6 +1434,9 @@ export default function AdminDashboard() {
 
             {/* User management (add / delete accounts) */}
             <UserManagementSection />
+
+            {/* Announcements management (publish / edit / delete) */}
+            <AnnouncementsSection />
 
             {/* Per-event sections */}
             {events.map((item) => (

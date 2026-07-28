@@ -165,6 +165,23 @@ const deleteUser = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, 'User deleted');
 });
 
+/* ─── Announcement Management ────────────────────────────────────────────── */
+
+const createAnnouncement = asyncHandler(async (req, res) => {
+  const announcement = await adminService.createAnnouncement(req.user, req.body);
+  ApiResponse.created(res, 'Announcement published', announcement);
+});
+
+const updateAnnouncement = asyncHandler(async (req, res) => {
+  const announcement = await adminService.updateAnnouncement(req.user.email, req.params.id, req.body);
+  ApiResponse.ok(res, 'Announcement updated', announcement);
+});
+
+const deleteAnnouncement = asyncHandler(async (req, res) => {
+  await adminService.deleteAnnouncement(req.user.email, req.params.id);
+  ApiResponse.ok(res, 'Announcement deleted');
+});
+
 module.exports = {
   getOverview,
   getConferenceRegistrations,
@@ -186,4 +203,7 @@ module.exports = {
   getUsers,
   createUser,
   deleteUser,
+  createAnnouncement,
+  updateAnnouncement,
+  deleteAnnouncement,
 };
