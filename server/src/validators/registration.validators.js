@@ -146,7 +146,7 @@ const submitConferenceRegistrationValidator = [
 
   body('registrationTier')
     .trim().notEmpty().withMessage('Registration tier is required')
-    .isIn(['base', 'fooding', 'accommodation']).withMessage('Please select a valid registration tier'),
+    .isIn(['base', 'fooding', 'accommodation', 'rgipt_events', 'rgipt_kit', 'rgipt_fooding']).withMessage('Please select a valid registration tier'),
 
   body('merchSize')
     .trim().notEmpty().withMessage('Merch size is required')

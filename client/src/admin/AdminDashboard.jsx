@@ -23,6 +23,9 @@ const TIER_LABELS = {
   base: 'Registration Only',
   fooding: 'Registration + Fooding',
   accommodation: 'Registration + Accommodation & Fooding',
+  rgipt_events: 'Conference Events (RGIPT Student)',
+  rgipt_kit: 'Conference Events + Registration Kit (RGIPT Student)',
+  rgipt_fooding: 'Conference Events + Registration Kit + Fooding (RGIPT Student)',
 };
 
 function tierLabel(reg) {
@@ -33,6 +36,9 @@ const TIER_LABELS_SHORT = {
   base: 'Registration Only',
   fooding: 'Fooding',
   accommodation: 'Accommodation',
+  rgipt_events: 'RGIPT Events',
+  rgipt_kit: 'RGIPT Kit',
+  rgipt_fooding: 'RGIPT Kit+Fooding',
 };
 
 function tierLabelShort(reg) {
@@ -190,6 +196,7 @@ function ConfDetailModal({ confRegId, onClose }) {
               <Row label="State" value={u.state} />
               <Row label="Country" value={u.country} />
               <Row label="Merch Size" value={u.merchSize} />
+              <Row label="Participant Type" value={detail.participantType ? detail.participantType.toUpperCase() : 'EXTERNAL'} />
               <Row label="Registration Type" value={tierLabel(detail)} />
               <Row label="Registration Fee" value={`₹${detail.registrationFee ?? '—'}`} />
               <Row label="Transaction ID" value={detail.transactionId} />
@@ -257,6 +264,7 @@ function ConfRegRow({ confReg, onRefresh }) {
         <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
           {confReg.transactionId || '—'}
         </td>
+        <td style={{ textTransform: 'capitalize' }}>{confReg.participantType || 'external'}</td>
         <td>{confReg.srcId ? <strong style={{ color: 'var(--primary)' }}>{confReg.srcId}</strong> : '—'}</td>
         <td>{tierLabelShort(confReg)}</td>
         <td>₹{confReg.registrationFee ?? '—'}</td>
@@ -389,6 +397,7 @@ function ConfRegSection({ counts }) {
                     <th>Email</th>
                     <th>College</th>
                     <th>Transaction ID</th>
+                    <th>Participant Type</th>
                     <th>SRC ID</th>
                     <th>Registration Type</th>
                     <th>Fee Paid</th>

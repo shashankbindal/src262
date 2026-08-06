@@ -30,11 +30,18 @@ const conferenceRegistrationSchema = new mongoose.Schema(
 
     /* Which registration tier was purchased — determines the fee.
      * 'base': registration only. 'fooding': registration + fooding.
-     * 'accommodation': registration + accommodation & fooding. */
+     * 'accommodation': registration + accommodation & fooding.
+     * 'rgipt_events': events only. 'rgipt_kit': events + kit. 'rgipt_fooding': events + kit + fooding. */
     registrationTier: {
       type: String,
-      enum: ['base', 'fooding', 'accommodation'],
+      enum: ['base', 'fooding', 'accommodation', 'rgipt_events', 'rgipt_kit', 'rgipt_fooding'],
       default: 'base',
+    },
+    /* Whether the user is an internal (RGIPT) or external student */
+    participantType: {
+      type: String,
+      enum: ['internal', 'external'],
+      default: 'external',
     },
     /* Kept in sync with registrationTier (true only for 'accommodation') —
      * older code/exports read this boolean directly. */

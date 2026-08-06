@@ -209,21 +209,13 @@ export default function Registration() {
               </p>
 
               <div className="reg-gate-fees">
-                <div className="reg-gate-fee-card">
-                  <span className="rg-fee-type">Registration Only</span>
-                  <span className="rg-fee-val">₹{(config?.feeBase ?? 3000).toLocaleString('en-IN')}</span>
-                  <span className="rg-fee-desc">Access to all conference events</span>
-                </div>
-                <div className="reg-gate-fee-card">
-                  <span className="rg-fee-type">Registration + Fooding</span>
-                  <span className="rg-fee-val">₹{(config?.feeFooding ?? 5000).toLocaleString('en-IN')}</span>
-                  <span className="rg-fee-desc">Events access + fooding at campus</span>
-                </div>
-                <div className="reg-gate-fee-card highlighted">
-                  <span className="rg-fee-type">Registration + Accommodation & Fooding</span>
-                  <span className="rg-fee-val">₹{(config?.feeWithAccommodation ?? 5500).toLocaleString('en-IN')}</span>
-                  <span className="rg-fee-desc">Events access + accommodation & fooding at campus</span>
-                </div>
+                {config?.tiers?.map((t, idx) => (
+                  <div key={t.key} className={`reg-gate-fee-card${idx === config.tiers.length - 1 ? ' highlighted' : ''}`}>
+                    <span className="rg-fee-type">{t.title}</span>
+                    <span className="rg-fee-val">₹{(t.amount ?? 0).toLocaleString('en-IN')}</span>
+                    <span className="rg-fee-desc">{t.description}</span>
+                  </div>
+                ))}
               </div>
             </>
           )}

@@ -38,6 +38,9 @@ const TIER_LABELS = {
   base: 'Registration Only',
   fooding: 'Registration + Fooding',
   accommodation: 'Registration + Accommodation & Fooding',
+  rgipt_events: 'Conference Events (RGIPT Student)',
+  rgipt_kit: 'Conference Events + Registration Kit (RGIPT Student)',
+  rgipt_fooding: 'Conference Events + Registration Kit + Fooding (RGIPT Student)',
 };
 
 function maskId(num) {
@@ -575,27 +578,17 @@ function PaymentStage({ config, registrationTier, setRegistrationTier, transacti
       <div className="cr-fee-card">
         <span className="cr-fee-label">Choose your registration type</span>
         <div className="cr-fee-options">
-          <label className={`cr-fee-option${registrationTier === 'base' ? ' selected' : ''}`}>
-            <input type="radio" name="registrationTier" checked={registrationTier === 'base'}
-              onChange={() => setRegistrationTier('base')} />
-            <span className="cr-fee-option-title">Conference Registration Only</span>
-            <span className="cr-fee-option-amount">₹{config?.feeBase ?? '—'}</span>
-          </label>
-          <label className={`cr-fee-option${registrationTier === 'fooding' ? ' selected' : ''}`}>
-            <input type="radio" name="registrationTier" checked={registrationTier === 'fooding'}
-              onChange={() => setRegistrationTier('fooding')} />
-            <span className="cr-fee-option-title">Conference Registration + Fooding</span>
-            <span className="cr-fee-option-amount">₹{config?.feeFooding ?? '—'}</span>
-          </label>
-          <label className={`cr-fee-option${registrationTier === 'accommodation' ? ' selected' : ''}`}>
-            <input type="radio" name="registrationTier" checked={registrationTier === 'accommodation'}
-              onChange={() => setRegistrationTier('accommodation')} />
-            <span className="cr-fee-option-title">Conference Registration + Accommodation & Fooding</span>
-            <span className="cr-fee-option-amount">₹{config?.feeWithAccommodation ?? '—'}</span>
-          </label>
+          {config?.tiers?.map((t) => (
+            <label key={t.key} className={`cr-fee-option${registrationTier === t.key ? ' selected' : ''}`}>
+              <input type="radio" name="registrationTier" checked={registrationTier === t.key}
+                onChange={() => setRegistrationTier(t.key)} />
+              <span className="cr-fee-option-title">{t.title}</span>
+              <span className="cr-fee-option-amount">₹{t.amount ?? '—'}</span>
+            </label>
+          ))}
         </div>
         <div className="cr-fee-note">
-          This fee covers your participation in all conference events. No additional event-level fees apply.
+          {config?.tiers?.find((t) => t.key === registrationTier)?.description || 'This fee covers your participation.'}
         </div>
       </div>
 
@@ -909,6 +902,16 @@ export default function ConferenceRegistration() {
       })
       .finally(() => setLoading(false));
   }, [isAuthenticated]);
+
+  /* Keep registrationTier in sync with loaded config options */
+  useEffect(() => {
+    if (config?.tiers && config.tiers.length > 0) {
+      const keys = config.tiers.map((t) => t.key);
+      if (!keys.includes(registrationTier)) {
+        setRegistrationTier(keys[0]);
+      }
+    }
+  }, [config, registrationTier]);
 
   /* Pre-fill form with existing user profile */
   useEffect(() => {

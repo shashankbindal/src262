@@ -12,6 +12,12 @@ module.exports = {
   feeFooding: parseInt(process.env.CONF_FEE_FOODING || '5000', 10),
   /* Conference registration + accommodation & fooding */
   feeWithAccommodation: parseInt(process.env.CONF_FEE_WITH_ACCOMMODATION || '5500', 10),
+  /* RGIPT Events Only */
+  feeRgiptEvents: parseInt(process.env.CONF_FEE_RGIPT_EVENTS || '500', 10),
+  /* RGIPT Events + Registration Kit */
+  feeRgiptKit: parseInt(process.env.CONF_FEE_RGIPT_KIT || '1500', 10),
+  /* RGIPT Events + Kit + Fooding */
+  feeRgiptFooding: parseInt(process.env.CONF_FEE_RGIPT_FOODING || '3500', 10),
   upiId: process.env.CONF_UPI_ID || 'rgiptjais@sbi',
   qrVersion: process.env.CONF_QR_VERSION || 'v1',
 

@@ -20,6 +20,9 @@ const TIER_LABELS = {
   base:          'Registration Only',
   fooding:       'Registration + Fooding',
   accommodation: 'Registration + Accommodation & Fooding',
+  rgipt_events:  'Conference Events (RGIPT Student)',
+  rgipt_kit:     'Conference Events + Registration Kit (RGIPT Student)',
+  rgipt_fooding: 'Conference Events + Registration Kit + Fooding (RGIPT Student)',
 };
 
 function tierLabel(reg) {
@@ -49,17 +52,34 @@ async function submitConferenceRegistration(userId, {
   /* Merch */
   merchSize,
 }) {
-  const tier = ['base', 'fooding', 'accommodation'].includes(registrationTier) ? registrationTier : 'base';
-  const accommodation = tier === 'accommodation';
-  const FEE_BY_TIER = {
-    base:          conferenceConfig.feeBase,
-    fooding:       conferenceConfig.feeFooding,
-    accommodation: conferenceConfig.feeWithAccommodation,
-  };
-  const registrationFee = FEE_BY_TIER[tier];
-
   const user = await User.findById(userId);
   if (!user) throw ApiError.notFound('User not found');
+
+  const isRgipt = user.email && user.email.toLowerCase().endsWith('@rgipt.ac.in');
+  const participantType = isRgipt ? 'internal' : 'external';
+
+  // Strict validation on requested registrationTier matching participantType
+  if (isRgipt) {
+    if (!['rgipt_events', 'rgipt_kit', 'rgipt_fooding'].includes(registrationTier)) {
+      throw ApiError.badRequest('RGIPT students must select one of the allowed host-college registration packages.');
+    }
+  } else {
+    if (!['base', 'fooding', 'accommodation'].includes(registrationTier)) {
+      throw ApiError.badRequest('External students must select one of the standard conference tiers.');
+    }
+  }
+
+  const tier = registrationTier;
+  const accommodation = tier === 'accommodation';
+  const FEE_BY_TIER = {
+    base:             conferenceConfig.feeBase,
+    fooding:          conferenceConfig.feeFooding,
+    accommodation:    conferenceConfig.feeWithAccommodation,
+    rgipt_events:     conferenceConfig.feeRgiptEvents || 500,
+    rgipt_kit:        conferenceConfig.feeRgiptKit || 1500,
+    rgipt_fooding:    conferenceConfig.feeRgiptFooding || 3500,
+  };
+  const registrationFee = FEE_BY_TIER[tier];
 
   /* ── Update user profile ── */
   const profileUpdate = {};
@@ -130,6 +150,7 @@ async function submitConferenceRegistration(userId, {
     existing.qrVersion             = conferenceConfig.qrVersion;
     existing.status                = 'pending';
     existing.rejectionReason       = '';
+    existing.participantType       = participantType;
     if (photoFileUrl) {
       existing.photoUrl = photoFileUrl;
       existing.photoKey = photoFileKey;
@@ -154,6 +175,7 @@ async function submitConferenceRegistration(userId, {
     referenceNumber:      generateReferenceNumber(),
     photoUrl:             photoFileUrl,
     photoKey:             photoFileKey,
+    participantType:      participantType,
   });
 
   logger.info(`Conference registration submitted: user=${userId}, ref=${reg.referenceNumber}`);
@@ -178,15 +200,63 @@ async function getMyConferenceRegistration(userId) {
 /**
  * Public config for the registration form (fee, UPI, options lists).
  */
-function getRegistrationConfig() {
+function getRegistrationConfig(user) {
+  const isRgipt = user && user.email && user.email.toLowerCase().endsWith('@rgipt.ac.in');
+  
+  const tiers = [];
+  if (isRgipt) {
+    tiers.push({
+      key: 'rgipt_events',
+      title: 'Conference Events',
+      amount: conferenceConfig.feeRgiptEvents || 500,
+      description: 'This fee (₹500) covers your participation in conference events.'
+    });
+    tiers.push({
+      key: 'rgipt_kit',
+      title: 'Conference Events + Registration Kit',
+      amount: conferenceConfig.feeRgiptKit || 1500,
+      description: 'This fee (₹1500) covers your participation in conference events and includes a registration kit.'
+    });
+    tiers.push({
+      key: 'rgipt_fooding',
+      title: 'Conference Events + Kit + Fooding',
+      amount: conferenceConfig.feeRgiptFooding || 3500,
+      description: 'This fee (₹3500) covers your participation in conference events, and includes a registration kit and fooding.'
+    });
+  } else {
+    tiers.push({
+      key: 'base',
+      title: 'Conference Registration Only',
+      amount: conferenceConfig.feeBase,
+      description: 'This fee covers your participation in all conference events. No additional event-level fees apply.'
+    });
+    tiers.push({
+      key: 'fooding',
+      title: 'Conference Registration + Fooding',
+      amount: conferenceConfig.feeFooding,
+      description: 'This fee covers your participation in all conference events and campus dining. No additional event-level fees apply.'
+    });
+    tiers.push({
+      key: 'accommodation',
+      title: 'Conference Registration + Accommodation & Fooding',
+      amount: conferenceConfig.feeWithAccommodation,
+      description: 'This fee covers your participation in all conference events, campus dining, and campus accommodation. No additional event-level fees apply.'
+    });
+  }
+
   return {
     feeBase:                conferenceConfig.feeBase,
     feeFooding:             conferenceConfig.feeFooding,
     feeWithAccommodation:   conferenceConfig.feeWithAccommodation,
+    feeRgiptEvents:         conferenceConfig.feeRgiptEvents || 500,
+    feeRgiptKit:            conferenceConfig.feeRgiptKit || 1500,
+    feeRgiptFooding:        conferenceConfig.feeRgiptFooding || 3500,
     upiId:                  conferenceConfig.upiId,
     qrVersion:              conferenceConfig.qrVersion,
     yearOfStudyOptions:     conferenceConfig.yearOfStudyOptions,
     genderOptions:          conferenceConfig.genderOptions,
+    tiers:                  tiers,
+    isRgipt:                isRgipt,
   };
 }
 
@@ -392,6 +462,7 @@ async function exportConferenceRegistrationsCSV(status) {
       state:               u.state || '',
       country:             u.country || '',
       merchSize:           u.merchSize || '',
+      participantType:     r.participantType || 'external',
       registrationTier:    r.registrationTier || 'base',
       needsAccommodation:  r.needsAccommodation ? 'Yes' : 'No',
       registrationFee:     r.registrationFee ?? '',

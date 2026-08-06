@@ -5,10 +5,31 @@ const ApiError       = require('../utils/ApiError');
 const confRegService = require('../services/conferenceRegistration.service');
 const cloudinaryService = require('../services/cloudinary.service');
 
-/* ─── Config (public) ─────────────────────────────────────────────────────── */
+/* ─── Config (public, optionally authenticated) ───────────────────────────── */
 
-const getConfig = asyncHandler(async (_req, res) => {
-  const config = confRegService.getRegistrationConfig();
+const getConfig = asyncHandler(async (req, res) => {
+  let user = null;
+  let token = req.cookies?.accessToken;
+
+  if (!token) {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.slice(7);
+    }
+  }
+
+  if (token) {
+    try {
+      const { verifyAccessToken } = require('../utils/generateToken');
+      const User = require('../models/User');
+      const payload = verifyAccessToken(token);
+      user = await User.findById(payload.sub).lean();
+    } catch (e) {
+      // Ignore token errors for public config
+    }
+  }
+
+  const config = confRegService.getRegistrationConfig(user);
   ApiResponse.ok(res, 'Conference registration config', config);
 });
 

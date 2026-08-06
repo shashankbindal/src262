@@ -130,12 +130,19 @@ function ProfileTab({ user, refreshUser }) {
 /* ═══════════════════════════════════════════ CONFERENCE REGISTRATION BANNER */
 function ConferenceRegBanner() {
   const [confReg, setConfReg] = useState(null);
+  const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
-    api.get('/conference-registration')
-      .then((res) => setConfReg(res.data || null))
+    const fetchReg = api.get('/conference-registration').catch(() => ({ data: null }));
+    const fetchConfig = api.get('/conference-registration/config').catch(() => ({ data: null }));
+
+    Promise.all([fetchReg, fetchConfig])
+      .then(([regRes, cfgRes]) => {
+        setConfReg(regRes.data || null);
+        setConfig(cfgRes.data || null);
+      })
       .catch(() => setLoadError(true))
       .finally(() => setLoading(false));
   }, []);
@@ -154,11 +161,16 @@ function ConferenceRegBanner() {
   }
 
   if (!confReg) {
+    const tierList = config?.tiers?.map((t) => `${t.title}: ₹${t.amount}`).join(', ');
+    const msg = tierList
+      ? `You haven't registered yet. Complete registration (${tierList}) to unlock event registration.`
+      : "You haven't registered for the conference yet. Complete registration to unlock event registration.";
+
     return (
       <div className="confbanner confbanner-none">
         <div className="confbanner-body">
           <span className="confbanner-label">Conference Registration</span>
-          <p className="confbanner-msg">You haven't registered for the conference yet. Pay the conference fee to unlock event registration.</p>
+          <p className="confbanner-msg">{msg}</p>
         </div>
         <Link to="/conference-registration" className="confbanner-btn">Register Now</Link>
       </div>
