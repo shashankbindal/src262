@@ -165,6 +165,20 @@ async function getSubmissionFile(registrationId) {
   const sub = await Submission.findOne({ registrationId }).lean();
   if (!sub) throw ApiError.notFound('No submission found for this registration');
 
+  if (sub.files && sub.files.length > 0) {
+    const filesWithUrls = await Promise.all(
+      sub.files.map(async (file) => ({
+        ...file,
+        signedUrl: await cloudinaryService.getSignedDownloadUrl(
+          file.fileKey,
+          file.fileUrl,
+          file.originalFileName || file.fileName
+        ),
+      }))
+    );
+    return { ...sub, files: filesWithUrls, signedUrl: filesWithUrls[0].signedUrl };
+  }
+
   const signedUrl = await cloudinaryService.getSignedDownloadUrl(sub.fileKey, sub.fileUrl, sub.originalFileName || sub.fileName);
   return { ...sub, signedUrl };
 }
@@ -312,7 +326,7 @@ function slugify(name) {
 
 const EVENT_UPDATABLE_FIELDS = [
   'name', 'slug', 'description', 'type', 'registrationDeadline', 'submissionDeadline',
-  'fileUploadRequired', 'allowedFileTypes', 'maxFileSizeMB', 'minTeamSize', 'maxTeamSize',
+  'fileUploadRequired', 'pdfUploadMode', 'allowedFileTypes', 'maxFileSizeMB', 'minTeamSize', 'maxTeamSize',
   'registrationEnabled', 'whatsappGroupLink',
 ];
 
@@ -322,6 +336,9 @@ async function createEvent(data) {
   const existing = await Event.findOne({ slug });
   if (existing) throw ApiError.conflict(`An event with slug "${slug}" already exists`);
 
+  const pdfUploadMode = data.pdfUploadMode || (data.fileUploadRequired ? 'single' : 'none');
+  const fileUploadRequired = pdfUploadMode !== 'none';
+
   const event = await Event.create({
     name:                 data.name,
     slug,
@@ -329,7 +346,8 @@ async function createEvent(data) {
     type:                 data.type,
     registrationDeadline: data.registrationDeadline,
     submissionDeadline:   data.submissionDeadline || undefined,
-    fileUploadRequired:   Boolean(data.fileUploadRequired),
+    fileUploadRequired,
+    pdfUploadMode,
     allowedFileTypes:     data.allowedFileTypes || ['application/pdf'],
     maxFileSizeMB:        data.maxFileSizeMB || 10,
     minTeamSize:          data.minTeamSize,
@@ -346,6 +364,18 @@ async function updateEvent(eventId, data) {
   const update = {};
   for (const field of EVENT_UPDATABLE_FIELDS) {
     if (data[field] !== undefined) update[field] = data[field];
+  }
+
+  if (data.pdfUploadMode !== undefined) {
+    update.pdfUploadMode = data.pdfUploadMode;
+    update.fileUploadRequired = data.pdfUploadMode !== 'none';
+  } else if (data.fileUploadRequired !== undefined) {
+    update.fileUploadRequired = data.fileUploadRequired;
+    if (!data.fileUploadRequired) {
+      update.pdfUploadMode = 'none';
+    } else if (update.pdfUploadMode === undefined || update.pdfUploadMode === 'none') {
+      update.pdfUploadMode = 'single';
+    }
   }
 
   if (update.slug) {
@@ -490,6 +520,28 @@ async function deleteAnnouncement(adminEmail, announcementId) {
   logger.info(`Announcement deleted: "${announcement.title}" (${announcementId}) by ${adminEmail}`);
 }
 
+async function deleteRegistration(registrationId) {
+  const reg = await Registration.findById(registrationId);
+  if (!reg) throw ApiError.notFound('Registration not found');
+
+  if (reg.teamId) {
+    await Team.findByIdAndDelete(reg.teamId);
+  }
+
+  const submission = await Submission.findOne({ registrationId });
+  if (submission) {
+    if (submission.files && submission.files.length) {
+      await Promise.all(submission.files.map(f => cloudinaryService.deleteFile(f.fileKey).catch(() => {})));
+    } else if (submission.fileKey) {
+      await cloudinaryService.deleteFile(submission.fileKey).catch(() => {});
+    }
+    await submission.deleteOne();
+  }
+
+  await reg.deleteOne();
+  logger.info(`Registration ${registrationId} deleted by admin`);
+}
+
 module.exports = {
   /* Conference Registration */
   getConferenceRegistrations,
@@ -502,6 +554,7 @@ module.exports = {
   getConfIdCard,
   /* Event Registration */
   getRegistrationsByEvent,
+  deleteRegistration,
   markSubmissionComplete,
   getSubmissionsByEvent,
   getSubmissionFile,

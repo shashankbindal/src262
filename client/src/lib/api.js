@@ -84,6 +84,7 @@ export const api = {
   delete: (path)          => request('DELETE', path),
   upload: (path, formData) => request('POST',  path, formData, true),
   uploadPatch: (path, formData) => request('PATCH', path, formData, true),
+  uploadPut: (path, formData) => request('PUT', path, formData, true),
 };
 
 export { ApiError };

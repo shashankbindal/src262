@@ -41,6 +41,7 @@ router.get('/conference-registrations/:confRegId/id-card-preview', ctrl.getIdCar
 
 /* ─── Event Registrations ────────────────────────────────────────────────── */
 router.get('/events/:eventId/registrations',     ctrl.getRegistrations);
+router.delete('/registrations/:registrationId',  ctrl.deleteRegistration);
 router.get('/registrations/:registrationId/submission-file', ctrl.getSubmissionFile);
 
 /* ─── Submissions ────────────────────────────────────────────────────────── */

@@ -43,6 +43,7 @@ const createEventValidator = [
     .isISO8601().withMessage('Invalid submission deadline'),
 
   body('fileUploadRequired').optional().isBoolean().toBoolean(),
+  body('pdfUploadMode').optional().isIn(['none', 'single', 'multiple']).withMessage('Invalid PDF upload mode'),
   body('registrationEnabled').optional().isBoolean().toBoolean(),
   body('maxFileSizeMB').optional().isInt({ min: 1, max: 100 }).toInt(),
   body('minTeamSize').optional().isInt({ min: 1 }).toInt(),
@@ -59,6 +60,7 @@ const updateEventValidator = [
   body('registrationDeadline').optional().isISO8601().withMessage('Invalid registration deadline'),
   body('submissionDeadline').optional({ values: 'falsy' }).isISO8601().withMessage('Invalid submission deadline'),
   body('fileUploadRequired').optional().isBoolean().toBoolean(),
+  body('pdfUploadMode').optional().isIn(['none', 'single', 'multiple']).withMessage('Invalid PDF upload mode'),
   body('registrationEnabled').optional().isBoolean().toBoolean(),
   body('maxFileSizeMB').optional().isInt({ min: 1, max: 100 }).toInt(),
   body('minTeamSize').optional().isInt({ min: 1 }).toInt(),

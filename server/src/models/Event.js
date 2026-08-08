@@ -33,6 +33,11 @@ const eventSchema = new mongoose.Schema(
       type:    Boolean,
       default: false,
     },
+    pdfUploadMode: {
+      type:    String,
+      enum:    ['none', 'single', 'multiple'],
+      default: 'none',
+    },
     allowedFileTypes: {
       type:    [String],
       default: ['application/pdf'],

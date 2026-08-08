@@ -47,31 +47,47 @@ function EventCard({ event, selected, onClick }) {
 }
 
 /* ── Submission Upload Form for Registration Success ── */
-function RegistrationSubmissionForm({ registrationId, onSuccess }) {
-  const [file, setFile] = useState(null);
+function RegistrationSubmissionForm({ registrationId, event, onSuccess }) {
+  const [files, setFiles] = useState([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
   const fileRef = useRef(null);
 
-  const validateAndSetFile = (selectedFile) => {
-    if (selectedFile.type !== 'application/pdf') {
-      setError('Please select a PDF file.');
-      setFile(null);
-      return;
-    }
-    if (selectedFile.size > 10 * 1024 * 1024) {
-      setError('File size exceeds the 10MB limit.');
-      setFile(null);
-      return;
-    }
-    setFile(selectedFile);
-    setError('');
+  const validateAndSetFiles = (selectedFiles, append = false) => {
+    const isMultiple = event?.pdfUploadMode === 'multiple';
+    const fileList = isMultiple ? Array.from(selectedFiles) : [selectedFiles[0]];
+    const maxMB = event?.maxFileSizeMB || 10;
+
+    setFiles((prevFiles) => {
+      const validFiles = isMultiple && append ? [...prevFiles] : [];
+
+      for (const f of fileList) {
+        if (!f) continue;
+        if (f.type !== 'application/pdf') {
+          setError('Please select PDF files only.');
+          return prevFiles;
+        }
+        if (f.size > maxMB * 1024 * 1024) {
+          setError(`File "${f.name}" exceeds the ${maxMB}MB limit.`);
+          return prevFiles;
+        }
+        if (validFiles.some(existing => existing.name === f.name && existing.size === f.size)) {
+          continue;
+        }
+        validFiles.push(f);
+      }
+
+      setError('');
+      return validFiles;
+    });
   };
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) validateAndSetFile(selectedFile);
+    const selectedFiles = e.target.files;
+    if (selectedFiles && selectedFiles.length > 0) {
+      validateAndSetFiles(selectedFiles, true);
+    }
   };
 
   const handleDragOver = (e) => {
@@ -86,13 +102,15 @@ function RegistrationSubmissionForm({ registrationId, onSuccess }) {
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragOver(false);
-    const selectedFile = e.dataTransfer.files[0];
-    if (selectedFile) validateAndSetFile(selectedFile);
+    const selectedFiles = e.dataTransfer.files;
+    if (selectedFiles && selectedFiles.length > 0) {
+      validateAndSetFiles(selectedFiles, true);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file) {
+    if (files.length === 0) {
       setError('Please select a file.');
       return;
     }
@@ -100,7 +118,13 @@ function RegistrationSubmissionForm({ registrationId, onSuccess }) {
     setError('');
 
     const fd = new FormData();
-    fd.append('file', file);
+    if (files.length === 1) {
+      fd.append('file', files[0]);
+    } else {
+      files.forEach((file) => {
+        fd.append('files', file);
+      });
+    }
 
     try {
       await api.upload(`/submissions/${registrationId}`, fd);
@@ -136,26 +160,50 @@ function RegistrationSubmissionForm({ registrationId, onSuccess }) {
             ref={fileRef}
             type="file"
             accept="application/pdf"
+            multiple={event?.pdfUploadMode === 'multiple'}
             onChange={handleFileChange}
             style={{ display: 'none' }}
           />
-          {file ? (
-            <div className="cr-file-thumb cr-file-thumb-pdf">
-              <span className="cr-pdf-icon">PDF</span>
-              <span className="cr-file-name">{file.name}</span>
+          {files.length > 0 ? (
+            <div className="cr-file-thumb cr-file-thumb-pdf" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px', cursor: 'default', width: '100%' }} onClick={(e) => e.stopPropagation()}>
+              {files.map((file, idx) => (
+                <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className="cr-pdf-icon">PDF</span>
+                    <span className="cr-file-name" style={{ fontSize: '0.85rem' }}>{file.name}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFiles((prev) => prev.filter((_, i) => i !== idx))}
+                    style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.2rem', padding: '0 4px' }}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              {event?.pdfUploadMode === 'multiple' && (
+                <button
+                  type="button"
+                  className="reg-action-btn"
+                  onClick={() => fileRef.current?.click()}
+                  style={{ marginTop: '8px', fontSize: '0.8rem', padding: '4px 8px' }}
+                >
+                  + Add another file
+                </button>
+              )}
             </div>
           ) : (
             <div className="cr-upload-placeholder">
               <span className="cr-upload-icon">⬆</span>
-              <span style={{ fontWeight: '500' }}>Click or drag PDF here to upload</span>
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted, #888)' }}>(Max 10 MB)</span>
+              <span style={{ fontWeight: '500' }}>Click or drag PDF{event?.pdfUploadMode === 'multiple' ? 's' : ''} here to upload</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted, #888)' }}>(Max {event?.maxFileSizeMB || 10} MB per file)</span>
             </div>
           )}
         </div>
       </div>
 
       <button className="reg-simple-btn" type="submit" disabled={busy} style={{ width: '100%' }}>
-        {busy ? <><span className="btn-spinner" /> Uploading…</> : 'Upload Abstract'}
+        {busy ? <><span className="btn-spinner" /> Uploading…</> : 'Upload PDF(s)'}
       </button>
     </form>
   );
@@ -370,6 +418,7 @@ export default function Registration() {
               ) : (
                 <RegistrationSubmissionForm 
                   registrationId={successReg._id || successReg.id} 
+                  event={selectedEvent}
                   onSuccess={() => setUploadSuccess(true)}
                 />
               )}

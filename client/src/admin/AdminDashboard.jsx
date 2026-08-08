@@ -420,6 +420,7 @@ function ConfRegSection({ counts }) {
 /* ══════════════════════════════════════ EVENT REGISTRATION COMPONENTS */
 
 /* ── Submission download + review cell ── */
+/* ── Submission download + review cell ── */
 function SubmissionCell({ registrationId, status, onRefresh }) {
   const [submission, setSubmission] = useState(null);
   const [loading, setLoading]       = useState(false);
@@ -427,12 +428,21 @@ function SubmissionCell({ registrationId, status, onRefresh }) {
 
   const fetchSubmission = async () => {
     if (submission) return submission;
-    const res = await api.get(`/admin/registrations/${registrationId}/submission-file`);
-    setSubmission(res.data);
-    return res.data;
+    try {
+      const res = await api.get(`/admin/registrations/${registrationId}/submission-file`);
+      setSubmission(res.data);
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
   };
 
-  const download = async () => {
+  useEffect(() => {
+    fetchSubmission();
+  }, [registrationId]);
+
+  const downloadSingle = async () => {
     const tab = window.open('', '_blank');
     setLoading(true);
     try {
@@ -444,6 +454,10 @@ function SubmissionCell({ registrationId, status, onRefresh }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const downloadFile = (url) => {
+    window.open(url, '_blank');
   };
 
   const markComplete = async () => {
@@ -460,11 +474,29 @@ function SubmissionCell({ registrationId, status, onRefresh }) {
     }
   };
 
+  const hasFiles = submission?.files && submission.files.length > 0;
+
   return (
-    <div style={{ display: 'flex', gap: '8px' }}>
-      <button className="tbl-btn" onClick={download} disabled={loading}>
-        {loading ? '…' : 'Download'}
-      </button>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: '150px' }}>
+      {hasFiles ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          {submission.files.map((file, idx) => (
+            <button
+              key={file.fileKey || idx}
+              className="tbl-btn"
+              onClick={() => downloadFile(file.signedUrl)}
+              style={{ fontSize: '0.72rem', padding: '4px 6px', textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+              title={file.fileName}
+            >
+              ↓ {file.fileName || `PDF ${idx + 1}`}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <button className="tbl-btn" onClick={downloadSingle} disabled={loading}>
+          {loading ? '…' : 'Download'}
+        </button>
+      )}
       {status !== 'completed' && (
         <button className="tbl-btn approve" onClick={markComplete} disabled={completing}>
           {completing ? '…' : 'Mark Complete'}
@@ -479,6 +511,21 @@ function RegRow({ reg, onRefresh }) {
   const participant = reg.participantSnapshot || reg.userId || {};
   const team        = reg.teamId;
   const [isCollapsed, setIsCollapsed] = useState(true);
+
+  const deleteReg = async () => {
+    const confirmMsg = team 
+      ? `Delete team "${team.teamName}"? This permanently removes the team, its leader registration, and any files. This cannot be undone.`
+      : `Delete registration for ${participant.name || 'this user'}? This cannot be undone.`;
+      
+    if (!window.confirm(confirmMsg)) return;
+    
+    try {
+      await api.delete(`/admin/registrations/${reg._id}`);
+      onRefresh();
+    } catch (err) {
+      alert(err instanceof ApiError ? err.message : 'Failed to delete registration.');
+    }
+  };
 
   if (team) {
     return (
@@ -502,9 +549,14 @@ function RegRow({ reg, onRefresh }) {
             Team: {team.teamName} <span style={{ fontSize: '0.85em', color: 'var(--text-muted)', fontWeight: 'normal' }}>({(team.members?.length || 0) + 1} members)</span>
           </td>
           <td>
-            {['submitted', 'completed'].includes(reg.status) && (
-              <SubmissionCell registrationId={reg._id} status={reg.status} onRefresh={onRefresh} />
-            )}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              {['submitted', 'completed'].includes(reg.status) && (
+                <SubmissionCell registrationId={reg._id} status={reg.status} onRefresh={onRefresh} />
+              )}
+              <button className="tbl-btn reject" onClick={deleteReg}>
+                Delete Team
+              </button>
+            </div>
           </td>
         </tr>
         {!isCollapsed && (
@@ -555,7 +607,12 @@ function RegRow({ reg, onRefresh }) {
       </td>
       <td>{new Date(reg.createdAt).toLocaleDateString('en-IN')}</td>
       <td>
-        {reg.status === 'submitted' && <SubmissionCell registrationId={reg._id} />}
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          {['submitted', 'completed'].includes(reg.status) && <SubmissionCell registrationId={reg._id} status={reg.status} onRefresh={onRefresh} />}
+          <button className="tbl-btn reject" onClick={deleteReg}>
+            Delete
+          </button>
+        </div>
       </td>
     </tr>
   );
@@ -655,7 +712,7 @@ function EventSection({ evt }) {
 const EMPTY_EVENT_FORM = {
   name: '', slug: '', description: '', type: 'solo',
   registrationDeadline: '', submissionDeadline: '',
-  fileUploadRequired: false, maxFileSizeMB: 10,
+  fileUploadRequired: false, pdfUploadMode: 'none', maxFileSizeMB: 10,
   minTeamSize: 2, maxTeamSize: 4, registrationEnabled: true,
   whatsappGroupLink: '',
 };
@@ -679,6 +736,7 @@ function EventFormModal({ event, onClose, onDone }) {
     registrationDeadline: toDatetimeLocal(event.registrationDeadline),
     submissionDeadline: toDatetimeLocal(event.submissionDeadline),
     fileUploadRequired: Boolean(event.fileUploadRequired),
+    pdfUploadMode: event.pdfUploadMode || (event.fileUploadRequired ? 'single' : 'none'),
     maxFileSizeMB: event.maxFileSizeMB || 10,
     minTeamSize: event.minTeamSize || 2,
     maxTeamSize: event.maxTeamSize || 4,
@@ -690,7 +748,13 @@ function EventFormModal({ event, onClose, onDone }) {
 
   const handle = (e) => {
     const { name, type, checked, value } = e.target;
-    setForm((f) => ({ ...f, [name]: type === 'checkbox' ? checked : value }));
+    setForm((f) => {
+      const next = { ...f, [name]: type === 'checkbox' ? checked : value };
+      if (name === 'pdfUploadMode') {
+        next.fileUploadRequired = value !== 'none';
+      }
+      return next;
+    });
   };
 
   const submit = async () => {
@@ -707,7 +771,8 @@ function EventFormModal({ event, onClose, onDone }) {
         type: form.type,
         registrationDeadline: new Date(form.registrationDeadline).toISOString(),
         submissionDeadline: form.submissionDeadline ? new Date(form.submissionDeadline).toISOString() : undefined,
-        fileUploadRequired: form.fileUploadRequired,
+        fileUploadRequired: form.pdfUploadMode !== 'none',
+        pdfUploadMode: form.pdfUploadMode,
         maxFileSizeMB: Number(form.maxFileSizeMB) || 10,
         registrationEnabled: form.registrationEnabled,
         whatsappGroupLink: form.whatsappGroupLink.trim(),
@@ -794,18 +859,23 @@ function EventFormModal({ event, onClose, onDone }) {
               </>
             )}
 
-            {form.fileUploadRequired && (
+            <div className="ef-field">
+              <label className="auth-label">File Submission Option</label>
+              <select className="admin-modal-input" name="pdfUploadMode" value={form.pdfUploadMode} onChange={handle}>
+                <option value="none">No File Required</option>
+                <option value="single">Single PDF</option>
+                <option value="multiple">Multiple PDFs</option>
+              </select>
+            </div>
+
+            {form.pdfUploadMode !== 'none' && (
               <div className="ef-field">
                 <label className="auth-label">Max file size (MB)</label>
                 <input className="admin-modal-input" type="number" min="1" max="100" name="maxFileSizeMB" value={form.maxFileSizeMB} onChange={handle} />
               </div>
             )}
 
-            <div className="ef-field ef-checkboxes">
-              <label>
-                <input type="checkbox" name="fileUploadRequired" checked={form.fileUploadRequired} onChange={handle} />
-                Requires file submission (PDF)
-              </label>
+            <div className="ef-field ef-checkboxes" style={{ alignSelf: 'center', marginTop: '20px' }}>
               <label>
                 <input type="checkbox" name="registrationEnabled" checked={form.registrationEnabled} onChange={handle} />
                 Registrations open

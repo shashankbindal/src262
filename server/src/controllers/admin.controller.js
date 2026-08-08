@@ -82,6 +82,12 @@ const getRegistrations = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, 'Registrations fetched', data);
 });
 
+const deleteRegistration = asyncHandler(async (req, res) => {
+  const { registrationId } = req.params;
+  await adminService.deleteRegistration(registrationId);
+  ApiResponse.ok(res, 'Registration deleted successfully');
+});
+
 const getSubmissionFile = asyncHandler(async (req, res) => {
   const data = await adminService.getSubmissionFile(req.params.registrationId);
   ApiResponse.ok(res, 'Submission URL generated', data);
@@ -192,6 +198,7 @@ module.exports = {
   getConfPaymentScreenshot,
   getConfIdCard,
   getRegistrations,
+  deleteRegistration,
   getSubmissionFile,
   getSubmissions,
   markSubmissionComplete,

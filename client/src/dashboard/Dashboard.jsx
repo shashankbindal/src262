@@ -258,34 +258,46 @@ function ConferenceRegBanner() {
 }
 
 /* ═══════════════════════════════════════════════════════ SUBMISSION UPLOAD */
-function SubmissionUploadForm({ registrationId, onDone }) {
-  const [file, setFile]   = useState(null);
+function SubmissionUploadForm({ registrationId, event, onDone }) {
+  const [files, setFiles] = useState([]);
   const [busy, setBusy]   = useState(false);
   const [error, setError] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
   const fileRef = React.useRef(null);
 
-  const validateAndSetFile = (selectedFile) => {
-    if (selectedFile.type !== 'application/pdf') {
-      setError('Please select a PDF file.');
-      setFile(null);
-      return;
-    }
+  const validateAndSetFiles = (selectedFiles, append = false) => {
+    const isMultiple = event?.pdfUploadMode === 'multiple';
+    const fileList = isMultiple ? Array.from(selectedFiles) : [selectedFiles[0]];
+    const maxMB = event?.maxFileSizeMB || 10;
 
-    if (selectedFile.size > 10 * 1024 * 1024) {
-      setError('File size exceeds the 10MB limit.');
-      setFile(null);
-      return;
-    }
+    setFiles((prevFiles) => {
+      const validFiles = isMultiple && append ? [...prevFiles] : [];
 
-    setFile(selectedFile);
-    setError('');
+      for (const f of fileList) {
+        if (!f) continue;
+        if (f.type !== 'application/pdf') {
+          setError('Please select PDF files only.');
+          return prevFiles;
+        }
+        if (f.size > maxMB * 1024 * 1024) {
+          setError(`File "${f.name}" exceeds the ${maxMB}MB limit.`);
+          return prevFiles;
+        }
+        if (validFiles.some(existing => existing.name === f.name && existing.size === f.size)) {
+          continue;
+        }
+        validFiles.push(f);
+      }
+
+      setError('');
+      return validFiles;
+    });
   };
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      validateAndSetFile(selectedFile);
+    const selectedFiles = e.target.files;
+    if (selectedFiles && selectedFiles.length > 0) {
+      validateAndSetFiles(selectedFiles, true);
     }
   };
 
@@ -301,19 +313,25 @@ function SubmissionUploadForm({ registrationId, onDone }) {
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragOver(false);
-    const selectedFile = e.dataTransfer.files[0];
-    if (selectedFile) {
-      validateAndSetFile(selectedFile);
+    const selectedFiles = e.dataTransfer.files;
+    if (selectedFiles && selectedFiles.length > 0) {
+      validateAndSetFiles(selectedFiles, true);
     }
   };
 
   const submit = async (e) => {
     e.preventDefault();
-    if (!file) { setError('Please select a file.'); return; }
+    if (files.length === 0) { setError('Please select a file.'); return; }
     setBusy(true);
     setError('');
     const fd = new FormData();
-    fd.append('file', file);
+    if (files.length === 1) {
+      fd.append('file', files[0]);
+    } else {
+      files.forEach((file) => {
+        fd.append('files', file);
+      });
+    }
     try {
       await api.upload(`/submissions/${registrationId}`, fd);
       onDone();
@@ -328,7 +346,7 @@ function SubmissionUploadForm({ registrationId, onDone }) {
     <form className="payment-form" onSubmit={submit}>
       {error && <div className="auth-error" style={{ margin: 0 }}>{error}</div>}
       <div>
-        <label>Upload File (PDF)</label>
+        <label>Upload File{event?.pdfUploadMode === 'multiple' ? 's' : ''} (PDF)</label>
         <div
           className={`cr-upload-box ${isDragOver ? 'drag-over' : ''}`}
           onClick={() => fileRef.current?.click()}
@@ -343,18 +361,42 @@ function SubmissionUploadForm({ registrationId, onDone }) {
             ref={fileRef}
             type="file"
             accept="application/pdf"
+            multiple={event?.pdfUploadMode === 'multiple'}
             onChange={handleFileChange}
             style={{ display: 'none' }}
           />
-          {file ? (
-            <div className="cr-file-thumb cr-file-thumb-pdf">
-              <span className="cr-pdf-icon">PDF</span>
-              <span className="cr-file-name">{file.name}</span>
+          {files.length > 0 ? (
+            <div className="cr-file-thumb cr-file-thumb-pdf" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px', cursor: 'default', width: '100%' }} onClick={(e) => e.stopPropagation()}>
+              {files.map((file, idx) => (
+                <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className="cr-pdf-icon">PDF</span>
+                    <span className="cr-file-name" style={{ fontSize: '0.85rem' }}>{file.name}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFiles((prev) => prev.filter((_, i) => i !== idx))}
+                    style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.2rem', padding: '0 4px' }}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              {event?.pdfUploadMode === 'multiple' && (
+                <button
+                  type="button"
+                  className="reg-action-btn"
+                  onClick={() => fileRef.current?.click()}
+                  style={{ marginTop: '8px', fontSize: '0.8rem', padding: '4px 8px' }}
+                >
+                  + Add another file
+                </button>
+              )}
             </div>
           ) : (
             <div className="cr-upload-placeholder">
               <span className="cr-upload-icon">⬆</span>
-              <span>Click to upload (PDF — max 10 MB)</span>
+              <span>Click to upload {event?.pdfUploadMode === 'multiple' ? 'PDFs' : 'PDF'} (max {event?.maxFileSizeMB || 10} MB per file)</span>
             </div>
           )}
         </div>
@@ -447,13 +489,117 @@ function EditRegistrationForm({ reg, onDone }) {
 function RegCard({ reg, onRefresh }) {
   const [showSubmission, setShowSubmission] = useState(false);
   const [showEdit, setShowEdit]             = useState(false);
+  const [submission, setSubmission]         = useState(null);
+  const [replacingFileKey, setReplacingFileKey] = useState(null);
+  const [busy, setBusy]                     = useState(false);
+
+  const replaceFileRef = React.useRef(null);
+  const addFileRef     = React.useRef(null);
 
   const event    = reg.eventId;
   const canEdit  = ['registered', 'waiting_submission'].includes(reg.status) && event?.type === 'team';
   const canSubmit = ['waiting_submission', 'submitted'].includes(reg.status) && event?.fileUploadRequired;
 
+  useEffect(() => {
+    if (['submitted', 'completed'].includes(reg.status)) {
+      api.get(`/submissions/${reg._id}`)
+        .then((res) => setSubmission(res.data))
+        .catch(() => {});
+    }
+  }, [reg._id, reg.status]);
+
+  const triggerReplace = (fileKey) => {
+    setReplacingFileKey(fileKey);
+    replaceFileRef.current?.click();
+  };
+
+  const handleReplaceFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.type !== 'application/pdf') {
+      alert('Please select a PDF file.');
+      return;
+    }
+    const maxMB = event?.maxFileSizeMB || 10;
+    if (file.size > maxMB * 1024 * 1024) {
+      alert(`File size exceeds the ${maxMB}MB limit.`);
+      return;
+    }
+
+    setBusy(true);
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('fileKey', replacingFileKey);
+
+    try {
+      await api.uploadPut(`/submissions/${reg._id}/replace-file`, fd);
+      onRefresh();
+      // Fetch submission again to update display
+      api.get(`/submissions/${reg._id}`)
+        .then((res) => setSubmission(res.data))
+        .catch(() => {});
+    } catch (err) {
+      alert(err.message || 'Replace failed.');
+    } finally {
+      setBusy(false);
+      setReplacingFileKey(null);
+      e.target.value = '';
+    }
+  };
+
+  const triggerAddFile = () => {
+    addFileRef.current?.click();
+  };
+
+  const handleAddFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.type !== 'application/pdf') {
+      alert('Please select a PDF file.');
+      return;
+    }
+    const maxMB = event?.maxFileSizeMB || 10;
+    if (file.size > maxMB * 1024 * 1024) {
+      alert(`File size exceeds the ${maxMB}MB limit.`);
+      return;
+    }
+
+    setBusy(true);
+    const fd = new FormData();
+    fd.append('file', file);
+
+    try {
+      await api.upload(`/submissions/${reg._id}/add-file`, fd);
+      onRefresh();
+      // Fetch submission again to update display
+      api.get(`/submissions/${reg._id}`)
+        .then((res) => setSubmission(res.data))
+        .catch(() => {});
+    } catch (err) {
+      alert(err.message || 'Add file failed.');
+    } finally {
+      setBusy(false);
+      e.target.value = '';
+    }
+  };
+
   return (
     <div className="reg-card">
+      <input
+        ref={replaceFileRef}
+        type="file"
+        accept="application/pdf"
+        onChange={handleReplaceFileChange}
+        style={{ display: 'none' }}
+      />
+      <input
+        ref={addFileRef}
+        type="file"
+        accept="application/pdf"
+        onChange={handleAddFileChange}
+        style={{ display: 'none' }}
+      />
+
       <div className="reg-card-header">
         <h3 className="reg-event-name">{event?.name || 'Event'}</h3>
         <span className="reg-event-type">{event?.type}</span>
@@ -490,6 +636,56 @@ function RegCard({ reg, onRefresh }) {
             </span>
           </div>
         )}
+        {submission && (
+          <div className="reg-meta-item" style={{ gridColumn: '1 / -1' }}>
+            <span className="reg-meta-label">Uploaded Files</span>
+            <div className="reg-meta-value" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '6px' }}>
+              {submission.files && submission.files.length > 0 ? (
+                submission.files.map((file, i) => (
+                  <div key={file.fileKey || i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255, 255, 255, 0.02)', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-medium)' }}>
+                    <a href={file.signedFileUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', textDecoration: 'underline', fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '75%' }}>
+                      {file.fileName || 'Download PDF'}
+                    </a>
+                    {canSubmit && (
+                      <button
+                        type="button"
+                        className="tbl-btn"
+                        onClick={() => triggerReplace(file.fileKey)}
+                        style={{ padding: '4px 10px', fontSize: '0.75rem', height: 'auto' }}
+                      >
+                        Replace
+                      </button>
+                    )}
+                  </div>
+                ))
+              ) : (
+                submission.signedFileUrl && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255, 255, 255, 0.02)', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-medium)' }}>
+                    <a href={submission.signedFileUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', textDecoration: 'underline', fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '75%' }}>
+                      {submission.fileName || 'Download PDF'}
+                    </a>
+                    {canSubmit && (
+                      <button
+                        type="button"
+                        className="tbl-btn"
+                        onClick={() => triggerReplace(submission.fileKey)}
+                        style={{ padding: '4px 10px', fontSize: '0.75rem', height: 'auto' }}
+                      >
+                        Replace
+                      </button>
+                    )}
+                  </div>
+                )
+              )}
+            </div>
+            {busy && (
+              <div style={{ marginTop: '10px', color: 'var(--primary)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="auth-spinner" style={{ width: '14px', height: '14px', border: '2px solid var(--primary)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'auth-spin 0.6s linear infinite' }} />
+                Uploading file...
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {(canEdit || canSubmit) && (
@@ -500,9 +696,16 @@ function RegCard({ reg, onRefresh }) {
             </button>
           )}
           {canSubmit && (
-            <button className="reg-action-btn primary" onClick={() => { setShowSubmission((v) => !v); setShowEdit(false); }}>
-              {showSubmission ? 'Cancel' : (reg.status === 'submitted' ? '↺ Replace File' : 'Upload Submission')}
-            </button>
+            <>
+              {event?.pdfUploadMode === 'multiple' && submission && (
+                <button className="reg-action-btn primary" onClick={triggerAddFile} disabled={busy}>
+                  + Add PDF
+                </button>
+              )}
+              <button className="reg-action-btn" onClick={() => { setShowSubmission((v) => !v); setShowEdit(false); }} disabled={busy}>
+                {showSubmission ? 'Cancel' : (reg.status === 'submitted' ? '↺ Replace All Files' : 'Upload Submission')}
+              </button>
+            </>
           )}
         </div>
       )}
@@ -516,6 +719,7 @@ function RegCard({ reg, onRefresh }) {
       {showSubmission && (
         <SubmissionUploadForm
           registrationId={reg._id}
+          event={event}
           onDone={() => { setShowSubmission(false); onRefresh(); }}
         />
       )}

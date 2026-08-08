@@ -6,28 +6,66 @@ const cloudinaryService = require('../services/cloudinary.service');
 const submissionService = require('../services/submission.service');
 
 const uploadSubmission = asyncHandler(async (req, res) => {
-  if (!req.file) throw ApiError.badRequest('Submission file is required');
+  let files = [];
+  if (req.files && req.files.length > 0) {
+    files = req.files;
+  } else if (req.file) {
+    files = [req.file];
+  }
 
-  const uploadResult = await cloudinaryService.uploadFile(
-    req.file.buffer,
-    'submissions',
-    req.file.originalname
+  if (files.length === 0) throw ApiError.badRequest('Submission file(s) are required');
+
+  const uploadResults = await Promise.all(
+    files.map(file => cloudinaryService.uploadFile(
+      file.buffer,
+      'submissions',
+      file.originalname
+    ))
   );
+
+  const fileInfos = uploadResults.map((result, i) => ({
+    fileUrl: result.secure_url,
+    fileKey: result.public_id,
+    fileName: files[i].originalname,
+    originalFileName: files[i].originalname,
+    fileMimeType: files[i].mimetype,
+    fileSizeBytes: files[i].size,
+  }));
 
   const submission = await submissionService.uploadSubmission(
     req.user._id,
     req.params.registrationId,
-    {
-      fileUrl: uploadResult.secure_url,
-      fileKey: uploadResult.public_id,
-      fileName: req.file.originalname,
-      originalFileName: req.file.originalname,
-      fileMimeType: req.file.mimetype,
-      fileSizeBytes: req.file.size,
-    }
+    fileInfos
   );
 
   ApiResponse.ok(res, 'Submission uploaded successfully', submission);
+});
+
+const replaceSubmissionFile = asyncHandler(async (req, res) => {
+  if (!req.file) throw ApiError.badRequest('New file is required');
+  const { fileKey } = req.body;
+  if (!fileKey) throw ApiError.badRequest('fileKey to replace is required');
+  const { registrationId } = req.params;
+
+  const submission = await submissionService.replaceSubmissionFile(
+    req.user._id,
+    registrationId,
+    fileKey,
+    req.file
+  );
+  ApiResponse.ok(res, 'File replaced successfully', submission);
+});
+
+const addSubmissionFile = asyncHandler(async (req, res) => {
+  if (!req.file) throw ApiError.badRequest('File is required');
+  const { registrationId } = req.params;
+
+  const submission = await submissionService.addSubmissionFile(
+    req.user._id,
+    registrationId,
+    req.file
+  );
+  ApiResponse.ok(res, 'File added successfully', submission);
 });
 
 const getMySubmission = asyncHandler(async (req, res) => {
@@ -38,4 +76,4 @@ const getMySubmission = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, 'Submission fetched', submission);
 });
 
-module.exports = { uploadSubmission, getMySubmission };
+module.exports = { uploadSubmission, replaceSubmissionFile, addSubmissionFile, getMySubmission };

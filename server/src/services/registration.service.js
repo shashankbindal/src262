@@ -284,7 +284,7 @@ async function getUserRegistrations(userId) {
   const regs = await Registration.find({
     $or: [{ userId }, { teamId: { $in: teamIds } }],
   })
-    .populate('eventId', 'name slug type fileUploadRequired')
+    .populate('eventId', 'name slug type fileUploadRequired pdfUploadMode maxFileSizeMB')
     .populate('teamId', 'teamName members')
     .sort({ createdAt: -1 })
     .lean();
@@ -303,7 +303,7 @@ async function getRegistrationById(userId, registrationId) {
     _id: registrationId,
     $or: [{ userId }, { teamId: { $in: teamIds } }],
   })
-    .populate('eventId', 'name slug type registrationDeadline submissionDeadline fileUploadRequired')
+    .populate('eventId', 'name slug type registrationDeadline submissionDeadline fileUploadRequired pdfUploadMode maxFileSizeMB')
     .populate('teamId', 'teamName members')
     .lean();
 

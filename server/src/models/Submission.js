@@ -20,12 +20,22 @@ const submissionSchema = new mongoose.Schema(
       ref:      'Event',
       required: true,
     },
-    fileUrl:      { type: String, required: true },
-    fileKey:      { type: String, required: true },  // Cloudinary public_id for deletion/replacement
-    fileName:     { type: String, required: true },
+    fileUrl:      { type: String },
+    fileKey:      { type: String },  // Cloudinary public_id for deletion/replacement
+    fileName:     { type: String },
     originalFileName: { type: String },
-    fileMimeType: { type: String, required: true },
-    fileSizeBytes: { type: Number, required: true },
+    fileMimeType: { type: String },
+    fileSizeBytes: { type: Number },
+    files: [
+      {
+        fileUrl:       { type: String, required: true },
+        fileKey:       { type: String, required: true },
+        fileName:      { type: String, required: true },
+        originalFileName: { type: String },
+        fileMimeType:  { type: String, required: true },
+        fileSizeBytes: { type: Number, required: true },
+      }
+    ],
     status: {
       type:    String,
       enum:    ['submitted', 'under_review', 'completed'],
