@@ -1194,3 +1194,41 @@
 :root[data-theme="dark"] .cr-upload-box:hover { background: rgba(26, 115, 232, 0.06); }
 
 :root[data-theme="light"] .cr-page { background: var(--bg-secondary, #f4f5f7); }
+
+/* ── Video Guide ─────────────────────────────────────────── */
+
+.cr-video-container {
+  margin-top: 20px;
+}
+
+.cr-video-wrapper {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border, #d0d7de);
+  background: #000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.cr-video-wrapper:hover {
+  border-color: var(--accent, #1a73e8);
+  box-shadow: 0 4px 16px rgba(26, 115, 232, 0.15);
+}
+
+.cr-video {
+  width: 100%;
+  display: block;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+:root[data-theme="dark"] .cr-video-wrapper {
+  border-color: var(--border, #30363d);
+}
+
+:root[data-theme="dark"] .cr-video-wrapper:hover {
+  border-color: var(--accent, #1a73e8);
+}
+

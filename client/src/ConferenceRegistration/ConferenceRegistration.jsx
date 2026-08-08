@@ -367,6 +367,23 @@ function FormStage({ form, setForm, errors, setErrors, idCardFile, setIdCardFile
               <input className="cr-input" type="text" value={form.aicheId}
                 onChange={set('aicheId')} placeholder="e.g. 00990594XXXX" />
             </Field>
+
+            <div className="cr-video-container">
+              <label className="cr-label" style={{ display: 'block', marginBottom: '8px' }}>
+                How To Get AiChE Member Id
+              </label>
+              <div className="cr-video-wrapper">
+                <video 
+                  className="cr-video"
+                  controls 
+                  preload="metadata"
+                  poster="/about-aiche.png"
+                >
+                  <source src="/aiche.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
           </div>
         </div>
       </Section>

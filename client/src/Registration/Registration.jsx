@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api, ApiError } from '../lib/api.js';
@@ -46,6 +46,121 @@ function EventCard({ event, selected, onClick }) {
   );
 }
 
+/* ── Submission Upload Form for Registration Success ── */
+function RegistrationSubmissionForm({ registrationId, onSuccess }) {
+  const [file, setFile] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileRef = useRef(null);
+
+  const validateAndSetFile = (selectedFile) => {
+    if (selectedFile.type !== 'application/pdf') {
+      setError('Please select a PDF file.');
+      setFile(null);
+      return;
+    }
+    if (selectedFile.size > 10 * 1024 * 1024) {
+      setError('File size exceeds the 10MB limit.');
+      setFile(null);
+      return;
+    }
+    setFile(selectedFile);
+    setError('');
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) validateAndSetFile(selectedFile);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const selectedFile = e.dataTransfer.files[0];
+    if (selectedFile) validateAndSetFile(selectedFile);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!file) {
+      setError('Please select a file.');
+      return;
+    }
+    setBusy(true);
+    setError('');
+
+    const fd = new FormData();
+    fd.append('file', file);
+
+    try {
+      await api.upload(`/submissions/${registrationId}`, fd);
+      onSuccess();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Upload failed. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {error && (
+        <div style={{ color: '#ef4444', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '12px', borderRadius: '6px', fontSize: '0.82rem' }}>
+          {error}
+        </div>
+      )}
+      
+      <div>
+        <div
+          className={`cr-upload-box ${isDragOver ? 'drag-over' : ''}`}
+          onClick={() => fileRef.current?.click()}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && fileRef.current?.click()}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          style={{ width: '100%', boxSizing: 'border-box' }}
+        >
+          <input
+            ref={fileRef}
+            type="file"
+            accept="application/pdf"
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+          />
+          {file ? (
+            <div className="cr-file-thumb cr-file-thumb-pdf">
+              <span className="cr-pdf-icon">PDF</span>
+              <span className="cr-file-name">{file.name}</span>
+            </div>
+          ) : (
+            <div className="cr-upload-placeholder">
+              <span className="cr-upload-icon">⬆</span>
+              <span style={{ fontWeight: '500' }}>Click or drag PDF here to upload</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted, #888)' }}>(Max 10 MB)</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <button className="reg-simple-btn" type="submit" disabled={busy} style={{ width: '100%' }}>
+        {busy ? <><span className="btn-spinner" /> Uploading…</> : 'Upload Abstract'}
+      </button>
+    </form>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════ MAIN COMPONENT */
 export default function Registration() {
   useDocumentTitle('Event Registration | VIPLAV 2026 — AIChE India SRC');
@@ -67,6 +182,7 @@ export default function Registration() {
   const [busy, setBusy]     = useState(false);
   const [error, setError]   = useState('');
   const [successReg, setSuccessReg] = useState(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
 
   /* Config state */
   const [config, setConfig] = useState(null);
@@ -234,15 +350,36 @@ export default function Registration() {
         <div className="reg-content-wrapper" style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '3rem', marginBottom: '20px' }}>🎉</div>
           <h1 className="reg-simple-title">Registration Submitted!</h1>
-          <p className="reg-simple-desc">
+          <p className="reg-simple-desc" style={{ marginBottom: '16px' }}>
             You're registered for <strong style={{ color: 'var(--primary)' }}>{selectedEvent?.name}</strong>.
-            <br /><br />
-            Head to your dashboard to track your registration status and upload submission files when required.
           </p>
+
+          {selectedEvent?.fileUploadRequired && (
+            <div style={{ marginTop: '24px', borderTop: '1px solid var(--border-medium)', paddingTop: '24px', textAlign: 'left', marginBottom: '24px' }}>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', fontWeight: '700', marginBottom: '8px', color: 'var(--text-primary)' }}>
+                Upload Abstract / Presentation
+              </h3>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: '1.5' }}>
+                This event requires a PDF submission. You can upload it now, or do it later via the Dashboard.
+              </p>
+              
+              {uploadSuccess ? (
+                <div style={{ background: 'rgba(11, 93, 70, 0.06)', border: '1px solid rgba(11, 93, 70, 0.15)', borderRadius: '8px', padding: '14px', color: 'var(--primary)', fontWeight: '600', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '1.1rem' }}>✓</span> File uploaded successfully! You can still manage/replace it in the Dashboard.
+                </div>
+              ) : (
+                <RegistrationSubmissionForm 
+                  registrationId={successReg._id || successReg.id} 
+                  onSuccess={() => setUploadSuccess(true)}
+                />
+              )}
+            </div>
+          )}
+
           <div className="reg-notice" style={{ margin: '20px 0', textAlign: 'left' }}>
             Team details can be edited while your registration is in the <em>Registered</em> or <em>Awaiting Submission</em> state.
           </div>
-          <button className="reg-simple-btn" onClick={() => navigate('/dashboard')}>
+          <button className="reg-simple-btn" onClick={() => navigate('/dashboard')} style={{ width: '100%' }}>
             Go to Dashboard
           </button>
         </div>
@@ -268,7 +405,7 @@ export default function Registration() {
                 key={evt._id}
                 event={evt}
                 selected={selectedEvent?._id === evt._id}
-                onClick={(e) => { setSelectedEvent(e); setStep(2); setError(''); }}
+                onClick={(e) => { setSelectedEvent(e); setStep(2); setError(''); setUploadSuccess(false); }}
               />
             ))}
           </div>
@@ -280,7 +417,7 @@ export default function Registration() {
                 key={evt._id}
                 event={evt}
                 selected={selectedEvent?._id === evt._id}
-                onClick={(e) => { setSelectedEvent(e); setStep(2); setError(''); }}
+                onClick={(e) => { setSelectedEvent(e); setStep(2); setError(''); setUploadSuccess(false); }}
               />
             ))}
           </div>
@@ -346,6 +483,7 @@ export default function Registration() {
       sessionStorage.removeItem('er_members');
 
       setSuccessReg(res.data);
+      setUploadSuccess(false);
       setStep(3);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Registration failed. Please try again.');
