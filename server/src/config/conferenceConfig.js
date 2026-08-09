@@ -7,11 +7,11 @@
  */
 module.exports = {
   /* Conference registration only */
-  feeBase: parseInt(process.env.CONF_FEE_BASE || '3000', 10),
+  feeBase: parseInt(process.env.CONF_FEE_BASE || '4000', 10),
   /* Conference registration + fooding (no accommodation) */
-  feeFooding: parseInt(process.env.CONF_FEE_FOODING || '5000', 10),
+  feeFooding: parseInt(process.env.CONF_FEE_FOODING || '6000', 10),
   /* Conference registration + accommodation & fooding */
-  feeWithAccommodation: parseInt(process.env.CONF_FEE_WITH_ACCOMMODATION || '5500', 10),
+  feeWithAccommodation: parseInt(process.env.CONF_FEE_WITH_ACCOMMODATION || '6500', 10),
   /* RGIPT Events Only */
   feeRgiptEvents: parseInt(process.env.CONF_FEE_RGIPT_EVENTS || '500', 10),
   /* RGIPT Events + Registration Kit */
