@@ -29,6 +29,44 @@ function ProfileTab({ user, refreshUser }) {
   const [busy, setBusy]     = useState(false);
   const [msg, setMsg]       = useState({ type: '', text: '' });
 
+  /* Email Verification state */
+  const [showVerification, setShowVerification] = useState(false);
+  const [otp, setOtp]                           = useState('');
+  const [otpBusy, setOtpBusy]                   = useState(false);
+  const [otpError, setOtpError]                 = useState('');
+  const [otpSuccess, setOtpSuccess]             = useState('');
+
+  const sendVerificationOTP = async () => {
+    setOtpBusy(true);
+    setOtpError('');
+    setOtpSuccess('');
+    try {
+      await api.post('/auth/send-otp', { email: user.email });
+      setOtpSuccess('Verification code sent to your email.');
+      setShowVerification(true);
+    } catch (err) {
+      setOtpError(err instanceof ApiError ? err.message : 'Could not send verification code.');
+    } finally {
+      setOtpBusy(false);
+    }
+  };
+
+  const submitVerificationOTP = async () => {
+    setOtpBusy(true);
+    setOtpError('');
+    setOtpSuccess('');
+    try {
+      await api.post('/auth/verify-otp', { email: user.email, otp: otp.trim() });
+      await refreshUser();
+      setShowVerification(false);
+      setOtp('');
+    } catch (err) {
+      setOtpError(err instanceof ApiError ? err.message : 'Verification failed.');
+    } finally {
+      setOtpBusy(false);
+    }
+  };
+
   const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const save = async (e) => {
@@ -57,13 +95,86 @@ function ProfileTab({ user, refreshUser }) {
         {/* Email row */}
         <div className="profile-field">
           <label className="profile-label">Email</label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <input className="profile-input" value={user.email} disabled />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <input className="profile-input" style={{ flex: 1, minWidth: '200px' }} value={user.email} disabled />
             <span className={`email-badge ${user.isEmailVerified ? 'verified' : 'unverified'}`}>
               {user.isEmailVerified ? '✓ Verified' : '! Unverified'}
             </span>
+            {!user.isEmailVerified && !showVerification && (
+              <button
+                type="button"
+                className="profile-verify-btn"
+                onClick={sendVerificationOTP}
+                disabled={otpBusy}
+              >
+                {otpBusy ? 'Sending...' : 'Verify Now'}
+              </button>
+            )}
           </div>
         </div>
+
+        {/* Expandable verification box */}
+        {!user.isEmailVerified && showVerification && (
+          <div className="profile-verification-box">
+            <h4 style={{ margin: '0 0 8px 0', fontSize: '0.90rem', color: 'var(--text-primary)', fontWeight: '600' }}>
+              Enter Verification Code
+            </h4>
+            <p style={{ margin: '0 0 16px 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+              We sent a 6-digit code to <strong>{user.email}</strong>. Enter it below to verify your email.
+            </p>
+
+            {otpError && <div className="auth-error" style={{ marginBottom: '12px' }}>{otpError}</div>}
+            {otpSuccess && <div className="auth-success" style={{ marginBottom: '12px' }}>{otpSuccess}</div>}
+
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <input
+                className="profile-input"
+                style={{ width: '140px', textAlign: 'center', letterSpacing: '2px', fontSize: '1.1rem', height: '42px', padding: '6px' }}
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                placeholder="000000"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              />
+              <button
+                type="button"
+                className="profile-save-btn"
+                style={{ height: '42px', padding: '0 20px', fontSize: '0.85rem' }}
+                onClick={submitVerificationOTP}
+                disabled={otpBusy || otp.length !== 6}
+              >
+                {otpBusy ? 'Verifying...' : 'Verify'}
+              </button>
+              <button
+                type="button"
+                className="profile-cancel-btn"
+                onClick={() => {
+                  setShowVerification(false);
+                  setOtpError('');
+                  setOtpSuccess('');
+                  setOtp('');
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+
+            <p style={{ margin: '12px 0 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+              Didn't receive the code?{' '}
+              <button
+                type="button"
+                className="auth-link-btn"
+                style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
+                onClick={sendVerificationOTP}
+                disabled={otpBusy}
+              >
+                Resend code
+              </button>
+            </p>
+          </div>
+        )}
+
 
         {msg.text && (
           <div className={msg.type === 'success' ? 'auth-success' : 'auth-error'} style={{ marginBottom: '20px' }}>

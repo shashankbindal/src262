@@ -869,7 +869,45 @@ function ApprovedScreen({ confReg }) {
 
 /* ══════════════════════════════════ ROOT COMPONENT */
 export default function ConferenceRegistration() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { user, isAuthenticated, loading: authLoading, refreshUser } = useAuth();
+
+  /* Email Verification state */
+  const [showVerification, setShowVerification] = useState(false);
+  const [otp, setOtp]                           = useState('');
+  const [otpBusy, setOtpBusy]                   = useState(false);
+  const [otpError, setOtpError]                 = useState('');
+  const [otpSuccess, setOtpSuccess]             = useState('');
+
+  const sendVerificationOTP = async () => {
+    setOtpBusy(true);
+    setOtpError('');
+    setOtpSuccess('');
+    try {
+      await api.post('/auth/send-otp', { email: user.email });
+      setOtpSuccess('Verification code sent to your email.');
+      setShowVerification(true);
+    } catch (err) {
+      setOtpError(err instanceof ApiError ? err.message : 'Could not send verification code.');
+    } finally {
+      setOtpBusy(false);
+    }
+  };
+
+  const submitVerificationOTP = async () => {
+    setOtpBusy(true);
+    setOtpError('');
+    setOtpSuccess('');
+    try {
+      await api.post('/auth/verify-otp', { email: user.email, otp: otp.trim() });
+      await refreshUser();
+      setShowVerification(false);
+      setOtp('');
+    } catch (err) {
+      setOtpError(err instanceof ApiError ? err.message : 'Verification failed.');
+    } finally {
+      setOtpBusy(false);
+    }
+  };
 
   const [confReg, setConfReg] = useState(null);
   const [config, setConfig] = useState(null);
@@ -1003,10 +1041,87 @@ export default function ConferenceRegistration() {
   if (!user?.isEmailVerified) {
     return (
       <div className="cr-page">
-        <div className="cr-gate">
-          <h1>Verify your email first</h1>
-          <p>Please verify your email address before registering for the conference.</p>
-          <Link to="/dashboard" className="cr-btn cr-btn-primary" style={{ textDecoration: 'none' }}>Go to Dashboard</Link>
+        <div className="cr-gate" style={{ maxWidth: '520px' }}>
+          {!showVerification ? (
+            <>
+              <h1>Verify your email first</h1>
+              <p>Please verify your email address before registering for the conference.</p>
+              
+              {otpError && <div className="auth-error" style={{ marginBottom: '16px' }}>{otpError}</div>}
+              
+              <div className="cr-gate-btns" style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                <button
+                  type="button"
+                  className="cr-btn cr-btn-primary"
+                  onClick={sendVerificationOTP}
+                  disabled={otpBusy}
+                >
+                  {otpBusy ? 'Sending...' : 'Verify Now'}
+                </button>
+                <Link to="/dashboard" className="cr-btn" style={{ textDecoration: 'none', border: '1px solid var(--border-medium)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                  Go to Dashboard
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <h1>Enter Verification Code</h1>
+              <p>
+                We sent a 6-digit code to <strong>{user.email}</strong>. Enter it below to activate your account.
+              </p>
+
+              {otpError && <div className="auth-error" style={{ marginBottom: '16px' }}>{otpError}</div>}
+              {otpSuccess && <div className="auth-success" style={{ marginBottom: '16px' }}>{otpSuccess}</div>}
+
+              <div style={{ display: 'flex', gap: '12px', justifyItems: 'center', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', marginBottom: '20px' }}>
+                <input
+                  className="profile-input"
+                  style={{ width: '150px', textAlign: 'center', letterSpacing: '2px', fontSize: '1.2rem', height: '46px', padding: '6px' }}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  placeholder="000000"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                />
+                <button
+                  type="button"
+                  className="cr-btn cr-btn-primary"
+                  style={{ height: '46px' }}
+                  onClick={submitVerificationOTP}
+                  disabled={otpBusy || otp.length !== 6}
+                >
+                  {otpBusy ? 'Verifying...' : 'Verify'}
+                </button>
+                <button
+                  type="button"
+                  className="cr-btn"
+                  style={{ height: '46px', border: '1px solid var(--border-medium)' }}
+                  onClick={() => {
+                    setShowVerification(false);
+                    setOtpError('');
+                    setOtpSuccess('');
+                    setOtp('');
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+
+              <p style={{ margin: '12px 0 0 0', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                Didn't receive the code?{' '}
+                <button
+                  type="button"
+                  className="auth-link-btn"
+                  style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
+                  onClick={sendVerificationOTP}
+                  disabled={otpBusy}
+                >
+                  Resend code
+                </button>
+              </p>
+            </>
+          )}
         </div>
       </div>
     );
