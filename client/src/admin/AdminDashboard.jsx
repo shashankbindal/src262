@@ -380,7 +380,7 @@ function ConfRegSection({ counts }) {
     setLoading(true);
     setLoadError('');
     setSelectedIds(new Set());
-    api.get(`/admin/conference-registrations?status=${activeTab}&limit=100`)
+    api.get(`/admin/conference-registrations?status=${activeTab}&limit=2000`)
       .then((res) => setRows(res.data?.docs || []))
       .catch(() => { setRows([]); setLoadError('Failed to load registrations.'); })
       .finally(() => setLoading(false));
@@ -736,7 +736,7 @@ function EventSection({ evt }) {
     setLoading(true);
     setLoadError('');
     setSelectedIds(new Set());
-    api.get(`/admin/events/${evt.event._id}/registrations?status=${activeTab}&limit=100`)
+    api.get(`/admin/events/${evt.event._id}/registrations?status=${activeTab}&limit=2000`)
       .then((res) => setRegs(res.data?.docs || []))
       .catch(() => { setRegs([]); setLoadError('Failed to load registrations.'); })
       .finally(() => setLoading(false));
