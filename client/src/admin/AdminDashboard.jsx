@@ -304,6 +304,10 @@ function ConfRegRow({ confReg, onRefresh, selected, onToggle }) {
   };
 
   const u = confReg.userId || {};
+  /* Fall back to deriving internal/external from the email domain for legacy
+   * rows saved before participantType existed (RGIPT accounts are internal). */
+  const participantType = confReg.participantType
+    || ((u.email || '').toLowerCase().endsWith('@rgipt.ac.in') ? 'internal' : 'external');
 
   return (
     <>
@@ -317,7 +321,7 @@ function ConfRegRow({ confReg, onRefresh, selected, onToggle }) {
         <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
           {confReg.transactionId || '—'}
         </td>
-        <td style={{ textTransform: 'capitalize' }}>{confReg.participantType || 'external'}</td>
+        <td style={{ textTransform: 'capitalize' }}>{participantType}</td>
         <td>{confReg.srcId ? <strong style={{ color: 'var(--primary)' }}>{confReg.srcId}</strong> : '—'}</td>
         <td>{tierLabelShort(confReg)}</td>
         <td>₹{confReg.registrationFee ?? '—'}</td>

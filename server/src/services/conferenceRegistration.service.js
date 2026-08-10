@@ -383,6 +383,7 @@ async function sendConfRegStatusEmail(reg) {
       email: reg.userId.email,
       srcId: reg.srcId,
       idCardPdf,
+      via:   'smtp', // resend buttons deliver over SMTP
     });
     return 'approved';
   }
@@ -392,6 +393,7 @@ async function sendConfRegStatusEmail(reg) {
       name:   reg.userId.name,
       email:  reg.userId.email,
       reason: reg.rejectionReason,
+      via:    'smtp',
     });
     return 'rejected';
   }

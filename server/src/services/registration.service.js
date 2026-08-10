@@ -341,6 +341,7 @@ async function resendEventRegistrationEmail(userId, registrationId) {
     teamName:          reg.teamId?.teamName || '',
     whatsappGroupLink: reg.eventId?.whatsappGroupLink || '',
     hasSubmission:     reg.status === 'completed',
+    via:               'smtp', // resend buttons deliver over SMTP
   });
 
   logger.info(`Resent event registration email for reg ${registrationId} to user ${userId}`);
@@ -373,6 +374,7 @@ async function bulkResendEventEmails(ids) {
         teamName:          reg.teamId?.teamName || '',
         whatsappGroupLink: reg.eventId?.whatsappGroupLink || '',
         hasSubmission:     reg.status === 'completed',
+        via:               'smtp', // admin resend delivers over SMTP
       });
       sent++;
     } catch (err) {
