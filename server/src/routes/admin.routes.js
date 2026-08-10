@@ -30,6 +30,7 @@ router.get('/overview', ctrl.getOverview);
 /* ─── Conference Registration ────────────────────────────────────────────── */
 router.get('/conference-registrations',          ctrl.getConferenceRegistrations);
 router.get('/conference-registrations/export/csv', ctrl.exportConferenceRegistrationsCSV);
+router.post('/conference-registrations/resend-emails', ctrl.bulkResendConfRegEmails);
 router.patch('/conference-registrations/:confRegId/decision',
   adminConfRegDecisionValidator, validate,
   ctrl.decideConferenceRegistration
@@ -41,6 +42,7 @@ router.get('/conference-registrations/:confRegId/id-card-preview', ctrl.getIdCar
 
 /* ─── Event Registrations ────────────────────────────────────────────────── */
 router.get('/events/:eventId/registrations',     ctrl.getRegistrations);
+router.post('/registrations/resend-emails',       ctrl.bulkResendEventEmails);
 router.delete('/registrations/:registrationId',  ctrl.deleteRegistration);
 router.get('/registrations/:registrationId/submission-file', ctrl.getSubmissionFile);
 

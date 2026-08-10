@@ -358,16 +358,12 @@ async function rejectConferenceRegistration(adminId, confRegId, { reason }) {
 }
 
 /**
- * Re-sends the conference registration email to the logged-in user for their
- * own registration. Approved → the approval email WITH a freshly generated ID
- * card PDF attached (the conference pass); rejected → the rejection email.
- * Pending has no confirmation email to resend yet.
+ * Sends the status email for one (populated) conference registration:
+ * approved → approval email with a freshly generated ID card PDF; rejected →
+ * rejection email; pending → nothing (returns 'skipped'). The reg's userId
+ * must be populated with name/email/college.
  */
-async function resendConfRegEmail(userId) {
-  const reg = await ConferenceRegistration.findOne({ userId })
-    .populate('userId', 'name email college');
-  if (!reg) throw ApiError.notFound('No conference registration found for your account');
-
+async function sendConfRegStatusEmail(reg) {
   if (reg.status === 'approved') {
     /* Regenerate the ID card so the resent email carries the same PDF pass
      * the participant received on approval. */
@@ -380,7 +376,7 @@ async function resendConfRegEmail(userId) {
         photoUrl: reg.photoUrl,
       });
     } catch (err) {
-      logger.error(`ID card regeneration failed on resend for user ${userId}: ${err.message}`);
+      logger.error(`ID card regeneration failed on resend for reg ${reg._id}: ${err.message}`);
     }
     await emailService.sendConfRegApproved({
       name:  reg.userId.name,
@@ -388,8 +384,7 @@ async function resendConfRegEmail(userId) {
       srcId: reg.srcId,
       idCardPdf,
     });
-    logger.info(`Resent approval email (with ID card) for conf reg of user ${userId}`);
-    return { status: 'approved', email: reg.userId.email };
+    return 'approved';
   }
 
   if (reg.status === 'rejected') {
@@ -398,11 +393,53 @@ async function resendConfRegEmail(userId) {
       email:  reg.userId.email,
       reason: reg.rejectionReason,
     });
-    logger.info(`Resent rejection email for conf reg of user ${userId}`);
-    return { status: 'rejected', email: reg.userId.email };
+    return 'rejected';
   }
 
-  throw ApiError.badRequest('Your registration is still under review. The confirmation email will be available once it is approved.');
+  return 'skipped'; // pending — no confirmation email exists yet
+}
+
+/**
+ * Re-sends the conference registration email to the logged-in user for their
+ * own registration.
+ */
+async function resendConfRegEmail(userId) {
+  const reg = await ConferenceRegistration.findOne({ userId })
+    .populate('userId', 'name email college');
+  if (!reg) throw ApiError.notFound('No conference registration found for your account');
+
+  const result = await sendConfRegStatusEmail(reg);
+  if (result === 'skipped') {
+    throw ApiError.badRequest('Your registration is still under review. The confirmation email will be available once it is approved.');
+  }
+  logger.info(`Resent ${result} email for conf reg of user ${userId}`);
+  return { status: result, email: reg.userId.email };
+}
+
+/**
+ * Admin bulk resend: re-sends the status email for each selected conference
+ * registration id. Pending registrations are skipped (no email to send).
+ * Best-effort — one failure never aborts the batch.
+ */
+async function bulkResendConfRegEmails(ids) {
+  if (!Array.isArray(ids) || ids.length === 0) {
+    throw ApiError.badRequest('No conference registrations selected');
+  }
+  const regs = await ConferenceRegistration.find({ _id: { $in: ids } })
+    .populate('userId', 'name email college');
+
+  let sent = 0, skipped = 0, failed = 0;
+  for (const reg of regs) {
+    try {
+      const result = await sendConfRegStatusEmail(reg);
+      if (result === 'skipped') skipped++; else sent++;
+    } catch (err) {
+      failed++;
+      logger.error(`Bulk conf resend failed for reg ${reg._id}: ${err.message}`);
+    }
+  }
+  logger.info(`Admin bulk conf resend: ${sent} sent, ${skipped} skipped (pending), ${failed} failed`);
+  return { total: regs.length, sent, skipped, failed };
 }
 
 async function getPaymentScreenshot(confRegId) {
@@ -574,6 +611,7 @@ module.exports = {
   submitConferenceRegistration,
   getMyConferenceRegistration,
   resendConfRegEmail,
+  bulkResendConfRegEmails,
   getRegistrationConfig,
   verifyBySrcId,
   getConferenceRegistrations,

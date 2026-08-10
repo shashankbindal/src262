@@ -347,10 +347,48 @@ async function resendEventRegistrationEmail(userId, registrationId) {
   return { email: user.email, eventName };
 }
 
+/**
+ * Admin bulk resend: re-sends the event confirmation email for each selected
+ * registration id, addressed to that registration's registrant. Best-effort —
+ * one failure never aborts the batch.
+ */
+async function bulkResendEventEmails(ids) {
+  if (!Array.isArray(ids) || ids.length === 0) {
+    throw ApiError.badRequest('No event registrations selected');
+  }
+  const regs = await Registration.find({ _id: { $in: ids } })
+    .populate('eventId', 'name whatsappGroupLink')
+    .populate('teamId', 'teamName');
+
+  let sent = 0, failed = 0;
+  for (const reg of regs) {
+    const email = reg.participantSnapshot?.email;
+    const name  = reg.participantSnapshot?.name || 'Participant';
+    if (!email) { failed++; continue; }
+    try {
+      await emailService.sendEventRegistrationComplete({
+        name,
+        email,
+        eventName:         reg.eventId?.name || 'Event',
+        teamName:          reg.teamId?.teamName || '',
+        whatsappGroupLink: reg.eventId?.whatsappGroupLink || '',
+        hasSubmission:     reg.status === 'completed',
+      });
+      sent++;
+    } catch (err) {
+      failed++;
+      logger.error(`Bulk event resend failed for reg ${reg._id}: ${err.message}`);
+    }
+  }
+  logger.info(`Admin bulk event resend: ${sent} sent, ${failed} failed`);
+  return { total: regs.length, sent, failed };
+}
+
 module.exports = {
   createRegistration,
   updateRegistration,
   getUserRegistrations,
   getRegistrationById,
   resendEventRegistrationEmail,
+  bulkResendEventEmails,
 };

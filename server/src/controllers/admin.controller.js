@@ -1,7 +1,9 @@
 'use strict';
-const asyncHandler = require('../utils/asyncHandler');
-const ApiResponse  = require('../utils/ApiResponse');
-const adminService = require('../services/admin.service');
+const asyncHandler        = require('../utils/asyncHandler');
+const ApiResponse         = require('../utils/ApiResponse');
+const adminService        = require('../services/admin.service');
+const confRegService      = require('../services/conferenceRegistration.service');
+const registrationService = require('../services/registration.service');
 
 /* ─── Overview ───────────────────────────────────────────────────────────── */
 
@@ -69,6 +71,12 @@ const exportConferenceRegistrationsCSV = asyncHandler(async (req, res) => {
   res.send(csv);
 });
 
+/* Bulk resend conference registration emails to selected participants. */
+const bulkResendConfRegEmails = asyncHandler(async (req, res) => {
+  const result = await confRegService.bulkResendConfRegEmails(req.body.ids);
+  ApiResponse.ok(res, `Resent ${result.sent} email(s)${result.skipped ? `, skipped ${result.skipped} pending` : ''}.`, result);
+});
+
 /* ─── Event Registrations ────────────────────────────────────────────────── */
 
 const getRegistrations = asyncHandler(async (req, res) => {
@@ -86,6 +94,12 @@ const deleteRegistration = asyncHandler(async (req, res) => {
   const { registrationId } = req.params;
   await adminService.deleteRegistration(registrationId);
   ApiResponse.ok(res, 'Registration deleted successfully');
+});
+
+/* Bulk resend event confirmation emails for selected registrations. */
+const bulkResendEventEmails = asyncHandler(async (req, res) => {
+  const result = await registrationService.bulkResendEventEmails(req.body.ids);
+  ApiResponse.ok(res, `Resent ${result.sent} email(s).`, result);
 });
 
 const getSubmissionFile = asyncHandler(async (req, res) => {
@@ -194,11 +208,13 @@ module.exports = {
   getConferenceRegistrationDetail,
   getIdCardPreview,
   exportConferenceRegistrationsCSV,
+  bulkResendConfRegEmails,
   decideConferenceRegistration,
   getConfPaymentScreenshot,
   getConfIdCard,
   getRegistrations,
   deleteRegistration,
+  bulkResendEventEmails,
   getSubmissionFile,
   getSubmissions,
   markSubmissionComplete,

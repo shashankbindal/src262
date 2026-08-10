@@ -45,6 +45,56 @@ function tierLabelShort(reg) {
   return TIER_LABELS_SHORT[reg?.registrationTier] || (reg?.needsAccommodation ? TIER_LABELS_SHORT.accommodation : TIER_LABELS_SHORT.base);
 }
 
+/* Toolbar: college filter input + "Resend Email to Selected" bulk action.
+ * Shared by the conference and event registration tables. */
+function AdminSelectionBar({ college, setCollege, selectedIds, endpoint, onDone }) {
+  const [state, setState] = useState('idle'); // idle | sending | done | error
+  const [msg, setMsg]     = useState('');
+  const ids = [...selectedIds];
+
+  const send = async () => {
+    if (!ids.length) return;
+    if (!window.confirm(`Resend the confirmation email to ${ids.length} selected participant(s)?`)) return;
+    setState('sending'); setMsg('');
+    try {
+      const res = await api.post(endpoint, { ids });
+      setState('done');
+      setMsg(res.message || `Resent to ${ids.length}.`);
+      onDone?.();
+    } catch (err) {
+      setState('error');
+      setMsg(err instanceof ApiError ? err.message : 'Failed to resend.');
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', margin: '4px 0 12px' }}>
+      <input
+        type="text"
+        value={college}
+        onChange={(e) => setCollege(e.target.value)}
+        placeholder="Filter by college…"
+        className="admin-modal-input"
+        style={{ maxWidth: '240px', margin: 0 }}
+      />
+      {college && (
+        <button className="tbl-btn" onClick={() => setCollege('')}>Clear</button>
+      )}
+      <button
+        className="export-btn"
+        disabled={!ids.length || state === 'sending'}
+        onClick={send}
+        title={!ids.length ? 'Select rows first' : ''}
+      >
+        {state === 'sending' ? 'Sending…' : `✉ Resend Email to Selected (${ids.length})`}
+      </button>
+      {msg && (
+        <span style={{ fontSize: '0.8rem', color: state === 'error' ? '#ef4444' : 'var(--primary)' }}>{msg}</span>
+      )}
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════ CONFERENCE REGISTRATION COMPONENTS */
 
 /* ── Conf Reg: Reject Modal ── */
@@ -232,7 +282,7 @@ function ConfDetailModal({ confRegId, onClose }) {
 }
 
 /* ── Conf Reg: Row in table ── */
-function ConfRegRow({ confReg, onRefresh }) {
+function ConfRegRow({ confReg, onRefresh, selected, onToggle }) {
   const [showApprove, setShowApprove] = useState(false);
   const [showReject, setShowReject]   = useState(false);
   const [showDetail, setShowDetail]   = useState(false);
@@ -258,6 +308,9 @@ function ConfRegRow({ confReg, onRefresh }) {
   return (
     <>
       <tr>
+        <td style={{ textAlign: 'center' }}>
+          <input type="checkbox" checked={selected} onChange={() => onToggle(confReg._id)} />
+        </td>
         <td className="name-cell">{u.name || '—'}</td>
         <td>{u.email || '—'}</td>
         <td>{u.college || '—'}</td>
@@ -313,6 +366,8 @@ function ConfRegSection({ counts }) {
   const [loading, setLoading]     = useState(false);
   const [loadError, setLoadError] = useState('');
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [college, setCollege]     = useState('');
+  const [selectedIds, setSelectedIds] = useState(() => new Set());
 
   const CONF_TABS = [
     { id: 'pending',  label: 'Pending',  count: counts?.pending  || 0 },
@@ -324,6 +379,7 @@ function ConfRegSection({ counts }) {
     if (isCollapsed) return;
     setLoading(true);
     setLoadError('');
+    setSelectedIds(new Set());
     api.get(`/admin/conference-registrations?status=${activeTab}&limit=100`)
       .then((res) => setRows(res.data?.docs || []))
       .catch(() => { setRows([]); setLoadError('Failed to load registrations.'); })
@@ -331,6 +387,28 @@ function ConfRegSection({ counts }) {
   }, [activeTab, isCollapsed]);
 
   useEffect(() => { load(); }, [load]);
+
+  /* Client-side college filter over the loaded page (≤100 rows). */
+  const visibleRows = college.trim()
+    ? rows.filter((r) => (r.userId?.college || '').toLowerCase().includes(college.trim().toLowerCase()))
+    : rows;
+
+  const toggleOne = (id) => setSelectedIds((prev) => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
+  const allVisibleSelected = visibleRows.length > 0 && visibleRows.every((r) => selectedIds.has(r._id));
+  const toggleAll = () => setSelectedIds((prev) => {
+    if (allVisibleSelected) {
+      const next = new Set(prev);
+      visibleRows.forEach((r) => next.delete(r._id));
+      return next;
+    }
+    const next = new Set(prev);
+    visibleRows.forEach((r) => next.add(r._id));
+    return next;
+  });
 
   return (
     <div className="admin-event-section">
@@ -382,17 +460,28 @@ function ConfRegSection({ counts }) {
             ))}
           </div>
 
+          <AdminSelectionBar
+            college={college}
+            setCollege={setCollege}
+            selectedIds={selectedIds}
+            endpoint="/admin/conference-registrations/resend-emails"
+            onDone={() => setSelectedIds(new Set())}
+          />
+
           {loading ? (
             <div style={{ padding: '32px', textAlign: 'center' }}><div className="auth-spinner" style={{ margin: '0 auto' }} /></div>
           ) : loadError ? (
             <div className="admin-empty">{loadError}</div>
-          ) : rows.length === 0 ? (
-            <div className="admin-empty">No registrations in this category.</div>
+          ) : visibleRows.length === 0 ? (
+            <div className="admin-empty">{rows.length === 0 ? 'No registrations in this category.' : 'No registrations match that college.'}</div>
           ) : (
             <div className="admin-table-wrap">
               <table className="admin-table">
                 <thead>
                   <tr>
+                    <th style={{ textAlign: 'center' }}>
+                      <input type="checkbox" checked={allVisibleSelected} onChange={toggleAll} title="Select all" />
+                    </th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>College</th>
@@ -406,7 +495,15 @@ function ConfRegSection({ counts }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((r) => <ConfRegRow key={r._id} confReg={r} onRefresh={load} />)}
+                  {visibleRows.map((r) => (
+                    <ConfRegRow
+                      key={r._id}
+                      confReg={r}
+                      onRefresh={load}
+                      selected={selectedIds.has(r._id)}
+                      onToggle={toggleOne}
+                    />
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -507,7 +604,7 @@ function SubmissionCell({ registrationId, status, onRefresh }) {
 }
 
 /* ── Event Registration Row ── */
-function RegRow({ reg, onRefresh }) {
+function RegRow({ reg, onRefresh, selected, onToggle }) {
   const participant = reg.participantSnapshot || reg.userId || {};
   const team        = reg.teamId;
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -530,12 +627,15 @@ function RegRow({ reg, onRefresh }) {
   if (team) {
     return (
       <>
-        <tr 
-          className="team-header-row" 
+        <tr
+          className="team-header-row"
           style={{ backgroundColor: 'rgba(255,255,255,0.03)', userSelect: 'none' }}
         >
-          <td 
-            colSpan="6" 
+          <td style={{ textAlign: 'center' }}>
+            <input type="checkbox" checked={selected} onChange={() => onToggle(reg._id)} />
+          </td>
+          <td
+            colSpan="6"
             style={{ padding: '12px 16px', fontWeight: 'bold', color: 'var(--primary)', cursor: 'pointer' }}
             onClick={() => setIsCollapsed(!isCollapsed)}
           >
@@ -562,6 +662,7 @@ function RegRow({ reg, onRefresh }) {
         {!isCollapsed && (
           <>
             <tr>
+              <td />
               <td className="name-cell">
                 {participant.name || '—'}
                 <span style={{ fontSize: '0.65rem', padding: '2px 6px', background: 'rgba(56, 189, 114, 0.2)', color: 'var(--primary)', borderRadius: '4px', marginLeft: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Leader</span>
@@ -577,6 +678,7 @@ function RegRow({ reg, onRefresh }) {
             </tr>
             {team.members?.map((m) => (
               <tr key={m.userId || m._id || m.email} style={{ opacity: 0.85 }}>
+                <td />
                 <td className="name-cell" style={{ paddingLeft: '24px' }}>
                   ↳ {m.name || '—'}
                 </td>
@@ -598,6 +700,9 @@ function RegRow({ reg, onRefresh }) {
 
   return (
     <tr>
+      <td style={{ textAlign: 'center' }}>
+        <input type="checkbox" checked={selected} onChange={() => onToggle(reg._id)} />
+      </td>
       <td className="name-cell">{participant.name || '—'}</td>
       <td>{participant.email || '—'}</td>
       <td>{participant.college || '—'}</td>
@@ -624,10 +729,13 @@ function EventSection({ evt }) {
   const [regs, setRegs]           = useState([]);
   const [loading, setLoading]     = useState(false);
   const [loadError, setLoadError] = useState('');
+  const [college, setCollege]     = useState('');
+  const [selectedIds, setSelectedIds] = useState(() => new Set());
 
   const load = useCallback(() => {
     setLoading(true);
     setLoadError('');
+    setSelectedIds(new Set());
     api.get(`/admin/events/${evt.event._id}/registrations?status=${activeTab}&limit=100`)
       .then((res) => setRegs(res.data?.docs || []))
       .catch(() => { setRegs([]); setLoadError('Failed to load registrations.'); })
@@ -635,6 +743,28 @@ function EventSection({ evt }) {
   }, [evt.event._id, activeTab]);
 
   useEffect(() => { load(); }, [load]);
+
+  /* College filter matches the registrant or any team member. */
+  const matchesCollege = (reg) => {
+    const q = college.trim().toLowerCase();
+    if (!q) return true;
+    const cols = [reg.participantSnapshot?.college, ...(reg.teamId?.members || []).map((m) => m.college)];
+    return cols.some((c) => (c || '').toLowerCase().includes(q));
+  };
+  const visibleRegs = regs.filter(matchesCollege);
+
+  const toggleOne = (id) => setSelectedIds((prev) => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
+  const allVisibleSelected = visibleRegs.length > 0 && visibleRegs.every((r) => selectedIds.has(r._id));
+  const toggleAll = () => setSelectedIds((prev) => {
+    const next = new Set(prev);
+    if (allVisibleSelected) visibleRegs.forEach((r) => next.delete(r._id));
+    else visibleRegs.forEach((r) => next.add(r._id));
+    return next;
+  });
 
   return (
     <div className="admin-event-section">
@@ -677,17 +807,28 @@ function EventSection({ evt }) {
         ))}
       </div>
 
+      <AdminSelectionBar
+        college={college}
+        setCollege={setCollege}
+        selectedIds={selectedIds}
+        endpoint="/admin/registrations/resend-emails"
+        onDone={() => setSelectedIds(new Set())}
+      />
+
       {loading ? (
         <div style={{ padding: '32px', textAlign: 'center' }}><div className="auth-spinner" style={{ margin: '0 auto' }} /></div>
       ) : loadError ? (
         <div className="admin-empty">{loadError}</div>
-      ) : regs.length === 0 ? (
-        <div className="admin-empty">No registrations in this category.</div>
+      ) : visibleRegs.length === 0 ? (
+        <div className="admin-empty">{regs.length === 0 ? 'No registrations in this category.' : 'No registrations match that college.'}</div>
       ) : (
         <div className="admin-table-wrap">
           <table className="admin-table">
             <thead>
               <tr>
+                <th style={{ textAlign: 'center' }}>
+                  <input type="checkbox" checked={allVisibleSelected} onChange={toggleAll} title="Select all" />
+                </th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>College</th>
@@ -698,7 +839,15 @@ function EventSection({ evt }) {
               </tr>
             </thead>
             <tbody>
-              {regs.map((r) => <RegRow key={r._id} reg={r} onRefresh={load} />)}
+              {visibleRegs.map((r) => (
+                <RegRow
+                  key={r._id}
+                  reg={r}
+                  onRefresh={load}
+                  selected={selectedIds.has(r._id)}
+                  onToggle={toggleOne}
+                />
+              ))}
             </tbody>
           </table>
         </div>
