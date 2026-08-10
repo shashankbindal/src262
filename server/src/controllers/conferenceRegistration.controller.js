@@ -118,9 +118,16 @@ const getMyConferenceRegistration = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, 'Conference registration fetched', reg);
 });
 
+/* Resend the conference registration email (with ID card PDF, if approved). */
+const resendMyConfRegEmail = asyncHandler(async (req, res) => {
+  const result = await confRegService.resendConfRegEmail(req.user._id);
+  ApiResponse.ok(res, `Email sent to ${result.email}. Please check your inbox (and spam folder).`, result);
+});
+
 module.exports = {
   getConfig,
   verifyRegistration,
   submitConferenceRegistration,
   getMyConferenceRegistration,
+  resendMyConfRegEmail,
 };

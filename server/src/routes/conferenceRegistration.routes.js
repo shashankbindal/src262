@@ -3,7 +3,7 @@ const express    = require('express');
 const ctrl       = require('../controllers/conferenceRegistration.controller');
 const { authenticate, requireVerifiedEmail } = require('../middleware/auth.middleware');
 const { confRegUpload }  = require('../middleware/upload');
-const { uploadLimiter }  = require('../middleware/rateLimiter');
+const { uploadLimiter, resendLimiter }  = require('../middleware/rateLimiter');
 const validate   = require('../middleware/validate');
 const {
   submitConferenceRegistrationValidator,
@@ -22,6 +22,9 @@ router.use(authenticate, requireVerifiedEmail);
 
 /* Get my conference registration status */
 router.get('/', ctrl.getMyConferenceRegistration);
+
+/* Resend my conference registration email (approval email + ID card PDF) */
+router.post('/resend-email', resendLimiter, ctrl.resendMyConfRegEmail);
 
 /* Submit / re-submit conference registration */
 router.post('/',

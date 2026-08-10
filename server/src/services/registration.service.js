@@ -311,9 +311,46 @@ async function getRegistrationById(userId, registrationId) {
   return reg;
 }
 
+/**
+ * Re-sends the event registration confirmation email to the logged-in user
+ * for one of their registrations (as leader/solo or as a team member). The
+ * email goes only to the requesting user's own address, so a leader can't
+ * spam their whole team by clicking resend.
+ */
+async function resendEventRegistrationEmail(userId, registrationId) {
+  const teams   = await Team.find({ 'members.userId': userId }).select('_id').lean();
+  const teamIds = teams.map((t) => t._id);
+
+  const reg = await Registration.findOne({
+    _id: registrationId,
+    $or: [{ userId }, { teamId: { $in: teamIds } }],
+  })
+    .populate('eventId', 'name whatsappGroupLink')
+    .populate('teamId', 'teamName');
+  if (!reg) throw ApiError.notFound('Registration not found');
+
+  const user = await User.findById(userId).select('name email').lean();
+  if (!user?.email) throw ApiError.badRequest('No email address on file for your account');
+
+  const eventName = reg.eventId?.name || 'Event';
+
+  await emailService.sendEventRegistrationComplete({
+    name:              user.name,
+    email:             user.email,
+    eventName,
+    teamName:          reg.teamId?.teamName || '',
+    whatsappGroupLink: reg.eventId?.whatsappGroupLink || '',
+    hasSubmission:     reg.status === 'completed',
+  });
+
+  logger.info(`Resent event registration email for reg ${registrationId} to user ${userId}`);
+  return { email: user.email, eventName };
+}
+
 module.exports = {
   createRegistration,
   updateRegistration,
   getUserRegistrations,
   getRegistrationById,
+  resendEventRegistrationEmail,
 };

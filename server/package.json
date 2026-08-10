@@ -33,6 +33,7 @@
     "mongoose": "^8.0.3",
     "mongoose-paginate-v2": "^1.7.4",
     "multer": "^2.2.0",
+    "nodemailer": "^9.0.5",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "pdfkit": "^0.19.1",

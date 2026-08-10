@@ -42,4 +42,12 @@ const getRegistrationById = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, 'Registration fetched', reg);
 });
 
-module.exports = { createRegistration, updateRegistration, getMyRegistrations, getRegistrationById };
+const resendRegistrationEmail = asyncHandler(async (req, res) => {
+  const result = await registrationService.resendEventRegistrationEmail(
+    req.user._id,
+    req.params.registrationId
+  );
+  ApiResponse.ok(res, `Email sent to ${result.email}. Please check your inbox (and spam folder).`, result);
+});
+
+module.exports = { createRegistration, updateRegistration, getMyRegistrations, getRegistrationById, resendRegistrationEmail };

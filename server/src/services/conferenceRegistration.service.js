@@ -357,6 +357,54 @@ async function rejectConferenceRegistration(adminId, confRegId, { reason }) {
   return reg;
 }
 
+/**
+ * Re-sends the conference registration email to the logged-in user for their
+ * own registration. Approved → the approval email WITH a freshly generated ID
+ * card PDF attached (the conference pass); rejected → the rejection email.
+ * Pending has no confirmation email to resend yet.
+ */
+async function resendConfRegEmail(userId) {
+  const reg = await ConferenceRegistration.findOne({ userId })
+    .populate('userId', 'name email college');
+  if (!reg) throw ApiError.notFound('No conference registration found for your account');
+
+  if (reg.status === 'approved') {
+    /* Regenerate the ID card so the resent email carries the same PDF pass
+     * the participant received on approval. */
+    let idCardPdf = null;
+    try {
+      idCardPdf = await idCardService.generateIdCardPdf({
+        name:     reg.userId.name,
+        srcId:    reg.srcId,
+        college:  reg.userId.college,
+        photoUrl: reg.photoUrl,
+      });
+    } catch (err) {
+      logger.error(`ID card regeneration failed on resend for user ${userId}: ${err.message}`);
+    }
+    await emailService.sendConfRegApproved({
+      name:  reg.userId.name,
+      email: reg.userId.email,
+      srcId: reg.srcId,
+      idCardPdf,
+    });
+    logger.info(`Resent approval email (with ID card) for conf reg of user ${userId}`);
+    return { status: 'approved', email: reg.userId.email };
+  }
+
+  if (reg.status === 'rejected') {
+    await emailService.sendConfRegRejected({
+      name:   reg.userId.name,
+      email:  reg.userId.email,
+      reason: reg.rejectionReason,
+    });
+    logger.info(`Resent rejection email for conf reg of user ${userId}`);
+    return { status: 'rejected', email: reg.userId.email };
+  }
+
+  throw ApiError.badRequest('Your registration is still under review. The confirmation email will be available once it is approved.');
+}
+
 async function getPaymentScreenshot(confRegId) {
   const reg = await ConferenceRegistration.findById(confRegId)
     .populate('userId', 'name email')
@@ -525,6 +573,7 @@ async function verifyBySrcId(srcId) {
 module.exports = {
   submitConferenceRegistration,
   getMyConferenceRegistration,
+  resendConfRegEmail,
   getRegistrationConfig,
   verifyBySrcId,
   getConferenceRegistrations,

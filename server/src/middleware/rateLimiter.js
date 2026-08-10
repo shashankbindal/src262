@@ -60,4 +60,15 @@ const announcementLimiter = rateLimit({
   message:         { success: false, message: 'Too many announcements created. Please slow down.' },
 });
 
-module.exports = { globalLimiter, authLimiter, authSlowDown, uploadLimiter, announcementLimiter };
+/* Limits user-triggered "resend email" buttons (conference pass, event
+ * confirmation) so a user can recover a lost email without being able to
+ * spam their own inbox or hammer the mail provider. */
+const resendLimiter = rateLimit({
+  windowMs:        15 * 60 * 1000, // 15 minutes
+  max:             5,
+  standardHeaders: true,
+  legacyHeaders:   false,
+  message:         { success: false, message: 'Too many resend requests. Please wait a few minutes and try again.' },
+});
+
+module.exports = { globalLimiter, authLimiter, authSlowDown, uploadLimiter, announcementLimiter, resendLimiter };

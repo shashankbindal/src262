@@ -8,7 +8,6 @@ const required = [
   'MONGODB_URI',
   'JWT_SECRET',
   'JWT_REFRESH_SECRET',
-  'RESEND_API_KEY',
   'EMAIL_FROM',
   'CLOUDINARY_CLOUD_NAME',
   'CLOUDINARY_API_KEY',
@@ -54,6 +53,13 @@ const env = {
 
   ADMIN_EMAILS,
 
+  /* Email transport — SMTP (e.g. Zoho) is used when SMTP_* are set,
+   * otherwise it falls back to Resend if RESEND_API_KEY is present. */
+  SMTP_HOST:              process.env.SMTP_HOST,
+  SMTP_PORT:              parseInt(process.env.SMTP_PORT, 10) || 465,
+  SMTP_SECURE:            process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : true,
+  SMTP_USER:              process.env.SMTP_USER,
+  SMTP_PASS:              process.env.SMTP_PASS,
   RESEND_API_KEY:         process.env.RESEND_API_KEY,
   EMAIL_FROM:             process.env.EMAIL_FROM,
   EMAIL_FROM_NAME:        process.env.EMAIL_FROM_NAME || 'Viplav 2026',

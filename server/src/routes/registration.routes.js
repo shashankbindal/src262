@@ -2,6 +2,7 @@
 const express  = require('express');
 const ctrl     = require('../controllers/registration.controller');
 const { authenticate, requireVerifiedEmail } = require('../middleware/auth.middleware');
+const { resendLimiter } = require('../middleware/rateLimiter');
 const validate = require('../middleware/validate');
 const {
   createRegistrationValidator,
@@ -23,6 +24,9 @@ router.get('/', ctrl.getMyRegistrations);
 
 /* Fetch a specific registration */
 router.get('/:registrationId', ctrl.getRegistrationById);
+
+/* Resend the registration confirmation email for one of my registrations */
+router.post('/:registrationId/resend-email', resendLimiter, ctrl.resendRegistrationEmail);
 
 /* Update a team registration */
 router.patch('/:registrationId',
