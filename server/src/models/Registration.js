@@ -38,6 +38,12 @@ const registrationSchema = new mongoose.Schema(
       enum:    STATUS,
       default: 'registered',
     },
+    /* Snapshot of the registrant category at the time of registration. */
+    participantType: {
+      type:    String,
+      enum:    ['internal', 'external'],
+      default: 'external',
+    },
 
     /* SRC ID of the registrant at the time of registration (immutable snapshot) */
     srcId: { type: String, trim: true, default: '' },

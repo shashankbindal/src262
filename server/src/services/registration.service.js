@@ -8,6 +8,16 @@ const User                   = require('../models/User');
 const ApiError               = require('../utils/ApiError');
 const emailService           = require('./email.service');
 const logger                 = require('../utils/logger');
+const { getParticipantType, participantTypeLabel } = require('../utils/participantType');
+
+function assertEventParticipantAllowed(event, email) {
+  const participantType = getParticipantType(email);
+  const allowed = participantType === 'internal' ? event.allowInternal !== false : event.allowExternal !== false;
+  if (!allowed) {
+    throw ApiError.forbidden(`This event is open to ${participantTypeLabel(participantType)} participants only`);
+  }
+  return participantType;
+}
 
 /**
  * Verifies that a user has an approved conference registration with a valid SRC ID.
@@ -59,6 +69,7 @@ async function createRegistration(userId, eventId, { teamName, memberSrcIds = []
 
   const user = await User.findById(userId).lean();
   if (!user) throw ApiError.notFound('User not found');
+  const participantType = assertEventParticipantAllowed(event, user.email);
 
 
   /* Verify leader's conference registration */
@@ -102,10 +113,13 @@ async function createRegistration(userId, eventId, { teamName, memberSrcIds = []
       if (memberReg) throw ApiError.conflict(`SRC ID ${srcId} is already registered for this event`);
       if (inAnotherTeam) throw ApiError.conflict(`SRC ID ${srcId} is already in a team for this event`);
 
+      const memberParticipantType = assertEventParticipantAllowed(event, member.email);
+
       return {
         userId:  member._id,
         name:    member.name,
         email:   member.email,
+        participantType: memberParticipantType,
         srcId,
         college: member.college || '',
         phone:   member.phone   || '',
@@ -127,6 +141,7 @@ async function createRegistration(userId, eventId, { teamName, memberSrcIds = []
     eventId,
     teamId: teamDoc?._id,
     status: initialStatus,
+    participantType,
     srcId:  leaderConfReg.srcId,
     participantSnapshot: {
       name:    user.name,
@@ -218,6 +233,7 @@ async function updateRegistration(userId, registrationId, { teamName, memberSrcI
   }
 
   const leaderConfReg = await ConferenceRegistration.findOne({ userId: reg.userId }).lean();
+  assertEventParticipantAllowed(event, reg.participantSnapshot?.email);
 
   if (event.minTeamSize && memberSrcIds.length + 1 < event.minTeamSize) {
     throw ApiError.badRequest(`Team must have at least ${event.minTeamSize} members`);
@@ -255,10 +271,13 @@ async function updateRegistration(userId, registrationId, { teamName, memberSrcI
       throw ApiError.conflict(`SRC ID ${srcId} is already in another team for this event`);
     }
 
+    const memberParticipantType = assertEventParticipantAllowed(event, member.email);
+
     return {
       userId:  member._id,
       name:    member.name,
       email:   member.email,
+      participantType: memberParticipantType,
       srcId,
       college: member.college || '',
       phone:   member.phone   || '',

@@ -58,6 +58,10 @@ const eventSchema = new mongoose.Schema(
       type:    Boolean,
       default: true,
     },
+    /* Which participant categories may register. Existing events remain open
+     * to both categories through the defaults. */
+    allowInternal: { type: Boolean, default: true },
+    allowExternal: { type: Boolean, default: true },
     whatsappGroupLink: {
       type:    String,
       trim:    true,

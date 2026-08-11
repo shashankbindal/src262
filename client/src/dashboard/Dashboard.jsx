@@ -773,6 +773,12 @@ function RegCard({ reg, onRefresh }) {
             </span>
           </div>
         )}
+        {reg.participantType && (
+          <div className="reg-meta-item">
+            <span className="reg-meta-label">Participant Type</span>
+            <span className="reg-meta-value" style={{ textTransform: 'capitalize' }}>{reg.participantType}</span>
+          </div>
+        )}
         {reg.teamId?.teamName && (
           <div className="reg-meta-item">
             <span className="reg-meta-label">Team</span>

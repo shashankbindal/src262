@@ -14,6 +14,7 @@ const logger                 = require('../utils/logger');
 const { Parser }             = require('json2csv');
 const ExcelJS                = require('exceljs');
 const filterXSS              = require('xss');
+const { getParticipantType } = require('../utils/participantType');
 
 /* ─── Conference Registration Management ──────────────────────────────────── */
 
@@ -198,6 +199,7 @@ async function exportRegistrationsCSV(eventId, status) {
   for (const r of regs) {
     rows.push({
       name:        r.participantSnapshot?.name    || r.userId?.name,
+      participantType: r.participantType || getParticipantType(r.participantSnapshot?.email || r.userId?.email),
       email:       r.participantSnapshot?.email   || r.userId?.email,
       college:     r.participantSnapshot?.college || r.userId?.college,
       phone:       r.participantSnapshot?.phone   || r.userId?.phone,
@@ -211,6 +213,7 @@ async function exportRegistrationsCSV(eventId, status) {
     for (const m of r.teamId?.members || []) {
       rows.push({
         name:        m.name    || '',
+        participantType: m.participantType || getParticipantType(m.email),
         email:       m.email   || '',
         college:     m.college || '',
         phone:       m.phone   || '',
@@ -243,6 +246,7 @@ async function exportRegistrationsExcel(eventId, status) {
   ws.columns = [
     { header: 'Name',         key: 'name',         width: 25 },
     { header: 'Email',        key: 'email',         width: 30 },
+    { header: 'Participant Type', key: 'participantType', width: 18 },
     { header: 'College',      key: 'college',       width: 30 },
     { header: 'Phone',        key: 'phone',         width: 15 },
     { header: 'SRC ID',       key: 'srcId',         width: 15 },
@@ -255,6 +259,7 @@ async function exportRegistrationsExcel(eventId, status) {
   for (const r of regs) {
     ws.addRow({
       name:         r.participantSnapshot?.name    || r.userId?.name    || '',
+      participantType: r.participantType || getParticipantType(r.participantSnapshot?.email || r.userId?.email),
       email:        r.participantSnapshot?.email   || r.userId?.email   || '',
       college:      r.participantSnapshot?.college || r.userId?.college || '',
       phone:        r.participantSnapshot?.phone   || r.userId?.phone   || '',
@@ -268,6 +273,7 @@ async function exportRegistrationsExcel(eventId, status) {
     for (const m of r.teamId?.members || []) {
       ws.addRow({
         name:         m.name    || '',
+        participantType: m.participantType || getParticipantType(m.email),
         email:        m.email   || '',
         college:      m.college || '',
         phone:        m.phone   || '',
@@ -327,7 +333,7 @@ function slugify(name) {
 const EVENT_UPDATABLE_FIELDS = [
   'name', 'slug', 'description', 'type', 'registrationDeadline', 'submissionDeadline',
   'fileUploadRequired', 'pdfUploadMode', 'allowedFileTypes', 'maxFileSizeMB', 'minTeamSize', 'maxTeamSize',
-  'registrationEnabled', 'whatsappGroupLink',
+  'registrationEnabled', 'allowInternal', 'allowExternal', 'whatsappGroupLink',
 ];
 
 async function createEvent(data) {
@@ -338,6 +344,11 @@ async function createEvent(data) {
 
   const pdfUploadMode = data.pdfUploadMode || (data.fileUploadRequired ? 'single' : 'none');
   const fileUploadRequired = pdfUploadMode !== 'none';
+  const allowInternal = data.allowInternal !== undefined ? data.allowInternal : true;
+  const allowExternal = data.allowExternal !== undefined ? data.allowExternal : true;
+  if (!allowInternal && !allowExternal) {
+    throw ApiError.badRequest('At least one participant type must be allowed');
+  }
 
   const event = await Event.create({
     name:                 data.name,
@@ -353,6 +364,8 @@ async function createEvent(data) {
     minTeamSize:          data.minTeamSize,
     maxTeamSize:          data.maxTeamSize,
     registrationEnabled:  data.registrationEnabled !== undefined ? data.registrationEnabled : true,
+    allowInternal,
+    allowExternal,
     whatsappGroupLink:    data.whatsappGroupLink || '',
   });
 
@@ -364,6 +377,13 @@ async function updateEvent(eventId, data) {
   const update = {};
   for (const field of EVENT_UPDATABLE_FIELDS) {
     if (data[field] !== undefined) update[field] = data[field];
+  }
+
+  const existingEvent = await Event.findById(eventId).select('allowInternal allowExternal').lean();
+  if (!existingEvent) throw ApiError.notFound('Event not found');
+  if ((update.allowInternal ?? existingEvent.allowInternal ?? true) === false
+    && (update.allowExternal ?? existingEvent.allowExternal ?? true) === false) {
+    throw ApiError.badRequest('At least one participant type must be allowed');
   }
 
   if (data.pdfUploadMode !== undefined) {

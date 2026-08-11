@@ -21,9 +21,12 @@ const EVENT_IMAGES = {
 };
 
 /* ── Event selector card ── */
-function EventCard({ event, selected, onClick }) {
+function EventCard({ event, selected, onClick, participantType }) {
   const isPast = event.registrationDeadline && new Date() > new Date(event.registrationDeadline);
-  const disabled = !event.registrationEnabled || isPast;
+  const participantAllowed = participantType === 'internal'
+    ? event.allowInternal !== false
+    : event.allowExternal !== false;
+  const disabled = !event.registrationEnabled || isPast || !participantAllowed;
   const bgImg = EVENT_IMAGES[event.name] || 'https://res.cloudinary.com/cnocxcvz/image/upload/v1783560048/site/nhezjpxd3ca6an2d5ooh.png';
 
   return (
@@ -40,7 +43,9 @@ function EventCard({ event, selected, onClick }) {
         <span className="esc-type">{event.type}</span>
       </div>
       {disabled && (
-        <span className="esc-closed">{isPast ? 'Closed' : 'Disabled'}</span>
+        <span className="esc-closed">
+          {isPast ? 'Closed' : !event.registrationEnabled ? 'Disabled' : `${participantType === 'internal' ? 'External' : 'Internal'} only`}
+        </span>
       )}
     </div>
   );
@@ -213,6 +218,7 @@ function RegistrationSubmissionForm({ registrationId, event, onSuccess }) {
 export default function Registration() {
   useDocumentTitle('Event Registration | VIPLAV 2026 — AIChE India SRC');
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const participantType = String(user?.email || '').toLowerCase().endsWith('@rgipt.ac.in') ? 'internal' : 'external';
   const navigate       = useNavigate();
   const [params]       = useSearchParams();
 
@@ -454,6 +460,7 @@ export default function Registration() {
                 key={evt._id}
                 event={evt}
                 selected={selectedEvent?._id === evt._id}
+                participantType={participantType}
                 onClick={(e) => { setSelectedEvent(e); setStep(2); setError(''); setUploadSuccess(false); }}
               />
             ))}
@@ -466,6 +473,7 @@ export default function Registration() {
                 key={evt._id}
                 event={evt}
                 selected={selectedEvent?._id === evt._id}
+                participantType={participantType}
                 onClick={(e) => { setSelectedEvent(e); setStep(2); setError(''); setUploadSuccess(false); }}
               />
             ))}

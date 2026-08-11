@@ -18,6 +18,14 @@ const EVENT_STATUS_TABS = [
   { id: 'completed',          label: 'Completed' },
 ];
 
+function participantTypeFromEmail(email) {
+  return String(email || '').trim().toLowerCase().endsWith('@rgipt.ac.in') ? 'internal' : 'external';
+}
+
+function participantTypeLabel(type) {
+  return type === 'internal' ? 'Internal' : 'External';
+}
+
 /* ── Conference registration tier labels ── */
 const TIER_LABELS = {
   base: 'Registration Only',
@@ -639,7 +647,7 @@ function RegRow({ reg, onRefresh, selected, onToggle }) {
             <input type="checkbox" checked={selected} onChange={() => onToggle(reg._id)} />
           </td>
           <td
-            colSpan="6"
+            colSpan="7"
             style={{ padding: '12px 16px', fontWeight: 'bold', color: 'var(--primary)', cursor: 'pointer' }}
             onClick={() => setIsCollapsed(!isCollapsed)}
           >
@@ -672,6 +680,7 @@ function RegRow({ reg, onRefresh, selected, onToggle }) {
                 <span style={{ fontSize: '0.65rem', padding: '2px 6px', background: 'rgba(56, 189, 114, 0.2)', color: 'var(--primary)', borderRadius: '4px', marginLeft: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Leader</span>
               </td>
               <td>{participant.email || '—'}</td>
+              <td style={{ textTransform: 'capitalize' }}>{participantTypeLabel(reg.participantType || participantTypeFromEmail(participant.email))}</td>
               <td>{participant.college || '—'}</td>
               <td>—</td>
               <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--primary)', fontWeight: '600' }}>
@@ -687,6 +696,7 @@ function RegRow({ reg, onRefresh, selected, onToggle }) {
                   ↳ {m.name || '—'}
                 </td>
                 <td>{m.email || '—'}</td>
+                <td style={{ textTransform: 'capitalize' }}>{participantTypeLabel(m.participantType || participantTypeFromEmail(m.email))}</td>
                 <td>{m.college || '—'}</td>
                 <td>—</td>
                 <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--primary)', fontWeight: '600' }}>
@@ -709,6 +719,7 @@ function RegRow({ reg, onRefresh, selected, onToggle }) {
       </td>
       <td className="name-cell">{participant.name || '—'}</td>
       <td>{participant.email || '—'}</td>
+      <td style={{ textTransform: 'capitalize' }}>{participantTypeLabel(reg.participantType || participantTypeFromEmail(participant.email))}</td>
       <td>{participant.college || '—'}</td>
       <td>—</td>
       <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--primary)', fontWeight: '600' }}>
@@ -835,6 +846,7 @@ function EventSection({ evt }) {
                 </th>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Participant Type</th>
                 <th>College</th>
                 <th>Team</th>
                 <th>SRC ID</th>
@@ -867,6 +879,7 @@ const EMPTY_EVENT_FORM = {
   registrationDeadline: '', submissionDeadline: '',
   fileUploadRequired: false, pdfUploadMode: 'none', maxFileSizeMB: 10,
   minTeamSize: 2, maxTeamSize: 4, registrationEnabled: true,
+  allowInternal: true, allowExternal: true,
   whatsappGroupLink: '',
 };
 
@@ -894,6 +907,8 @@ function EventFormModal({ event, onClose, onDone }) {
     minTeamSize: event.minTeamSize || 2,
     maxTeamSize: event.maxTeamSize || 4,
     registrationEnabled: event.registrationEnabled !== false,
+    allowInternal: event.allowInternal !== false,
+    allowExternal: event.allowExternal !== false,
     whatsappGroupLink: event.whatsappGroupLink || '',
   } : EMPTY_EVENT_FORM);
   const [busy, setBusy]   = useState(false);
@@ -913,6 +928,7 @@ function EventFormModal({ event, onClose, onDone }) {
   const submit = async () => {
     if (!form.name.trim()) { setError('Event name is required.'); return; }
     if (!form.registrationDeadline) { setError('Registration deadline is required.'); return; }
+    if (!form.allowInternal && !form.allowExternal) { setError('Allow internal, external, or both participant types.'); return; }
 
     setBusy(true);
     setError('');
@@ -928,6 +944,8 @@ function EventFormModal({ event, onClose, onDone }) {
         pdfUploadMode: form.pdfUploadMode,
         maxFileSizeMB: Number(form.maxFileSizeMB) || 10,
         registrationEnabled: form.registrationEnabled,
+        allowInternal: form.allowInternal,
+        allowExternal: form.allowExternal,
         whatsappGroupLink: form.whatsappGroupLink.trim(),
       };
       if (form.type === 'team') {
@@ -1034,6 +1052,17 @@ function EventFormModal({ event, onClose, onDone }) {
                 Registrations open
               </label>
             </div>
+            <div className="ef-field ef-checkboxes">
+              <span className="auth-label">Participant access</span>
+              <label>
+                <input type="checkbox" name="allowInternal" checked={form.allowInternal} onChange={handle} />
+                Internal (@rgipt.ac.in)
+              </label>
+              <label>
+                <input type="checkbox" name="allowExternal" checked={form.allowExternal} onChange={handle} />
+                External
+              </label>
+            </div>
           </div>
         </div>
 
@@ -1086,6 +1115,7 @@ function EventManagementSection({ events, onRefresh }) {
               <tr>
                 <th>Name</th>
                 <th>Type</th>
+                <th>Participants</th>
                 <th>Registration Deadline</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -1096,6 +1126,9 @@ function EventManagementSection({ events, onRefresh }) {
                 <tr key={evt._id}>
                   <td className="name-cell">{evt.name}</td>
                   <td style={{ textTransform: 'capitalize' }}>{evt.type}</td>
+                  <td style={{ textTransform: 'capitalize' }}>
+                    {[evt.allowInternal !== false && 'Internal', evt.allowExternal !== false && 'External'].filter(Boolean).join(' + ')}
+                  </td>
                   <td>{new Date(evt.registrationDeadline).toLocaleString('en-IN')}</td>
                   <td>{evt.registrationEnabled ? 'Open' : 'Closed'}</td>
                   <td>
