@@ -27,7 +27,7 @@ const Footer = () => {
             <h2 className="footer-heading">Contacts</h2>
             <div className="footer-left-bottom">
               <a href="mailto:aiche@rgipt.ac.in" className="footer-primary-link">aiche@rgipt.ac.in ↗</a>
-              <p className="footer-address">RGIPT, Rae Bareli, India</p>
+              <p className="footer-address">RGIPT Jais Campus, Amethi, India</p>
             </div>
           </div>
 

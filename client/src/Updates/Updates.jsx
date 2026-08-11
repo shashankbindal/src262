@@ -91,7 +91,7 @@ const Updates = () => {
     const today = new Date().toLocaleDateString('en-IN', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
     });
-    return `${today} · RGIPT, Rae Bareli`;
+    return `${today} · RGIPT Jais Campus, Amethi`;
   }, []);
 
   const [lead, ...briefs] = items;
