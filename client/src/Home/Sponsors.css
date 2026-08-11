@@ -79,6 +79,10 @@
   scrollbar-width: none;
 }
 
+.sponsors-slider-container.single-sponsor {
+  justify-content: center;
+}
+
 .sponsors-slider-container::-webkit-scrollbar {
   display: none;
 }

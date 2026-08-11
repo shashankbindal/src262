@@ -5,18 +5,7 @@ import '../Home/animations.css';
 import './Sponsor.css';
 
 const sponsorsData = [
-  { name: 'GAIL', url: '/gail.png' },
-  { name: 'HP', url: '/hp.png' },
-  { name: 'IndianOil', url: '/indianoil.png' },
-  { name: 'ONGC', url: '/mrpl.png' },
-  { name: 'Indorama', url: '/indorama.png' },
-  { name: 'ISRO', url: '/isro.png' },
-  { name: 'CSIR', url: '/csir.png' },
-  { name: 'SBI', url: '/sbi.png' },
-  { name: 'NRL', url: 'https://res.cloudinary.com/cnocxcvz/image/upload/v1783560062/site/gnic3xatmeoahcxzl9ps.jpg' },
-  { name: 'SERB INDIA', url: '/inserb.png' },
-  { name: 'PNB', url: '/pnb.png' },
-  { name: 'Burger Singh', url: '/burger.png' }
+  { name: 'HMEL', url: '/hmel.svg', href: 'https://www.hmel.in/' }
 ];
 
 import SponsorsHero from './SponsorsHero';
@@ -30,12 +19,12 @@ const Sponsor = () => {
       <SponsorsHero />
       <div className="sponsors-page">
         <div ref={containerRef} className={`sponsors-container reveal ${containerVisible ? 'visible' : ''}`}>
-          <h2 className="past-sponsors-title">Past Sponsors</h2>
+          <h2 className="current-sponsor-title">Our Sponsor</h2>
           <div className="sponsors-grid">
             {sponsorsData.map((sponsor, idx) => (
-              <div key={idx} className={`sponsor-card reveal-scale reveal-d${idx % 8 + 1} ${containerVisible ? 'visible' : ''}`}>
+              <a key={idx} href={sponsor.href} target="_blank" rel="noreferrer" className={`sponsor-card reveal-scale reveal-d${idx % 8 + 1} ${containerVisible ? 'visible' : ''}`}>
                 <img src={sponsor.url} alt={sponsor.name} className="sponsor-logo" loading="lazy" decoding="async" />
-              </div>
+              </a>
             ))}
           </div>
         </div>
