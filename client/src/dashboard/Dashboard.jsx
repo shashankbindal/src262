@@ -17,39 +17,6 @@ function StatusBadge({ status }) {
   return <span className={`status-badge ${status}`}>{STATUS_LABELS[status] || status}</span>;
 }
 
-/* Reusable "resend email" button: POSTs to an endpoint and reports status
- * inline. Used for the conference pass email and event confirmation emails. */
-function ResendEmailButton({ endpoint, label = 'Resend Email', className = 'reg-action-btn' }) {
-  const [state, setState] = useState('idle'); // idle | sending | sent | error
-  const [msg, setMsg]     = useState('');
-
-  const handleClick = async () => {
-    setState('sending');
-    setMsg('');
-    try {
-      const res = await api.post(endpoint);
-      setState('sent');
-      setMsg(res.message || 'Email sent. Please check your inbox (and spam folder).');
-    } catch (err) {
-      setState('error');
-      setMsg(err instanceof ApiError ? err.message : 'Could not send email. Please try again.');
-    }
-  };
-
-  return (
-    <span style={{ display: 'inline-flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
-      <button type="button" className={className} onClick={handleClick} disabled={state === 'sending'}>
-        {state === 'sending' ? 'Sending…' : state === 'sent' ? '✓ Sent' : label}
-      </button>
-      {msg && (
-        <span style={{ fontSize: '0.75rem', color: state === 'error' ? '#ef4444' : 'var(--primary)', maxWidth: '260px', lineHeight: 1.4 }}>
-          {msg}
-        </span>
-      )}
-    </span>
-  );
-}
-
 function ViewConferenceIdCardButton({ className = 'confbanner-btn outlined' }) {
   const [state, setState] = useState('idle');
   const [error, setError] = useState('');
@@ -467,11 +434,6 @@ function ConferenceRegBanner() {
           <a href="https://chat.whatsapp.com/KXApATqIm4rKRQ9ojYjWch" target="_blank" rel="noreferrer" className="confbanner-btn whatsapp">
             Join WhatsApp Group
           </a>
-          <ResendEmailButton
-            endpoint="/conference-registration/resend-email"
-            className="confbanner-btn outlined"
-            label="Resend ID Card Email"
-          />
         </div>
       </div>
     );
@@ -917,30 +879,27 @@ function RegCard({ reg, onRefresh }) {
         )}
       </div>
 
-      <div className="reg-card-actions">
-        <ResendEmailButton
-          endpoint={`/registrations/${reg._id}/resend-email`}
-          className="reg-action-btn"
-          label="Resend Confirmation Email"
-        />
-        {canEdit && (
-          <button className="reg-action-btn" onClick={() => { setShowEdit((v) => !v); setShowSubmission(false); }}>
-            {showEdit ? 'Cancel Edit' : 'Edit Team'}
-          </button>
-        )}
-        {canSubmit && (
-          <>
-            {event?.pdfUploadMode === 'multiple' && submission && (
-              <button className="reg-action-btn primary" onClick={triggerAddFile} disabled={busy}>
-                + Add PDF
-              </button>
-            )}
-            <button className="reg-action-btn" onClick={() => { setShowSubmission((v) => !v); setShowEdit(false); }} disabled={busy}>
-              {showSubmission ? 'Cancel' : (reg.status === 'submitted' ? '↺ Replace All Files' : 'Upload Submission')}
+      {(canEdit || canSubmit) && (
+        <div className="reg-card-actions">
+          {canEdit && (
+            <button className="reg-action-btn" onClick={() => { setShowEdit((v) => !v); setShowSubmission(false); }}>
+              {showEdit ? 'Cancel Edit' : 'Edit Team'}
             </button>
-          </>
-        )}
-      </div>
+          )}
+          {canSubmit && (
+            <>
+              {event?.pdfUploadMode === 'multiple' && submission && (
+                <button className="reg-action-btn primary" onClick={triggerAddFile} disabled={busy}>
+                  + Add PDF
+                </button>
+              )}
+              <button className="reg-action-btn" onClick={() => { setShowSubmission((v) => !v); setShowEdit(false); }} disabled={busy}>
+                {showSubmission ? 'Cancel' : (reg.status === 'submitted' ? '↺ Replace All Files' : 'Upload Submission')}
+              </button>
+            </>
+          )}
+        </div>
+      )}
 
       {showEdit && (
         <EditRegistrationForm
