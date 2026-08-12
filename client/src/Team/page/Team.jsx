@@ -35,10 +35,10 @@ const Team = () => {
             </article>
             <article className="patron-card">
               <div className="patron-image-wrap">
-                <img src="/hod.jpeg" alt="Dr. Amit Ranjan, Head of Department, Chemical and Biochemical Engineering" className="patron-image" loading="lazy" decoding="async" />
+                <img src="/hod.jpeg" alt="Dr. Venkata Subbarayudu Sistla, Head of Department, Chemical and Biochemical Engineering" className="patron-image" loading="lazy" decoding="async" />
               </div>
               <div className="patron-info">
-                <h3 className="patron-name">Dr. Amit Ranjan</h3>
+                <h3 className="patron-name">Dr. Venkata Subbarayudu Sistla</h3>
                 <p className="patron-role">Visionary Leader · Head, Chemical &amp; Biochemical Engineering</p>
               </div>
             </article>
