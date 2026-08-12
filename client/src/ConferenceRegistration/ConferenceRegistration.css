@@ -1085,6 +1085,48 @@
   letter-spacing: 0.08em;
 }
 
+.cr-approved-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.cr-btn-id-card,
+.cr-btn-whatsapp {
+  text-decoration: none;
+}
+
+.cr-btn-id-card {
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--primary, #1b7c2a);
+  color: var(--primary, #1b7c2a);
+}
+
+.cr-btn-id-card:hover:not(:disabled) {
+  background: rgba(27, 124, 42, 0.08);
+}
+
+.cr-btn-whatsapp {
+  background: #25d366;
+  color: #fff;
+  border-color: #25d366;
+}
+
+.cr-btn-whatsapp:hover {
+  background: #1fb65b;
+  border-color: #1fb65b;
+}
+
+.cr-id-card-error {
+  margin: -4px 0 0;
+  color: #c62828;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
 /* ── Gate screens ────────────────────────────────────────── */
 
 .cr-gate {

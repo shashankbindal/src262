@@ -579,6 +579,14 @@
   background: rgba(11,93,70,.08);
 }
 
+.confbanner-btn.whatsapp {
+  background: #25d366;
+}
+
+.confbanner-btn.whatsapp:hover {
+  background: #1fb65b;
+}
+
 /* ── File upload box ─────────────────────────────────────── */
 .cr-upload-box {
   border: 2px dashed var(--border-medium, #959581);

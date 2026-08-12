@@ -837,6 +837,37 @@ function PendingScreen({ confReg }) {
 }
 
 function ApprovedScreen({ confReg }) {
+  const [idCardState, setIdCardState] = useState('idle');
+  const [idCardError, setIdCardError] = useState('');
+
+  const viewIdCard = async () => {
+    setIdCardState('loading');
+    setIdCardError('');
+    const cardWindow = window.open('', '_blank');
+
+    try {
+      const pdf = await api.download('/conference-registration/id-card');
+      const url = URL.createObjectURL(pdf);
+
+      if (cardWindow) {
+        cardWindow.location.href = url;
+      } else {
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noreferrer';
+        link.click();
+      }
+
+      window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      setIdCardState('idle');
+    } catch (err) {
+      cardWindow?.close();
+      setIdCardState('error');
+      setIdCardError(err instanceof ApiError ? err.message : 'Could not open your ID card. Please try again.');
+    }
+  };
+
   return (
     <div className="cr-status-screen cr-status-approved">
       <div className="cr-status-icon cr-icon-approved">✓</div>
@@ -860,9 +891,18 @@ function ApprovedScreen({ confReg }) {
           <strong>{confReg.approvalTimestamp ? formatDate(confReg.approvalTimestamp) : '—'}</strong>
         </div>
       </div>
-      <Link to="/register" className="cr-btn cr-btn-primary" style={{ textDecoration: 'none', display: 'inline-block', marginTop: '4px' }}>
-        Register for Events →
-      </Link>
+      <div className="cr-approved-actions">
+        <button type="button" className="cr-btn cr-btn-id-card" onClick={viewIdCard} disabled={idCardState === 'loading'}>
+          {idCardState === 'loading' ? 'Opening ID Card…' : 'View ID Card'}
+        </button>
+        <a className="cr-btn cr-btn-whatsapp" href="https://chat.whatsapp.com/KXApATqIm4rKRQ9ojYjWch" target="_blank" rel="noreferrer">
+          Join WhatsApp Group
+        </a>
+        <Link to="/register" className="cr-btn cr-btn-primary" style={{ textDecoration: 'none' }}>
+          Register for Events →
+        </Link>
+      </div>
+      {idCardError && <p className="cr-id-card-error">{idCardError}</p>}
     </div>
   );
 }

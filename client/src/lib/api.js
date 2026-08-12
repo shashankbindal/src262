@@ -76,6 +76,24 @@ async function request(method, path, body = null, isFormData = false, _isRetry =
   return data;
 }
 
+async function download(path, _isRetry = false) {
+  const res = await fetch(`${BASE}${path}`, { credentials: 'include' });
+
+  if (res.status === 401 && !_isRetry && !NO_REFRESH_PATHS.includes(path)) {
+    const refreshed = await refreshAccessToken();
+    if (refreshed) return download(path, true);
+  }
+
+  if (!res.ok) {
+    const data = res.headers.get('content-type')?.includes('application/json')
+      ? await res.json()
+      : await res.text();
+    throw new ApiError(data?.message || `HTTP ${res.status}`, res.status, data?.errors || []);
+  }
+
+  return res.blob();
+}
+
 export const api = {
   get:    (path)          => request('GET',    path),
   post:   (path, body)    => request('POST',   path, body),
@@ -85,6 +103,7 @@ export const api = {
   upload: (path, formData) => request('POST',  path, formData, true),
   uploadPatch: (path, formData) => request('PATCH', path, formData, true),
   uploadPut: (path, formData) => request('PUT', path, formData, true),
+  download: (path) => download(path),
 };
 
 export { ApiError };

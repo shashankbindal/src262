@@ -198,6 +198,28 @@ async function getMyConferenceRegistration(userId) {
 }
 
 /**
+ * Generates the logged-in attendee's own conference ID card.  The card is
+ * available only after the registration has been approved and an SRC ID has
+ * been assigned.
+ */
+async function getMyConferenceIdCard(userId) {
+  const reg = await ConferenceRegistration.findOne({ userId })
+    .populate('userId', 'name college');
+
+  if (!reg) throw ApiError.notFound('No conference registration found for your account');
+  if (reg.status !== 'approved' || !reg.srcId) {
+    throw ApiError.forbidden('Your conference ID card will be available once your registration is approved');
+  }
+
+  return idCardService.generateIdCardPdf({
+    name:     reg.userId?.name || '',
+    srcId:    reg.srcId,
+    college:  reg.userId?.college || '',
+    photoUrl: reg.photoUrl || '',
+  });
+}
+
+/**
  * Public config for the registration form (fee, UPI, options lists).
  */
 function getRegistrationConfig(user) {
@@ -612,6 +634,7 @@ async function verifyBySrcId(srcId) {
 module.exports = {
   submitConferenceRegistration,
   getMyConferenceRegistration,
+  getMyConferenceIdCard,
   resendConfRegEmail,
   bulkResendConfRegEmails,
   getRegistrationConfig,

@@ -118,6 +118,14 @@ const getMyConferenceRegistration = asyncHandler(async (req, res) => {
   ApiResponse.ok(res, 'Conference registration fetched', reg);
 });
 
+/* Render the logged-in approved attendee's conference ID card. */
+const getMyConferenceIdCard = asyncHandler(async (req, res) => {
+  const pdf = await confRegService.getMyConferenceIdCard(req.user._id);
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', 'inline; filename="VIPLAV-2026-ID-Card.pdf"');
+  res.send(pdf);
+});
+
 /* Resend the conference registration email (with ID card PDF, if approved). */
 const resendMyConfRegEmail = asyncHandler(async (req, res) => {
   const result = await confRegService.resendConfRegEmail(req.user._id);
@@ -129,5 +137,6 @@ module.exports = {
   verifyRegistration,
   submitConferenceRegistration,
   getMyConferenceRegistration,
+  getMyConferenceIdCard,
   resendMyConfRegEmail,
 };

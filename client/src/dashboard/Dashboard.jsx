@@ -50,6 +50,48 @@ function ResendEmailButton({ endpoint, label = 'Resend Email', className = 'reg-
   );
 }
 
+function ViewConferenceIdCardButton({ className = 'confbanner-btn outlined' }) {
+  const [state, setState] = useState('idle');
+  const [error, setError] = useState('');
+
+  const handleClick = async () => {
+    setState('loading');
+    setError('');
+    const cardWindow = window.open('', '_blank');
+
+    try {
+      const pdf = await api.download('/conference-registration/id-card');
+      const url = URL.createObjectURL(pdf);
+
+      if (cardWindow) {
+        cardWindow.location.href = url;
+      } else {
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noreferrer';
+        link.click();
+      }
+
+      window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      setState('idle');
+    } catch (err) {
+      cardWindow?.close();
+      setState('error');
+      setError(err instanceof ApiError ? err.message : 'Could not open your ID card. Please try again.');
+    }
+  };
+
+  return (
+    <span style={{ display: 'inline-flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
+      <button type="button" className={className} onClick={handleClick} disabled={state === 'loading'}>
+        {state === 'loading' ? 'Opening ID Card…' : 'View ID Card'}
+      </button>
+      {error && <span style={{ fontSize: '0.75rem', color: '#ef4444', maxWidth: '220px', lineHeight: 1.4 }}>{error}</span>}
+    </span>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════════ PROFILE TAB */
 function ProfileTab({ user, refreshUser }) {
   const [form, setForm]     = useState({
@@ -395,6 +437,10 @@ function ConferenceRegBanner() {
         </div>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
           <Link to="/register" className="confbanner-btn outlined">Register for Events</Link>
+          <ViewConferenceIdCardButton />
+          <a href="https://chat.whatsapp.com/KXApATqIm4rKRQ9ojYjWch" target="_blank" rel="noreferrer" className="confbanner-btn whatsapp">
+            Join WhatsApp Group
+          </a>
           <ResendEmailButton
             endpoint="/conference-registration/resend-email"
             className="confbanner-btn outlined"

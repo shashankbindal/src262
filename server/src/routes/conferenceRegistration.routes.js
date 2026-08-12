@@ -23,6 +23,9 @@ router.use(authenticate, requireVerifiedEmail);
 /* Get my conference registration status */
 router.get('/', ctrl.getMyConferenceRegistration);
 
+/* View my conference ID card — available only after approval */
+router.get('/id-card', ctrl.getMyConferenceIdCard);
+
 /* Resend my conference registration email (approval email + ID card PDF) */
 router.post('/resend-email', resendLimiter, ctrl.resendMyConfRegEmail);
 
