@@ -10,53 +10,9 @@
   background: var(--bg-primary);
 }
 
-.sponsors-hero-bg {
-  display: block;
-  position: absolute;
-  inset: 0;
-  background-image: url('https://res.cloudinary.com/cnocxcvz/image/upload/v1783560068/site/gokiu1ocsca05ncvalyz.png');
-  background-size: cover;
-  background-position: center;
-  z-index: 0;
-  filter: brightness(0.55) grayscale(10%);
-  transform-origin: center center;
-  will-change: transform;
-  animation: sponsorsHeroDrift 28s ease-in-out infinite;
-}
-
-@keyframes sponsorsHeroDrift {
-  0% {
-    transform: scale(1.04) translate3d(0%, 0%, 0);
-  }
-
-  50% {
-    transform: scale(1.1) translate3d(1.2%, -1%, 0);
-  }
-
-  100% {
-    transform: scale(1.04) translate3d(0%, 0%, 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sponsors-hero-bg {
-    animation: none;
-  }
-}
-
-.sponsors-hero-fade {
-  display: block;
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at center, transparent 25%, var(--bg-primary) 95%),
-    linear-gradient(to bottom, transparent 70%, var(--bg-primary) 100%);
-  z-index: 1;
-}
-
 .sponsors-hero-content {
   position: relative;
-  z-index: 2;
+  z-index: 1;
   text-align: center;
   width: 90%;
   max-width: 550px;

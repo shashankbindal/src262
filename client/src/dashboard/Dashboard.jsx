@@ -103,6 +103,7 @@ function ProfileTab({ user, refreshUser }) {
   });
   const [busy, setBusy]     = useState(false);
   const [msg, setMsg]       = useState({ type: '', text: '' });
+  const [conferenceReg, setConferenceReg] = useState(null);
 
   /* Email Verification state */
   const [showVerification, setShowVerification] = useState(false);
@@ -110,6 +111,12 @@ function ProfileTab({ user, refreshUser }) {
   const [otpBusy, setOtpBusy]                   = useState(false);
   const [otpError, setOtpError]                 = useState('');
   const [otpSuccess, setOtpSuccess]             = useState('');
+
+  useEffect(() => {
+    api.get('/conference-registration')
+      .then((res) => setConferenceReg(res.data || null))
+      .catch(() => setConferenceReg(null));
+  }, []);
 
   const sendVerificationOTP = async () => {
     setOtpBusy(true);
@@ -307,6 +314,25 @@ function ProfileTab({ user, refreshUser }) {
           </button>
         </form>
       </div>
+
+      {conferenceReg?.status === 'approved' && (
+        <section className="profile-conference-card" aria-labelledby="profile-conference-heading">
+          <div>
+            <span className="profile-conference-eyebrow">Conference Registration · Approved</span>
+            <h3 id="profile-conference-heading" className="profile-conference-heading">Your VIPLAV Delegate Details</h3>
+            <div className="profile-srcid-row">
+              <span className="profile-srcid-label">SRC ID</span>
+              <strong className="profile-srcid-value">{conferenceReg.srcId}</strong>
+            </div>
+          </div>
+          <div className="profile-conference-actions">
+            <ViewConferenceIdCardButton className="profile-conference-btn profile-id-card-btn" />
+            <a href="https://chat.whatsapp.com/KXApATqIm4rKRQ9ojYjWch" target="_blank" rel="noreferrer" className="profile-conference-btn profile-whatsapp-btn">
+              Join WhatsApp Group
+            </a>
+          </div>
+        </section>
+      )}
 
       </div>
     </div>

@@ -193,6 +193,93 @@
 }
 .profile-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
+/* ── Approved conference attendee details ── */
+.profile-conference-card {
+  margin-top: 24px;
+  padding: 28px;
+  background: rgba(110, 231, 183, 0.08);
+  border: 1px solid rgba(11, 93, 70, 0.16);
+  border-radius: var(--radius-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.profile-conference-eyebrow {
+  display: block;
+  color: var(--primary);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.profile-conference-heading {
+  margin: 8px 0 14px;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+}
+
+.profile-srcid-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.profile-srcid-label {
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.profile-srcid-value {
+  color: var(--primary);
+  font-family: var(--font-mono);
+  font-size: 1.35rem;
+  letter-spacing: 0.06em;
+}
+
+.profile-conference-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.profile-conference-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--primary);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--primary);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.profile-conference-btn:hover:not(:disabled) { background: rgba(11, 93, 70, 0.08); }
+.profile-conference-btn:disabled { cursor: not-allowed; opacity: 0.65; }
+
+.profile-whatsapp-btn {
+  background: #25d366;
+  border-color: #25d366;
+  color: #fff;
+}
+
+.profile-whatsapp-btn:hover { background: #1fb65b; border-color: #1fb65b; }
+
 /* ── Email verified badge ── */
 .email-badge {
   display: inline-flex;
