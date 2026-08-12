@@ -253,8 +253,8 @@
 
 @media (max-width: 768px) {
   .src-section-ref {
-    gap: 100px;
-    padding: 100px 16px;
+    gap: 72px;
+    padding: 56px 16px;
   }
 
   .ref-block {
@@ -290,8 +290,8 @@
 
 @media (max-width: 480px) {
   .src-section-ref {
-    gap: 80px;
-    padding: 80px 12px;
+    gap: 56px;
+    padding: 44px 12px;
   }
 
   .ref-image-wrapper {

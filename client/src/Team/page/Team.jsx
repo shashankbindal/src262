@@ -16,6 +16,37 @@ const Team = () => {
       <TeamHero />
       <div className="team-page-container">
 
+        {/* ── Patrons & Visionary Leaders ── */}
+        <section className="patrons-section" aria-labelledby="patrons-heading">
+          <p className="patrons-eyebrow">Guided by Excellence</p>
+          <h2 id="patrons-heading" className="patrons-heading">Patrons &amp; Visionary Leaders</h2>
+          <p className="patrons-intro">
+            VIPLAV '26 is honoured to have the guidance and support of our institutional leaders.
+          </p>
+          <div className="patrons-grid">
+            <article className="patron-card">
+              <div className="patron-image-wrap">
+                <img src="/Director-RG.jpg.jpeg" alt="Prof. Harish Hirani, Director, RGIPT" className="patron-image" loading="lazy" decoding="async" />
+              </div>
+              <div className="patron-info">
+                <h3 className="patron-name">Prof. Harish Hirani</h3>
+                <p className="patron-role">Patron · Director, RGIPT</p>
+              </div>
+            </article>
+            <article className="patron-card">
+              <div className="patron-image-wrap">
+                <img src="/hod.jpeg" alt="Dr. Amit Ranjan, Head of Department, Chemical and Biochemical Engineering" className="patron-image" loading="lazy" decoding="async" />
+              </div>
+              <div className="patron-info">
+                <h3 className="patron-name">Dr. Amit Ranjan</h3>
+                <p className="patron-role">Visionary Leader · Head, Chemical &amp; Biochemical Engineering</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <div className="faculty-divider patrons-divider" />
+
         {/* ── Faculty Advisor ── */}
         <div className="faculty-advisor-section">
           <p className="faculty-advisor-eyebrow">Our Mentor</p>
