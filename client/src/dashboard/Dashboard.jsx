@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api, ApiError } from '../lib/api.js';
 import { COUNTRY_CODES } from '../shared/countryCodes.js';
+import { useResendCooldown } from '../shared/useResendCooldown.js';
 import './Dashboard.css';
 
 /* ── helpers ── */
@@ -78,6 +79,7 @@ function ProfileTab({ user, refreshUser }) {
   const [otpBusy, setOtpBusy]                   = useState(false);
   const [otpError, setOtpError]                 = useState('');
   const [otpSuccess, setOtpSuccess]             = useState('');
+  const [otpCooldown, startOtpCooldown]         = useResendCooldown(45);
 
   useEffect(() => {
     api.get('/conference-registration')
@@ -93,6 +95,7 @@ function ProfileTab({ user, refreshUser }) {
       await api.post('/auth/send-otp', { email: user.email });
       setOtpSuccess('Verification code sent to your email.');
       setShowVerification(true);
+      startOtpCooldown();
     } catch (err) {
       setOtpError(err instanceof ApiError ? err.message : 'Could not send verification code.');
     } finally {
@@ -154,9 +157,9 @@ function ProfileTab({ user, refreshUser }) {
                 type="button"
                 className="profile-verify-btn"
                 onClick={sendVerificationOTP}
-                disabled={otpBusy}
+                disabled={otpBusy || otpCooldown > 0}
               >
-                {otpBusy ? 'Sending...' : 'Verify Now'}
+                {otpBusy ? 'Sending...' : otpCooldown > 0 ? `Sent (${otpCooldown}s)` : 'Verify Now'}
               </button>
             )}
           </div>
@@ -216,9 +219,9 @@ function ProfileTab({ user, refreshUser }) {
                 className="auth-link-btn"
                 style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
                 onClick={sendVerificationOTP}
-                disabled={otpBusy}
+                disabled={otpBusy || otpCooldown > 0}
               >
-                Resend code
+                {otpCooldown > 0 ? `Resend code (${otpCooldown}s)` : 'Resend code'}
               </button>
             </p>
           </div>

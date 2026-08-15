@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api, ApiError } from '../lib/api.js';
 import { COUNTRY_CODES } from '../shared/countryCodes.js';
+import { useResendCooldown } from '../shared/useResendCooldown.js';
 import './ConferenceRegistration.css';
 
 /* ── Constants ── */
@@ -974,6 +975,19 @@ export default function ConferenceRegistration() {
   const [otpBusy, setOtpBusy]                   = useState(false);
   const [otpError, setOtpError]                 = useState('');
   const [otpSuccess, setOtpSuccess]             = useState('');
+  const [otpCooldown, startOtpCooldown]         = useResendCooldown(45);
+
+  /* Email verification isn't mandatory for RGIPT students registering for the
+   * conference — their institutional @rgipt.ac.in address is itself a form
+   * of identity assurance, and the OTP step was becoming a real blocker
+   * (resend rate limits, delivery delays) right when students most needed to
+   * register. External participants still must verify. */
+  const isRgiptEmail = (user?.email || '').toLowerCase().endsWith('@rgipt.ac.in');
+  const [verifySkipped, setVerifySkipped] = useState(() => sessionStorage.getItem('cr_verify_skipped') === 'true');
+  const skipVerification = () => {
+    sessionStorage.setItem('cr_verify_skipped', 'true');
+    setVerifySkipped(true);
+  };
 
   const sendVerificationOTP = async () => {
     setOtpBusy(true);
@@ -983,6 +997,7 @@ export default function ConferenceRegistration() {
       await api.post('/auth/send-otp', { email: user.email });
       setOtpSuccess('Verification code sent to your email.');
       setShowVerification(true);
+      startOtpCooldown();
     } catch (err) {
       setOtpError(err instanceof ApiError ? err.message : 'Could not send verification code.');
     } finally {
@@ -1135,7 +1150,7 @@ export default function ConferenceRegistration() {
     );
   }
 
-  if (!user?.isEmailVerified) {
+  if (!user?.isEmailVerified && !(isRgiptEmail && verifySkipped)) {
     return (
       <div className="cr-page">
         <div className="cr-gate" style={{ maxWidth: '520px' }}>
@@ -1143,18 +1158,28 @@ export default function ConferenceRegistration() {
             <>
               <h1>Verify your email first</h1>
               <p>Please verify your email address before registering for the conference.</p>
-              
+
               {otpError && <div className="auth-error" style={{ marginBottom: '16px' }}>{otpError}</div>}
-              
-              <div className="cr-gate-btns" style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+
+              <div className="cr-gate-btns" style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   className="cr-btn cr-btn-primary"
                   onClick={sendVerificationOTP}
-                  disabled={otpBusy}
+                  disabled={otpBusy || otpCooldown > 0}
                 >
-                  {otpBusy ? 'Sending...' : 'Verify Now'}
+                  {otpBusy ? 'Sending...' : otpCooldown > 0 ? `Sent (${otpCooldown}s)` : 'Verify Now'}
                 </button>
+                {isRgiptEmail && (
+                  <button
+                    type="button"
+                    className="cr-btn"
+                    style={{ border: '1px solid var(--border-medium)' }}
+                    onClick={skipVerification}
+                  >
+                    Verify Later — Continue Registration
+                  </button>
+                )}
                 <Link to="/dashboard" className="cr-btn" style={{ textDecoration: 'none', border: '1px solid var(--border-medium)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                   Go to Dashboard
                 </Link>
@@ -1212,9 +1237,9 @@ export default function ConferenceRegistration() {
                   className="auth-link-btn"
                   style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
                   onClick={sendVerificationOTP}
-                  disabled={otpBusy}
+                  disabled={otpBusy || otpCooldown > 0}
                 >
-                  Resend code
+                  {otpCooldown > 0 ? `Resend code (${otpCooldown}s)` : 'Resend code'}
                 </button>
               </p>
             </>

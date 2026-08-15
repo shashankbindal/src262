@@ -47,4 +47,21 @@ const requireVerifiedEmail = (req, _res, next) => {
   next();
 };
 
-module.exports = { authenticate, requireVerifiedEmail };
+/**
+ * Same as requireVerifiedEmail, but exempts @rgipt.ac.in accounts. Email
+ * verification isn't mandatory for RGIPT students registering for the
+ * conference — their institutional address is itself a form of identity
+ * assurance, and the OTP step (resend limits, delivery delays) was becoming
+ * a real blocker right when students most needed to register. External
+ * participants still must verify. Scoped only to conference-registration
+ * routes — every other route keeps the strict requireVerifiedEmail check.
+ */
+const requireVerifiedEmailUnlessRgipt = (req, _res, next) => {
+  const isRgipt = (req.user.email || '').toLowerCase().endsWith('@rgipt.ac.in');
+  if (!req.user.isEmailVerified && !isRgipt) {
+    return next(ApiError.forbidden('Please verify your email address first'));
+  }
+  next();
+};
+
+module.exports = { authenticate, requireVerifiedEmail, requireVerifiedEmailUnlessRgipt };
