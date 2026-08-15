@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api, ApiError } from '../lib/api.js';
 import { useDocumentTitle } from '../shared/useDocumentTitle.js';
-import { useResendCooldown } from '../shared/useResendCooldown.js';
+import { useResendCooldown, formatCooldown } from '../shared/useResendCooldown.js';
 import './auth.css';
 
 export default function Register() {
@@ -25,7 +25,7 @@ export default function Register() {
   const [otpBusy, setOtpBusy] = useState(false);
   const [resendBusy, setResendBusy] = useState(false);
   const [resendMsg, setResendMsg]   = useState('');
-  const [cooldown, startCooldown]   = useResendCooldown(45);
+  const [cooldown, startCooldown]   = useResendCooldown(300);
 
   useEffect(() => {
     if (!loading && isAuthenticated) navigate('/', { replace: true });
@@ -138,7 +138,7 @@ export default function Register() {
               disabled={resendBusy || cooldown > 0}
               type="button"
             >
-              {resendBusy ? 'Sending…' : cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend'}
+              {resendBusy ? 'Sending…' : cooldown > 0 ? `Resend in ${formatCooldown(cooldown)}` : 'Resend'}
             </button>
           </p>
         </div>

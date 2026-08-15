@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api, ApiError } from '../lib/api.js';
 import { COUNTRY_CODES } from '../shared/countryCodes.js';
-import { useResendCooldown } from '../shared/useResendCooldown.js';
+import { useResendCooldown, formatCooldown } from '../shared/useResendCooldown.js';
 import './Dashboard.css';
 
 /* ── helpers ── */
@@ -79,7 +79,7 @@ function ProfileTab({ user, refreshUser }) {
   const [otpBusy, setOtpBusy]                   = useState(false);
   const [otpError, setOtpError]                 = useState('');
   const [otpSuccess, setOtpSuccess]             = useState('');
-  const [otpCooldown, startOtpCooldown]         = useResendCooldown(45);
+  const [otpCooldown, startOtpCooldown]         = useResendCooldown(300);
 
   useEffect(() => {
     api.get('/conference-registration')
@@ -159,7 +159,7 @@ function ProfileTab({ user, refreshUser }) {
                 onClick={sendVerificationOTP}
                 disabled={otpBusy || otpCooldown > 0}
               >
-                {otpBusy ? 'Sending...' : otpCooldown > 0 ? `Sent (${otpCooldown}s)` : 'Verify Now'}
+                {otpBusy ? 'Sending...' : otpCooldown > 0 ? `Sent (${formatCooldown(otpCooldown)})` : 'Verify Now'}
               </button>
             )}
           </div>
@@ -221,7 +221,7 @@ function ProfileTab({ user, refreshUser }) {
                 onClick={sendVerificationOTP}
                 disabled={otpBusy || otpCooldown > 0}
               >
-                {otpCooldown > 0 ? `Resend code (${otpCooldown}s)` : 'Resend code'}
+                {otpCooldown > 0 ? `Resend code (${formatCooldown(otpCooldown)})` : 'Resend code'}
               </button>
             </p>
           </div>

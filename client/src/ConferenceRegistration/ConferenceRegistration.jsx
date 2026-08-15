@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api, ApiError } from '../lib/api.js';
 import { COUNTRY_CODES } from '../shared/countryCodes.js';
-import { useResendCooldown } from '../shared/useResendCooldown.js';
+import { useResendCooldown, formatCooldown } from '../shared/useResendCooldown.js';
 import './ConferenceRegistration.css';
 
 /* ── Constants ── */
@@ -975,7 +975,7 @@ export default function ConferenceRegistration() {
   const [otpBusy, setOtpBusy]                   = useState(false);
   const [otpError, setOtpError]                 = useState('');
   const [otpSuccess, setOtpSuccess]             = useState('');
-  const [otpCooldown, startOtpCooldown]         = useResendCooldown(45);
+  const [otpCooldown, startOtpCooldown]         = useResendCooldown(300);
 
   /* Email verification isn't mandatory for RGIPT students registering for the
    * conference — their institutional @rgipt.ac.in address is itself a form
@@ -1168,7 +1168,7 @@ export default function ConferenceRegistration() {
                   onClick={sendVerificationOTP}
                   disabled={otpBusy || otpCooldown > 0}
                 >
-                  {otpBusy ? 'Sending...' : otpCooldown > 0 ? `Sent (${otpCooldown}s)` : 'Verify Now'}
+                  {otpBusy ? 'Sending...' : otpCooldown > 0 ? `Sent (${formatCooldown(otpCooldown)})` : 'Verify Now'}
                 </button>
                 {isRgiptEmail && (
                   <button
@@ -1239,7 +1239,7 @@ export default function ConferenceRegistration() {
                   onClick={sendVerificationOTP}
                   disabled={otpBusy || otpCooldown > 0}
                 >
-                  {otpCooldown > 0 ? `Resend code (${otpCooldown}s)` : 'Resend code'}
+                  {otpCooldown > 0 ? `Resend code (${formatCooldown(otpCooldown)})` : 'Resend code'}
                 </button>
               </p>
             </>

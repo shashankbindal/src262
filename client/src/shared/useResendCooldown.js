@@ -9,11 +9,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
  * code for up to an hour. This hook gives the UI a visible cooldown so the
  * button simply can't be re-tapped that fast.
  *
- * Usage: const [secondsLeft, startCooldown] = useResendCooldown(45);
+ * Usage: const [secondsLeft, startCooldown] = useResendCooldown(300);
  *   - disable the button while `secondsLeft > 0`
  *   - call `startCooldown()` right after a resend request succeeds
+ *   - format the remaining time for display with formatCooldown(secondsLeft)
  */
-export function useResendCooldown(duration = 45) {
+export function useResendCooldown(duration = 300) {
   const [secondsLeft, setSecondsLeft] = useState(0);
   const intervalRef = useRef(null);
 
@@ -30,4 +31,12 @@ export function useResendCooldown(duration = 45) {
   }, [secondsLeft]);
 
   return [secondsLeft, start];
+}
+
+/** Formats a cooldown's remaining seconds as "M:SS" (or "Ns" under a minute). */
+export function formatCooldown(seconds) {
+  if (seconds < 60) return `${seconds}s`;
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
 }
