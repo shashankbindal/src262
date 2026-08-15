@@ -68,8 +68,16 @@ const env = {
   CLOUDINARY_API_KEY:     process.env.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET:  process.env.CLOUDINARY_API_SECRET,
 
-  isProd: () => process.env.NODE_ENV === 'production',
-  isDev:  () => process.env.NODE_ENV !== 'production',
+  /* Treat the app as "production" if NODE_ENV says so OR we're running on
+   * Render (which always injects RENDER=true into every deployed service).
+   * This is a deliberate belt-and-suspenders check: NODE_ENV not being set
+   * to "production" on the actual Render service is a real misconfiguration
+   * that has happened here before, and it's too security/correctness-
+   * critical (trust proxy → correct per-user rate limiting, Secure cookies,
+   * hiding internal error details from end users) to depend on a single env
+   * var that's easy to forget when provisioning a new service. */
+  isProd: () => process.env.NODE_ENV === 'production' || Boolean(process.env.RENDER),
+  isDev:  () => process.env.NODE_ENV !== 'production' && !process.env.RENDER,
 };
 
 module.exports = { env, validateEnv };
