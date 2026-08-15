@@ -51,7 +51,20 @@ const login = asyncHandler(async (req, res) => {
 const refresh = asyncHandler(async (req, res) => {
   const token = req.cookies?.refreshToken;
   if (!token) throw ApiError.unauthorized('Refresh token missing');
-  const { accessToken, refreshToken } = await authService.refreshTokens(token);
+
+  let accessToken, refreshToken;
+  try {
+    ({ accessToken, refreshToken } = await authService.refreshTokens(token));
+  } catch (err) {
+    /* A failed refresh (expired, reused, or pointing at a deleted account)
+     * must clear the stale cookies. Otherwise the browser keeps resending
+     * the same broken refresh token on every subsequent request, and every
+     * request on the site fails with "Authentication required" in a loop
+     * the user can never recover from without manually clearing cookies. */
+    clearCookies(res);
+    throw err;
+  }
+
   setCookies(res, accessToken, refreshToken);
   ApiResponse.ok(res, 'Token refreshed');
 });

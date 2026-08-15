@@ -48,6 +48,63 @@ function maskId(num) {
   return `${'X'.repeat(Math.max(num.length - 4, 4))} ${num.slice(-4)}`;
 }
 
+/* ── Image compression before upload ──
+ * Payment screenshots / ID card photos straight off a phone camera can be
+ * several MB. On a slow or unstable mobile connection that's often enough to
+ * blow past the request timeout on the network path (Vercel's proxy →
+ * Render), which drops the connection before the server ever responds —
+ * the fetch then throws a raw network error instead of a clean API error.
+ * Shrinking images client-side before upload cuts that risk substantially.
+ * PDFs are passed through untouched (canvas can't compress them). */
+function compressImageFile(file, { maxDimension = 1600, quality = 0.75, maxBytes = 1.5 * 1024 * 1024 } = {}) {
+  if (!file || !file.type?.startsWith('image/') || file.type === 'image/gif') {
+    return Promise.resolve(file);
+  }
+  if (file.size <= maxBytes) {
+    return Promise.resolve(file);
+  }
+
+  return new Promise((resolve) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    const cleanup = () => URL.revokeObjectURL(objectUrl);
+    const giveUp = () => { cleanup(); resolve(file); };
+
+    img.onload = () => {
+      try {
+        let { width, height } = img;
+        if (width > maxDimension || height > maxDimension) {
+          const scale = maxDimension / Math.max(width, height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob((blob) => {
+          cleanup();
+          if (!blob) { resolve(file); return; }
+          const compressed = new File(
+            [blob],
+            file.name.replace(/\.(png|webp)$/i, '.jpg'),
+            { type: 'image/jpeg', lastModified: Date.now() }
+          );
+          /* Only use the compressed version if it's actually smaller. */
+          resolve(compressed.size < file.size ? compressed : file);
+        }, 'image/jpeg', quality);
+      } catch {
+        giveUp();
+      }
+    };
+    img.onerror = giveUp;
+    img.src = objectUrl;
+  });
+}
+
 function FileThumbnail({ file, url }) {
   const src = url || (file ? URL.createObjectURL(file) : null);
   if (!src) return null;
@@ -1181,6 +1238,14 @@ export default function ConferenceRegistration() {
     setSubmitting(true);
     setSubmitErr('');
     try {
+      /* Shrink large images before upload — cuts upload time substantially
+       * on slow/unstable mobile connections, where a slow multi-MB upload is
+       * the most common cause of the request being dropped mid-transfer. */
+      const [compressedScreenshot, compressedIdCard] = await Promise.all([
+        compressImageFile(screenshotFile),
+        idCardFile ? compressImageFile(idCardFile) : Promise.resolve(null),
+      ]);
+
       const fd = new FormData();
       /* Profile fields */
       fd.append('name', form.name);
@@ -1204,13 +1269,27 @@ export default function ConferenceRegistration() {
       /* Payment */
       fd.append('transactionId', transactionId.trim());
       fd.append('registrationTier', registrationTier);
-      fd.append('screenshot', screenshotFile);
+      fd.append('screenshot', compressedScreenshot);
       /* ID card (optional on re-submission) */
-      if (idCardFile) fd.append('universityIdCard', idCardFile);
+      if (compressedIdCard) fd.append('universityIdCard', compressedIdCard);
       /* Profile photo (optional on re-submission if one already exists) */
       if (photoFile) fd.append('photo', photoFile);
 
-      const res = await api.upload('/conference-registration', fd);
+      /* Re-submitting the exact same FormData is safe: submission is an
+       * upsert keyed on the logged-in user (create-or-update-existing), so a
+       * retry after a dropped connection just re-saves the same data rather
+       * than creating a duplicate. Only retry on a raw network failure
+       * (fetch never got a response) — a real server-reported error (bad
+       * data, expired session, etc.) won't be fixed by retrying. */
+      let res;
+      try {
+        res = await api.upload('/conference-registration', fd);
+      } catch (err) {
+        if (err instanceof ApiError) throw err;
+        await new Promise((r) => setTimeout(r, 1500));
+        res = await api.upload('/conference-registration', fd);
+      }
+
       sessionStorage.removeItem('cr_stage');
       sessionStorage.removeItem('cr_form');
       sessionStorage.removeItem('cr_txId');
@@ -1219,7 +1298,11 @@ export default function ConferenceRegistration() {
       setConfReg(res.data);
       setStage('success');
     } catch (err) {
-      setSubmitErr(err instanceof ApiError ? err.message : 'Submission failed. Please try again.');
+      setSubmitErr(
+        err instanceof ApiError
+          ? err.message
+          : 'Network error — your connection may be too slow or unstable. Please check your signal/WiFi and try again.'
+      );
     } finally {
       setSubmitting(false);
     }
