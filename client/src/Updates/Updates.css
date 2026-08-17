@@ -303,6 +303,34 @@
 .skel-brief-title { width: 75%; height: 20px; margin-bottom: 10px; }
 .np-skel-brief { break-inside: avoid; }
 
+.np-link-container {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.np-announcement-link {
+  display: inline-flex;
+  align-items: center;
+  font-family: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background-color: var(--accent);
+  text-decoration: none;
+  padding: 10px 22px;
+  border: 1.5px solid var(--accent);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.np-announcement-link:hover {
+  background-color: transparent;
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
 /* ── Responsive ── */
 @media (max-width: 640px) {
   .updates-page { padding: 110px 6vw 80px; }

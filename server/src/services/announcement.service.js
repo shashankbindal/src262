@@ -22,7 +22,7 @@ async function getAnnouncements({ page = 1, limit = 20 } = {}) {
  * "new update" navbar badge, only genuinely new content should.
  */
 async function getLatestAnnouncement() {
-  return Announcement.findOne({}, '_id title content createdAt')
+  return Announcement.findOne({}, '_id title content url urlLabel createdAt')
     .sort({ createdAt: -1 })
     .lean();
 }

@@ -130,6 +130,13 @@ const Updates = () => {
                 </time>
               </div>
               <p className="np-lead-text">{lead.content}</p>
+              {lead.url && (
+                <div className="np-link-container">
+                  <a href={lead.url} target="_blank" rel="noopener noreferrer" className="np-announcement-link">
+                    {lead.urlLabel || 'Attachment Link / More Details'} →
+                  </a>
+                </div>
+              )}
             </article>
 
             {briefs.length > 0 && (
@@ -141,6 +148,13 @@ const Updates = () => {
                       <h3 className="np-brief-headline">{item.title}</h3>
                       <div className="np-byline np-byline--small">By Organizers · {timeAgo(item.createdAt)}</div>
                       <p className="np-brief-text">{item.content}</p>
+                      {item.url && (
+                        <div className="np-link-container">
+                          <a href={item.url} target="_blank" rel="noopener noreferrer" className="np-announcement-link">
+                            {item.urlLabel || 'Attachment Link / More Details'} →
+                          </a>
+                        </div>
+                      )}
                     </article>
                   ))}
                 </div>

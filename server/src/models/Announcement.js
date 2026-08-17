@@ -21,6 +21,16 @@ const announcementSchema = new mongoose.Schema(
       ref:      'User',
       required: true,
     },
+    url: {
+      type:      String,
+      trim:      true,
+      maxlength: 500,
+    },
+    urlLabel: {
+      type:      String,
+      trim:      true,
+      maxlength: 100,
+    },
   },
   { timestamps: true }
 );

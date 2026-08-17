@@ -505,6 +505,8 @@ async function createAnnouncement(admin, data) {
   const announcement = await Announcement.create({
     title:         filterXSS(data.title),
     content:       filterXSS(data.content),
+    url:           data.url ? filterXSS(data.url) : undefined,
+    urlLabel:      data.urlLabel ? filterXSS(data.urlLabel) : undefined,
     createdBy:     admin._id,
   });
 
@@ -512,13 +514,13 @@ async function createAnnouncement(admin, data) {
   return announcement;
 }
 
-const ANNOUNCEMENT_UPDATABLE_FIELDS = ['title', 'content'];
+const ANNOUNCEMENT_UPDATABLE_FIELDS = ['title', 'content', 'url', 'urlLabel'];
 
 async function updateAnnouncement(adminEmail, announcementId, data) {
   const update = {};
   for (const field of ANNOUNCEMENT_UPDATABLE_FIELDS) {
     if (data[field] === undefined) continue;
-    if (field === 'title' || field === 'content') {
+    if (field === 'title' || field === 'content' || field === 'url' || field === 'urlLabel') {
       update[field] = filterXSS(data[field]);
     } else {
       update[field] = data[field];

@@ -1374,7 +1374,7 @@ function UserManagementSection() {
 
 /* ══════════════════════════════════════ ANNOUNCEMENT MANAGEMENT COMPONENTS */
 
-const EMPTY_ANNOUNCEMENT_FORM = { title: '', content: '' };
+const EMPTY_ANNOUNCEMENT_FORM = { title: '', content: '', url: '', urlLabel: '' };
 
 function announcementTimeAgo(dateString) {
   const diffSec = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000);
@@ -1394,6 +1394,8 @@ function AnnouncementFormModal({ announcement, onClose, onDone }) {
   const [form, setForm] = useState(() => announcement ? {
     title: announcement.title || '',
     content: announcement.content || '',
+    url: announcement.url || '',
+    urlLabel: announcement.urlLabel || '',
   } : EMPTY_ANNOUNCEMENT_FORM);
   const [busy, setBusy]   = useState(false);
   const [error, setError] = useState('');
@@ -1413,6 +1415,8 @@ function AnnouncementFormModal({ announcement, onClose, onDone }) {
       const body = {
         title:    form.title.trim(),
         content:  form.content.trim(),
+        url:      form.url.trim() || undefined,
+        urlLabel: form.urlLabel.trim() || undefined,
       };
 
       if (isEdit) {
@@ -1442,12 +1446,21 @@ function AnnouncementFormModal({ announcement, onClose, onDone }) {
             </div>
           </div>
 
-
-
           <div className="ef-row">
             <div className="ef-field ef-field-full">
               <label className="auth-label">Content</label>
               <textarea className="admin-modal-input" name="content" placeholder="Announcement content" value={form.content} onChange={handle} rows={6} maxLength={5000} />
+            </div>
+          </div>
+
+          <div className="ef-row">
+            <div className="ef-field">
+              <label className="auth-label">Attachment URL (Optional)</label>
+              <input type="url" className="admin-modal-input" name="url" placeholder="https://example.com/details" value={form.url} onChange={handle} />
+            </div>
+            <div className="ef-field">
+              <label className="auth-label">Link Label (Optional)</label>
+              <input type="text" className="admin-modal-input" name="urlLabel" placeholder="e.g. Download Brochure" value={form.urlLabel} onChange={handle} maxLength={100} />
             </div>
           </div>
         </div>

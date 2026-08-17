@@ -87,6 +87,16 @@ const createAnnouncementValidator = [
   body('content')
     .trim().notEmpty().withMessage('Content is required')
     .isLength({ max: 5000 }).withMessage('Content cannot exceed 5000 characters'),
+
+  body('url')
+    .optional({ values: 'falsy' })
+    .trim()
+    .isURL().withMessage('Please provide a valid URL'),
+
+  body('urlLabel')
+    .optional({ values: 'falsy' })
+    .trim()
+    .isLength({ max: 100 }).withMessage('Link label cannot exceed 100 characters'),
 ];
 
 const updateAnnouncementValidator = [
@@ -97,6 +107,12 @@ const updateAnnouncementValidator = [
 
   body('content').optional().trim().notEmpty().withMessage('Content cannot be empty')
     .isLength({ max: 5000 }).withMessage('Content cannot exceed 5000 characters'),
+
+  body('url').optional({ values: 'falsy' }).trim()
+    .isURL().withMessage('Please provide a valid URL'),
+
+  body('urlLabel').optional({ values: 'falsy' }).trim()
+    .isLength({ max: 100 }).withMessage('Link label cannot exceed 100 characters'),
 ];
 
 const deleteAnnouncementValidator = [
