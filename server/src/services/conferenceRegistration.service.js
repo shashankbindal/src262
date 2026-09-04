@@ -218,11 +218,13 @@ async function issueCertificate(adminId, confRegId) {
 async function generateCertificatePdf(reg, user) {
   const template = path.join(__dirname, '..', '..', '..', 'client', 'Of Participation.pdf');
   const fs = require('fs');
-  const text = String(reg.institute || '').toUpperCase();
+  const text = String([reg.institute, reg.studentChapterName, user?.college].filter(Boolean).join(' ')).toUpperCase();
   const aliases = [['NIT ROURKELA','NATIONAL INSTITUTE OF TECHNOLOGY'],['BVRIT','B V RAJU','B.V RAJU'],['BMSCE','B.M.S','BMS COLLEGE'],['MIT WPU','MIT WORLD'],['BITS','BIRLA INSTITUTE'],['ICT MUMBAI','ICT'],['VIT','VELLORE INSTITUTE'],['SVNIT','SARDAR VALLABHBHAI']];
   let page = aliases.findIndex(a => a.some(k => text.includes(k))); if (page < 0) page = 0;
-  const pdf = await PDFDocument.load(fs.readFileSync(template));
-  const target = pdf.getPage(page);
+  const source = await PDFDocument.load(fs.readFileSync(template));
+  const pdf = await PDFDocument.create();
+  const [target] = await pdf.copyPages(source, [page]);
+  pdf.addPage(target);
   const font = await pdf.embedFont(StandardFonts.Helvetica);
   const name = String(reg.name || user?.name || '');
   const size = Math.min(20, Math.max(15, 330 / Math.max(1, name.length * .52)));
