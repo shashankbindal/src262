@@ -219,7 +219,9 @@ async function generateCertificatePdf(reg, user) {
   const template = path.join(__dirname, '..', '..', '..', 'client', 'Of Participation.pdf');
   const fs = require('fs');
   const text = String([reg.institute, reg.studentChapterName, user?.college].filter(Boolean).join(' ')).toUpperCase();
-  const aliases = [['NIT ROURKELA','NATIONAL INSTITUTE OF TECHNOLOGY'],['BVRIT','B V RAJU','B.V RAJU'],['BMSCE','B.M.S','BMS COLLEGE'],['MIT WPU','MIT WORLD'],['BITS','BIRLA INSTITUTE'],['VIT','VELLORE INSTITUTE'],['ICT IOCB','ICT MUMBAI'],['SVNIT','SARDAR VALLABHBHAI']];
+  // Must match the supplied workbook/template page order exactly:
+  // BITS, BMSCE, BVRIT, MIT WPU, NITR, ICT, VIT, SVNIT.
+  const aliases = [['BITS','BIRLA INSTITUTE'],['BMSCE','B.M.S','BMS COLLEGE'],['BVRIT','B V RAJU','B.V RAJU'],['MIT WPU','MIT WORLD'],['NIT ROURKELA','NATIONAL INSTITUTE OF TECHNOLOGY'],['ICT IOCB','ICT MUMBAI'],['VIT','VELLORE INSTITUTE'],['SVNIT','SARDAR VALLABHBHAI']];
   let page = aliases.findIndex(a => a.some(k => text.includes(k))); if (page < 0) page = 0;
   const source = await PDFDocument.load(fs.readFileSync(template));
   const pdf = await PDFDocument.create();
