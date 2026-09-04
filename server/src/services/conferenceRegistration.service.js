@@ -208,6 +208,13 @@ async function issueCertificate(adminId, confRegId) {
   if (!reg) throw ApiError.notFound('Conference registration not found');
   if (reg.status !== 'approved') throw ApiError.badRequest('Only approved participants can receive certificates');
   const user = await require('../models/User').findById(reg.userId).lean();
+  const buffer = await generateCertificatePdf(reg, user);
+  const result = await cloudinaryService.uploadFile(buffer, 'certificates', `${reg.srcId || reg._id}.pdf`);
+  reg.certificateIssued = true; reg.certificateUrl = result.secure_url; reg.certificateKey = result.public_id; reg.certificateIssuedAt = new Date(); reg.certificateIssuedBy = adminId; await reg.save();
+  return { certificateUrl: reg.certificateUrl, certificateIssued: true };
+}
+
+async function generateCertificatePdf(reg, user) {
   const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margin: 0 });
   const chunks=[]; doc.on('data', c => chunks.push(c));
   const done = new Promise((resolve, reject) => { doc.on('end', resolve); doc.on('error', reject); });
@@ -217,9 +224,15 @@ async function issueCertificate(adminId, confRegId) {
   doc.font('Helvetica').fontSize(Math.min(24, Math.max(15, 330 / Math.max(1, (reg.name || user?.name || '').length * .52)))).text(reg.name || user?.name || '', 0, 300, { align: 'center' });
   doc.font('Helvetica').fontSize(14).text(`For participation in the AIChE India Student Regional Conference 2026\n${reg.institute || ''}`, 110, 365, { width: 620, align: 'center' });
   doc.font('Helvetica').fontSize(11).text(reg.srcId || '', 0, 500, { align: 'center' }); doc.end(); await done;
-  const result = await cloudinaryService.uploadFile(Buffer.concat(chunks), 'certificates', `${reg.srcId || reg._id}.pdf`);
-  reg.certificateIssued = true; reg.certificateUrl = result.secure_url; reg.certificateKey = result.public_id; reg.certificateIssuedAt = new Date(); reg.certificateIssuedBy = adminId; await reg.save();
-  return { certificateUrl: reg.certificateUrl, certificateIssued: true };
+  return Buffer.concat(chunks);
+}
+
+async function previewCertificate(confRegId) {
+  const reg = await ConferenceRegistration.findById(confRegId).lean();
+  if (!reg) throw ApiError.notFound('Conference registration not found');
+  if (reg.status !== 'approved') throw ApiError.badRequest('Only approved participants can preview certificates');
+  const user = await require('../models/User').findById(reg.userId).lean();
+  return generateCertificatePdf(reg, user);
 }
 
 async function getCertificate(confRegId) {
@@ -680,6 +693,7 @@ module.exports = {
   getMyConferenceRegistration,
   getMyCertificate,
   issueCertificate,
+  previewCertificate,
   getCertificate,
   withdrawCertificate,
   getMyConferenceIdCard,

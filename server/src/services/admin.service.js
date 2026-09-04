@@ -25,6 +25,7 @@ const exportConferenceRegistrationsCSV = confRegService.exportConferenceRegistra
 const approveConferenceRegistration = confRegService.approveConferenceRegistration;
 const rejectConferenceRegistration  = confRegService.rejectConferenceRegistration;
 const issueCertificate = confRegService.issueCertificate;
+const previewCertificate = confRegService.previewCertificate;
 const getCertificate = confRegService.getCertificate;
 const withdrawCertificate = confRegService.withdrawCertificate;
 const getConfPaymentScreenshot      = confRegService.getPaymentScreenshot;
@@ -576,6 +577,7 @@ module.exports = {
   approveConferenceRegistration,
   rejectConferenceRegistration,
   issueCertificate,
+  previewCertificate,
   getCertificate,
   withdrawCertificate,
   getConfPaymentScreenshot,

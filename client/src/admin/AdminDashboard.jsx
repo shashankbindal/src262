@@ -350,7 +350,10 @@ function ConfRegRow({ confReg, onRefresh, selected, onToggle }) {
                 <button className="tbl-btn reject" onClick={async () => { if (!window.confirm('Withdraw this certificate?')) return; setIssuing(true); try { await api.post(`/admin/conference-registrations/${confReg._id}/certificate/withdraw`); onRefresh(); } catch (err) { alert(err.message || 'Withdrawal failed'); } finally { setIssuing(false); } }} disabled={issuing}>{issuing ? 'Withdrawing…' : 'Withdraw Certificate'}</button>
               </>
             ) : confReg.status === 'approved' ? (
-              <button className="tbl-btn approve" onClick={issueCertificate} disabled={issuing}>{issuing ? 'Issuing…' : 'Issue Certificate'}</button>
+              <>
+                <a className="tbl-btn" href={`${API_BASE}/admin/conference-registrations/${confReg._id}/certificate/preview`} target="_blank" rel="noreferrer">Preview Certificate</a>
+                <button className="tbl-btn approve" onClick={issueCertificate} disabled={issuing}>{issuing ? 'Issuing…' : 'Issue Certificate'}</button>
+              </>
             ) : null}
             {confReg.paymentScreenshotUrl && (
               <button className="tbl-btn" onClick={viewScreenshot}>Screenshot</button>
