@@ -1,8 +1,7 @@
 'use strict';
 const crypto               = require('crypto');
 const ConferenceRegistration = require('../models/ConferenceRegistration');
-const PDFDocument = require('pdfkit');
-const childProcess = require('child_process');
+const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 const path = require('path');
 const User                   = require('../models/User');
 const ApiError               = require('../utils/ApiError');
@@ -218,24 +217,20 @@ async function issueCertificate(adminId, confRegId) {
 
 async function generateCertificatePdf(reg, user) {
   const template = path.join(__dirname, '..', '..', '..', 'client', 'Of Participation.pdf');
-  const output = path.join(require('os').tmpdir(), `certificate-${reg._id}.pdf`);
+  const fs = require('fs');
   const text = String(reg.institute || '').toUpperCase();
   const aliases = [['NIT ROURKELA','NATIONAL INSTITUTE OF TECHNOLOGY'],['BVRIT','B V RAJU','B.V RAJU'],['BMSCE','B.M.S','BMS COLLEGE'],['MIT WPU','MIT WORLD'],['BITS','BIRLA INSTITUTE'],['ICT MUMBAI','ICT'],['VIT','VELLORE INSTITUTE'],['SVNIT','SARDAR VALLABHBHAI']];
   let page = aliases.findIndex(a => a.some(k => text.includes(k))); if (page < 0) page = 0;
-  childProcess.execFileSync('python', [path.join(__dirname, 'renderCertificate.py'), template, output, String(reg.name || user?.name || ''), String(reg.srcId || ''), String(page)]);
-  const buffer = require('fs').readFileSync(output); require('fs').unlinkSync(output); return buffer;
-  /* Legacy fallback below is intentionally unreachable; the template renderer
-   * above preserves the original logos, signatures, borders, and college text. */
-  const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margin: 0 });
-  const chunks=[]; doc.on('data', c => chunks.push(c));
-  const done = new Promise((resolve, reject) => { doc.on('end', resolve); doc.on('error', reject); });
-  doc.font('Helvetica-Bold').fontSize(38).fillColor('#557ca8').text('CERTIFICATE', 0, 145, { align: 'center' });
-  doc.font('Helvetica-Bold').fontSize(22).fillColor('#244f83').text('Of Participation', 0, 205, { align: 'center' });
-  doc.font('Helvetica').fontSize(16).fillColor('#111').text('This certificate is presented to', 0, 255, { align: 'center' });
-  doc.font('Helvetica').fontSize(Math.min(24, Math.max(15, 330 / Math.max(1, (reg.name || user?.name || '').length * .52)))).text(reg.name || user?.name || '', 0, 300, { align: 'center' });
-  doc.font('Helvetica').fontSize(14).text(`For participation in the AIChE India Student Regional Conference 2026\n${reg.institute || ''}`, 110, 365, { width: 620, align: 'center' });
-  doc.font('Helvetica').fontSize(11).text(reg.srcId || '', 0, 500, { align: 'center' }); doc.end(); await done;
-  return Buffer.concat(chunks);
+  const pdf = await PDFDocument.load(fs.readFileSync(template));
+  const target = pdf.getPage(page);
+  const font = await pdf.embedFont(StandardFonts.Helvetica);
+  const name = String(reg.name || user?.name || '');
+  const size = Math.min(20, Math.max(15, 330 / Math.max(1, name.length * .52)));
+  const width = font.widthOfTextAtSize(name, size);
+  target.drawText(name, { x: (target.getWidth() - width) / 2, y: 320, size, font, color: rgb(0, 0, 0) });
+  const src = String(reg.srcId || '');
+  target.drawText(src, { x: (target.getWidth() - font.widthOfTextAtSize(src, 10)) / 2, y: 112, size: 10, font, color: rgb(0, 0, 0) });
+  return Buffer.from(await pdf.save());
 }
 
 async function previewCertificate(confRegId) {
