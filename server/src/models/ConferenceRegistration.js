@@ -71,6 +71,13 @@ const conferenceRegistrationSchema = new mongoose.Schema(
 
     /* Lock: once approved, payment details cannot be changed */
     isLocked: { type: Boolean, default: false },
+
+    /* Participation certificate issued by an administrator */
+    certificateIssued: { type: Boolean, default: false },
+    certificateUrl: { type: String, default: '' },
+    certificateKey: { type: String, default: '' },
+    certificateIssuedAt: { type: Date },
+    certificateIssuedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
   { timestamps: true }
 );

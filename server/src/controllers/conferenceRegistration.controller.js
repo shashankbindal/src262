@@ -126,6 +126,12 @@ const getMyConferenceIdCard = asyncHandler(async (req, res) => {
   res.send(pdf);
 });
 
+const getMyCertificate = asyncHandler(async (req, res) => {
+  const url = await confRegService.getMyCertificate(req.user._id);
+  if (!url) return res.status(404).json({ message: 'Certificate has not been issued yet' });
+  res.redirect(url);
+});
+
 /* Resend the conference registration email (with ID card PDF, if approved). */
 const resendMyConfRegEmail = asyncHandler(async (req, res) => {
   const result = await confRegService.resendConfRegEmail(req.user._id);
@@ -138,5 +144,6 @@ module.exports = {
   submitConferenceRegistration,
   getMyConferenceRegistration,
   getMyConferenceIdCard,
+  getMyCertificate,
   resendMyConfRegEmail,
 };

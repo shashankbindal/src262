@@ -1,6 +1,7 @@
 'use strict';
 const crypto               = require('crypto');
 const ConferenceRegistration = require('../models/ConferenceRegistration');
+const PDFDocument = require('pdfkit');
 const User                   = require('../models/User');
 const ApiError               = require('../utils/ApiError');
 const cloudinaryService      = require('./cloudinary.service');
@@ -195,6 +196,35 @@ async function getMyConferenceRegistration(userId) {
   }
 
   return reg;
+}
+
+async function getMyCertificate(userId) {
+  const reg = await ConferenceRegistration.findOne({ userId }).lean();
+  return reg?.certificateIssued ? reg.certificateUrl : '';
+}
+
+async function issueCertificate(adminId, confRegId) {
+  const reg = await ConferenceRegistration.findById(confRegId);
+  if (!reg) throw ApiError.notFound('Conference registration not found');
+  if (reg.status !== 'approved') throw ApiError.badRequest('Only approved participants can receive certificates');
+  const user = await require('../models/User').findById(reg.userId).lean();
+  const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margin: 0 });
+  const chunks=[]; doc.on('data', c => chunks.push(c));
+  const done = new Promise((resolve, reject) => { doc.on('end', resolve); doc.on('error', reject); });
+  doc.font('Helvetica-Bold').fontSize(38).fillColor('#557ca8').text('CERTIFICATE', 0, 145, { align: 'center' });
+  doc.font('Helvetica-Bold').fontSize(22).fillColor('#244f83').text('Of Participation', 0, 205, { align: 'center' });
+  doc.font('Helvetica').fontSize(16).fillColor('#111').text('This certificate is presented to', 0, 255, { align: 'center' });
+  doc.font('Helvetica').fontSize(Math.min(24, Math.max(15, 330 / Math.max(1, (reg.name || user?.name || '').length * .52)))).text(reg.name || user?.name || '', 0, 300, { align: 'center' });
+  doc.font('Helvetica').fontSize(14).text(`For participation in the AIChE India Student Regional Conference 2026\n${reg.institute || ''}`, 110, 365, { width: 620, align: 'center' });
+  doc.font('Helvetica').fontSize(11).text(reg.srcId || '', 0, 500, { align: 'center' }); doc.end(); await done;
+  const result = await cloudinaryService.uploadFile(Buffer.concat(chunks), 'certificates', `${reg.srcId || reg._id}.pdf`);
+  reg.certificateIssued = true; reg.certificateUrl = result.secure_url; reg.certificateKey = result.public_id; reg.certificateIssuedAt = new Date(); reg.certificateIssuedBy = adminId; await reg.save();
+  return { certificateUrl: reg.certificateUrl, certificateIssued: true };
+}
+
+async function getCertificate(confRegId) {
+  const reg = await ConferenceRegistration.findById(confRegId).lean();
+  return reg?.certificateIssued ? reg.certificateUrl : '';
 }
 
 /**
@@ -634,6 +664,9 @@ async function verifyBySrcId(srcId) {
 module.exports = {
   submitConferenceRegistration,
   getMyConferenceRegistration,
+  getMyCertificate,
+  issueCertificate,
+  getCertificate,
   getMyConferenceIdCard,
   resendConfRegEmail,
   bulkResendConfRegEmails,

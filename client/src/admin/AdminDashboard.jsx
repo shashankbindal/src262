@@ -291,6 +291,7 @@ function ConfDetailModal({ confRegId, onClose }) {
 
 /* ── Conf Reg: Row in table ── */
 function ConfRegRow({ confReg, onRefresh, selected, onToggle }) {
+  const [issuing, setIssuing] = React.useState(false);
   const [showApprove, setShowApprove] = useState(false);
   const [showReject, setShowReject]   = useState(false);
   const [showDetail, setShowDetail]   = useState(false);
@@ -309,6 +310,12 @@ function ConfRegRow({ confReg, onRefresh, selected, onToggle }) {
       if (tab) tab.close();
       alert('Could not load screenshot.');
     }
+  };
+  const issueCertificate = async () => {
+    setIssuing(true);
+    try { await api.post(`/admin/conference-registrations/${confReg._id}/certificate/issue`); onRefresh(); }
+    catch (err) { alert(err.message || 'Certificate issue failed'); }
+    finally { setIssuing(false); }
   };
 
   const u = confReg.userId || {};
@@ -337,6 +344,11 @@ function ConfRegRow({ confReg, onRefresh, selected, onToggle }) {
         <td>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: '120px' }}>
             <button className="tbl-btn" onClick={() => setShowDetail(true)}>View Details</button>
+            {confReg.certificateIssued ? (
+              <a className="tbl-btn approve" href={`${API_BASE}/admin/conference-registrations/${confReg._id}/certificate`} target="_blank" rel="noreferrer">View Certificate</a>
+            ) : confReg.status === 'approved' ? (
+              <button className="tbl-btn approve" onClick={issueCertificate} disabled={issuing}>{issuing ? 'Issuing…' : 'Issue Certificate'}</button>
+            ) : null}
             {confReg.paymentScreenshotUrl && (
               <button className="tbl-btn" onClick={viewScreenshot}>Screenshot</button>
             )}

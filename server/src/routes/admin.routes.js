@@ -39,6 +39,8 @@ router.get('/conference-registrations/:confRegId/screenshot', ctrl.getConfPaymen
 router.get('/conference-registrations/:confRegId/id-card',    ctrl.getConfIdCard);
 router.get('/conference-registrations/:confRegId/detail',     ctrl.getConferenceRegistrationDetail);
 router.get('/conference-registrations/:confRegId/id-card-preview', ctrl.getIdCardPreview);
+router.post('/conference-registrations/:confRegId/certificate/issue', ctrl.issueCertificate);
+router.get('/conference-registrations/:confRegId/certificate', ctrl.getCertificate);
 
 /* ─── Event Registrations ────────────────────────────────────────────────── */
 router.get('/events/:eventId/registrations',     ctrl.getRegistrations);

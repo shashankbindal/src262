@@ -63,6 +63,16 @@ const getIdCardPreview = asyncHandler(async (req, res) => {
   res.send(pdf);
 });
 
+const issueCertificate = asyncHandler(async (req, res) => {
+  const result = await adminService.issueCertificate(req.user._id, req.params.confRegId);
+  ApiResponse.ok(res, 'Certificate issued', result);
+});
+const getCertificate = asyncHandler(async (req, res) => {
+  const url = await adminService.getCertificate(req.params.confRegId);
+  if (!url) return res.status(404).json({ message: 'Certificate has not been issued yet' });
+  res.redirect(url);
+});
+
 const exportConferenceRegistrationsCSV = asyncHandler(async (req, res) => {
   const { status } = req.query;
   const csv = await adminService.exportConferenceRegistrationsCSV(status);
@@ -207,6 +217,8 @@ module.exports = {
   getConferenceRegistrations,
   getConferenceRegistrationDetail,
   getIdCardPreview,
+  issueCertificate,
+  getCertificate,
   exportConferenceRegistrationsCSV,
   bulkResendConfRegEmails,
   decideConferenceRegistration,

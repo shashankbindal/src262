@@ -297,6 +297,11 @@ function ProfileTab({ user, refreshUser }) {
           </div>
           <div className="profile-conference-actions">
             <ViewConferenceIdCardButton className="profile-conference-btn profile-id-card-btn" />
+            {conferenceReg.certificateIssued && (
+              <a href={`${API_BASE}/conference-registration/certificate`} target="_blank" rel="noreferrer" download className="profile-conference-btn profile-id-card-btn">
+                Download Certificate
+              </a>
+            )}
             <a href="https://chat.whatsapp.com/KXApATqIm4rKRQ9ojYjWch" target="_blank" rel="noreferrer" className="profile-conference-btn profile-whatsapp-btn">
               Join WhatsApp Group
             </a>
