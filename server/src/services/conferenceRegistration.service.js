@@ -227,6 +227,20 @@ async function getCertificate(confRegId) {
   return reg?.certificateIssued ? reg.certificateUrl : '';
 }
 
+async function withdrawCertificate(adminId, confRegId) {
+  const reg = await ConferenceRegistration.findById(confRegId);
+  if (!reg) throw ApiError.notFound('Conference registration not found');
+  if (reg.certificateKey) await cloudinaryService.deleteFile(reg.certificateKey);
+  reg.certificateIssued = false;
+  reg.certificateUrl = '';
+  reg.certificateKey = '';
+  reg.certificateIssuedAt = undefined;
+  reg.certificateIssuedBy = undefined;
+  await reg.save();
+  logger.info(`Certificate withdrawn by admin ${adminId} for registration ${confRegId}`);
+  return { certificateIssued: false };
+}
+
 /**
  * Generates the logged-in attendee's own conference ID card.  The card is
  * available only after the registration has been approved and an SRC ID has
@@ -667,6 +681,7 @@ module.exports = {
   getMyCertificate,
   issueCertificate,
   getCertificate,
+  withdrawCertificate,
   getMyConferenceIdCard,
   resendConfRegEmail,
   bulkResendConfRegEmails,

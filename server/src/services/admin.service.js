@@ -26,6 +26,7 @@ const approveConferenceRegistration = confRegService.approveConferenceRegistrati
 const rejectConferenceRegistration  = confRegService.rejectConferenceRegistration;
 const issueCertificate = confRegService.issueCertificate;
 const getCertificate = confRegService.getCertificate;
+const withdrawCertificate = confRegService.withdrawCertificate;
 const getConfPaymentScreenshot      = confRegService.getPaymentScreenshot;
 const getConfIdCard                 = confRegService.getIdCardSignedUrl;
 
@@ -576,6 +577,7 @@ module.exports = {
   rejectConferenceRegistration,
   issueCertificate,
   getCertificate,
+  withdrawCertificate,
   getConfPaymentScreenshot,
   getConfIdCard,
   /* Event Registration */

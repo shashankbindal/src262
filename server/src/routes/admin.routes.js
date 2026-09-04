@@ -40,6 +40,7 @@ router.get('/conference-registrations/:confRegId/id-card',    ctrl.getConfIdCard
 router.get('/conference-registrations/:confRegId/detail',     ctrl.getConferenceRegistrationDetail);
 router.get('/conference-registrations/:confRegId/id-card-preview', ctrl.getIdCardPreview);
 router.post('/conference-registrations/:confRegId/certificate/issue', ctrl.issueCertificate);
+router.post('/conference-registrations/:confRegId/certificate/withdraw', ctrl.withdrawCertificate);
 router.get('/conference-registrations/:confRegId/certificate', ctrl.getCertificate);
 
 /* ─── Event Registrations ────────────────────────────────────────────────── */

@@ -345,7 +345,10 @@ function ConfRegRow({ confReg, onRefresh, selected, onToggle }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: '120px' }}>
             <button className="tbl-btn" onClick={() => setShowDetail(true)}>View Details</button>
             {confReg.certificateIssued ? (
-              <a className="tbl-btn approve" href={`${API_BASE}/admin/conference-registrations/${confReg._id}/certificate`} target="_blank" rel="noreferrer">View Certificate</a>
+              <>
+                <a className="tbl-btn approve" href={`${API_BASE}/admin/conference-registrations/${confReg._id}/certificate`} target="_blank" rel="noreferrer">View Certificate</a>
+                <button className="tbl-btn reject" onClick={async () => { if (!window.confirm('Withdraw this certificate?')) return; setIssuing(true); try { await api.post(`/admin/conference-registrations/${confReg._id}/certificate/withdraw`); onRefresh(); } catch (err) { alert(err.message || 'Withdrawal failed'); } finally { setIssuing(false); } }} disabled={issuing}>{issuing ? 'Withdrawing…' : 'Withdraw Certificate'}</button>
+              </>
             ) : confReg.status === 'approved' ? (
               <button className="tbl-btn approve" onClick={issueCertificate} disabled={issuing}>{issuing ? 'Issuing…' : 'Issue Certificate'}</button>
             ) : null}

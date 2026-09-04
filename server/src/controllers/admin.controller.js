@@ -72,6 +72,10 @@ const getCertificate = asyncHandler(async (req, res) => {
   if (!url) return res.status(404).json({ message: 'Certificate has not been issued yet' });
   res.redirect(url);
 });
+const withdrawCertificate = asyncHandler(async (req, res) => {
+  const result = await adminService.withdrawCertificate(req.user._id, req.params.confRegId);
+  ApiResponse.ok(res, 'Certificate withdrawn', result);
+});
 
 const exportConferenceRegistrationsCSV = asyncHandler(async (req, res) => {
   const { status } = req.query;
@@ -219,6 +223,7 @@ module.exports = {
   getIdCardPreview,
   issueCertificate,
   getCertificate,
+  withdrawCertificate,
   exportConferenceRegistrationsCSV,
   bulkResendConfRegEmails,
   decideConferenceRegistration,
