@@ -219,7 +219,7 @@ async function generateCertificatePdf(reg, user) {
   const template = path.join(__dirname, '..', '..', '..', 'client', 'Of Participation.pdf');
   const fs = require('fs');
   const text = String([reg.institute, reg.studentChapterName, user?.college].filter(Boolean).join(' ')).toUpperCase();
-  const aliases = [['NIT ROURKELA','NATIONAL INSTITUTE OF TECHNOLOGY'],['BVRIT','B V RAJU','B.V RAJU'],['BMSCE','B.M.S','BMS COLLEGE'],['MIT WPU','MIT WORLD'],['BITS','BIRLA INSTITUTE'],['ICT MUMBAI','ICT'],['VIT','VELLORE INSTITUTE'],['SVNIT','SARDAR VALLABHBHAI']];
+  const aliases = [['NIT ROURKELA','NATIONAL INSTITUTE OF TECHNOLOGY'],['BVRIT','B V RAJU','B.V RAJU'],['BMSCE','B.M.S','BMS COLLEGE'],['MIT WPU','MIT WORLD'],['BITS','BIRLA INSTITUTE'],['VIT','VELLORE INSTITUTE'],['ICT IOCB','ICT MUMBAI'],['SVNIT','SARDAR VALLABHBHAI']];
   let page = aliases.findIndex(a => a.some(k => text.includes(k))); if (page < 0) page = 0;
   const source = await PDFDocument.load(fs.readFileSync(template));
   const pdf = await PDFDocument.create();
@@ -229,7 +229,7 @@ async function generateCertificatePdf(reg, user) {
   const name = String(reg.name || user?.name || '');
   const size = Math.min(20, Math.max(15, 330 / Math.max(1, name.length * .52)));
   const width = font.widthOfTextAtSize(name, size);
-  target.drawText(name, { x: (target.getWidth() - width) / 2, y: 320, size, font, color: rgb(0, 0, 0) });
+  target.drawText(name, { x: (target.getWidth() - width) / 2, y: 310, size, font, color: rgb(0, 0, 0) });
   const src = String(reg.srcId || '');
   target.drawText(src, { x: (target.getWidth() - font.widthOfTextAtSize(src, 10)) / 2, y: 112, size: 10, font, color: rgb(0, 0, 0) });
   return Buffer.from(await pdf.save());
