@@ -2,6 +2,8 @@
 const crypto               = require('crypto');
 const ConferenceRegistration = require('../models/ConferenceRegistration');
 const PDFDocument = require('pdfkit');
+const childProcess = require('child_process');
+const path = require('path');
 const User                   = require('../models/User');
 const ApiError               = require('../utils/ApiError');
 const cloudinaryService      = require('./cloudinary.service');
@@ -215,6 +217,15 @@ async function issueCertificate(adminId, confRegId) {
 }
 
 async function generateCertificatePdf(reg, user) {
+  const template = path.join(__dirname, '..', '..', '..', 'client', 'Of Participation.pdf');
+  const output = path.join(require('os').tmpdir(), `certificate-${reg._id}.pdf`);
+  const text = String(reg.institute || '').toUpperCase();
+  const aliases = [['NIT ROURKELA','NATIONAL INSTITUTE OF TECHNOLOGY'],['BVRIT','B V RAJU','B.V RAJU'],['BMSCE','B.M.S','BMS COLLEGE'],['MIT WPU','MIT WORLD'],['BITS','BIRLA INSTITUTE'],['ICT MUMBAI','ICT'],['VIT','VELLORE INSTITUTE'],['SVNIT','SARDAR VALLABHBHAI']];
+  let page = aliases.findIndex(a => a.some(k => text.includes(k))); if (page < 0) page = 0;
+  childProcess.execFileSync('python', [path.join(__dirname, 'renderCertificate.py'), template, output, String(reg.name || user?.name || ''), String(reg.srcId || ''), String(page)]);
+  const buffer = require('fs').readFileSync(output); require('fs').unlinkSync(output); return buffer;
+  /* Legacy fallback below is intentionally unreachable; the template renderer
+   * above preserves the original logos, signatures, borders, and college text. */
   const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margin: 0 });
   const chunks=[]; doc.on('data', c => chunks.push(c));
   const done = new Promise((resolve, reject) => { doc.on('end', resolve); doc.on('error', reject); });
