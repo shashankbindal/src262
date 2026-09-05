@@ -224,7 +224,12 @@ async function issueCertificate(adminId, confRegId) {
 async function generateCertificatePdf(reg, user) {
   const template = path.join(__dirname, '..', '..', '..', 'client', 'Of Participation.pdf');
   const fs = require('fs');
-  const text = String([reg.institute, reg.studentChapterName, user?.college].filter(Boolean).join(' ')).toUpperCase();
+  const text = String([
+    reg.institute,
+    reg.studentChapterName,
+    user?.college,
+    user?.studentChapterName,
+  ].filter(Boolean).join(' ')).toUpperCase();
   // Page indexes must match the supplied workbook/template order exactly.
   // Specific institute aliases are checked before broader ones so SVNIT can
   // never be mistaken for NIT Rourkela merely because both names contain
