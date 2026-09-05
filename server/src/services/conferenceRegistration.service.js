@@ -210,8 +210,14 @@ async function issueCertificate(adminId, confRegId) {
   if (reg.status !== 'approved') throw ApiError.badRequest('Only approved participants can receive certificates');
   const user = await require('../models/User').findById(reg.userId).lean();
   const buffer = await generateCertificatePdf(reg, user);
+  const previousCertificateKey = reg.certificateKey;
   const result = await cloudinaryService.uploadFile(buffer, 'certificates', `${reg.srcId || reg._id}.pdf`);
   reg.certificateIssued = true; reg.certificateUrl = result.secure_url; reg.certificateKey = result.public_id; reg.certificateIssuedAt = new Date(); reg.certificateIssuedBy = adminId; await reg.save();
+  if (previousCertificateKey && previousCertificateKey !== result.public_id) {
+    await cloudinaryService.deleteFile(previousCertificateKey).catch((err) => {
+      logger.warn(`Could not remove replaced certificate ${previousCertificateKey}: ${err.message}`);
+    });
+  }
   return { certificateUrl: reg.certificateUrl, certificateIssued: true };
 }
 
@@ -219,10 +225,22 @@ async function generateCertificatePdf(reg, user) {
   const template = path.join(__dirname, '..', '..', '..', 'client', 'Of Participation.pdf');
   const fs = require('fs');
   const text = String([reg.institute, reg.studentChapterName, user?.college].filter(Boolean).join(' ')).toUpperCase();
-  // Must match the supplied workbook/template page order exactly:
-  // BITS, BMSCE, BVRIT, MIT WPU, NITR, ICT, VIT, SVNIT.
-  const aliases = [['BITS','BIRLA INSTITUTE'],['BMSCE','B.M.S','BMS COLLEGE'],['BVRIT','B V RAJU','B.V RAJU'],['MIT WPU','MIT WORLD'],['NIT ROURKELA','NATIONAL INSTITUTE OF TECHNOLOGY'],['ICT IOCB','ICT MUMBAI'],['VIT','VELLORE INSTITUTE'],['SVNIT','SARDAR VALLABHBHAI']];
-  let page = aliases.findIndex(a => a.some(k => text.includes(k))); if (page < 0) page = 0;
+  // Page indexes must match the supplied workbook/template order exactly.
+  // Specific institute aliases are checked before broader ones so SVNIT can
+  // never be mistaken for NIT Rourkela merely because both names contain
+  // "National Institute of Technology".
+  const templateMatchers = [
+    { page: 7, aliases: ['SVNIT', 'SARDAR VALLABHBHAI'] },
+    { page: 4, aliases: ['NIT ROURKELA', 'ROURKELA'] },
+    { page: 5, aliases: ['ICT IOCB', 'ICT MUMBAI', 'INSTITUTE OF CHEMICAL TECHNOLOGY'] },
+    { page: 0, aliases: ['BITS', 'BIRLA INSTITUTE'] },
+    { page: 1, aliases: ['BMSCE', 'B.M.S', 'BMS COLLEGE'] },
+    { page: 2, aliases: ['BVRIT', 'B V RAJU', 'B.V RAJU', 'BV RAJU'] },
+    { page: 3, aliases: ['MIT WPU', 'MIT WORLD'] },
+    { page: 6, aliases: ['VIT', 'VELLORE INSTITUTE'] },
+  ];
+  const match = templateMatchers.find(({ aliases }) => aliases.some((alias) => text.includes(alias)));
+  const page = match?.page ?? 0;
   const source = await PDFDocument.load(fs.readFileSync(template));
   const pdf = await PDFDocument.create();
   const [target] = await pdf.copyPages(source, [page]);
