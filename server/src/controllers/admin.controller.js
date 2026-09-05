@@ -15,9 +15,10 @@ const getOverview = asyncHandler(async (_req, res) => {
 /* ─── Conference Registration ────────────────────────────────────────────── */
 
 const getConferenceRegistrations = asyncHandler(async (req, res) => {
-  const { status, page, limit } = req.query;
+  const { status, certificateStatus, page, limit } = req.query;
   const data = await adminService.getConferenceRegistrations({
     status,
+    certificateStatus,
     page:  parseInt(page)  || 1,
     limit: parseInt(limit) || 50,
   });

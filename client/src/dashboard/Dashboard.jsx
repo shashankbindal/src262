@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { api, ApiError } from '../lib/api.js';
+import { api, ApiError, API_BASE } from '../lib/api.js';
 import { COUNTRY_CODES } from '../shared/countryCodes.js';
 import { useResendCooldown, formatCooldown } from '../shared/useResendCooldown.js';
 import './Dashboard.css';

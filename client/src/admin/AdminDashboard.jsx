@@ -342,6 +342,11 @@ function ConfRegRow({ confReg, onRefresh, selected, onToggle }) {
         <td>₹{confReg.registrationFee ?? '—'}</td>
         <td>{new Date(confReg.createdAt).toLocaleDateString('en-IN')}</td>
         <td>
+          <strong style={{ color: confReg.certificateIssued ? 'var(--primary)' : 'var(--text-muted)' }}>
+            {confReg.certificateIssued ? 'Issued' : 'Not Issued'}
+          </strong>
+        </td>
+        <td>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: '120px' }}>
             <button className="tbl-btn" onClick={() => setShowDetail(true)}>View Details</button>
             {confReg.certificateIssued ? (
@@ -397,6 +402,7 @@ function ConfRegSection({ counts }) {
   const [loadError, setLoadError] = useState('');
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [college, setCollege]     = useState('');
+  const [certificateFilter, setCertificateFilter] = useState('all');
   const [selectedIds, setSelectedIds] = useState(() => new Set());
 
   const CONF_TABS = [
@@ -410,11 +416,13 @@ function ConfRegSection({ counts }) {
     setLoading(true);
     setLoadError('');
     setSelectedIds(new Set());
-    api.get(`/admin/conference-registrations?status=${activeTab}&limit=2000`)
+    const params = new URLSearchParams({ status: activeTab, limit: '2000' });
+    if (certificateFilter !== 'all') params.set('certificateStatus', certificateFilter);
+    api.get(`/admin/conference-registrations?${params.toString()}`)
       .then((res) => setRows(res.data?.docs || []))
       .catch(() => { setRows([]); setLoadError('Failed to load registrations.'); })
       .finally(() => setLoading(false));
-  }, [activeTab, isCollapsed]);
+  }, [activeTab, certificateFilter, isCollapsed]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -490,6 +498,22 @@ function ConfRegSection({ counts }) {
             ))}
           </div>
 
+          <div className="admin-status-tabs" aria-label="Certificate status filter">
+            {[
+              { id: 'all', label: 'All Certificates' },
+              { id: 'issued', label: 'Issued' },
+              { id: 'not-issued', label: 'Not Issued' },
+            ].map((option) => (
+              <button
+                key={option.id}
+                className={`admin-status-tab${certificateFilter === option.id ? ' active' : ''}`}
+                onClick={() => setCertificateFilter(option.id)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+
           <AdminSelectionBar
             college={college}
             setCollege={setCollege}
@@ -503,7 +527,9 @@ function ConfRegSection({ counts }) {
           ) : loadError ? (
             <div className="admin-empty">{loadError}</div>
           ) : visibleRows.length === 0 ? (
-            <div className="admin-empty">{rows.length === 0 ? 'No registrations in this category.' : 'No registrations match that college.'}</div>
+            <div className="admin-empty">
+              {rows.length === 0 ? 'No registrations match the selected status filters.' : 'No registrations match that college.'}
+            </div>
           ) : (
             <div className="admin-table-wrap">
               <table className="admin-table">
@@ -521,6 +547,7 @@ function ConfRegSection({ counts }) {
                     <th>Registration Type</th>
                     <th>Fee Paid</th>
                     <th>Submitted</th>
+                    <th>Certificate</th>
                     <th>Actions</th>
                   </tr>
                 </thead>

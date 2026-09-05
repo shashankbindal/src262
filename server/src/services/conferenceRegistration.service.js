@@ -351,9 +351,11 @@ function getRegistrationConfig(user) {
 
 /* ─── Admin-facing ────────────────────────────────────────────────────────── */
 
-async function getConferenceRegistrations({ status, page = 1, limit = 50 } = {}) {
+async function getConferenceRegistrations({ status, certificateStatus, page = 1, limit = 50 } = {}) {
   const filter = {};
   if (status) filter.status = status;
+  if (certificateStatus === 'issued') filter.certificateIssued = true;
+  if (certificateStatus === 'not-issued') filter.certificateIssued = { $ne: true };
 
   const options = {
     page,
