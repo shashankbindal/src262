@@ -439,6 +439,11 @@ function ConferenceRegBanner() {
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
           <Link to="/register" className="confbanner-btn outlined">Register for Events</Link>
           <ViewConferenceIdCardButton />
+          {confReg.certificateIssued && (
+            <a href={`${API_BASE}/conference-registration/certificate`} target="_blank" rel="noreferrer" download className="confbanner-btn outlined">
+              Download Certificate
+            </a>
+          )}
           <a href="https://chat.whatsapp.com/KXApATqIm4rKRQ9ojYjWch" target="_blank" rel="noreferrer" className="confbanner-btn whatsapp">
             Join WhatsApp Group
           </a>
